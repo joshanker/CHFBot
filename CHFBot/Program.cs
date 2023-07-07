@@ -7,6 +7,7 @@ using System.IO;
 using Scraper;
 using BotCommands;
 using System.Threading;
+using System.Timers;
 
 
 
@@ -18,31 +19,69 @@ namespace CHFBot
         private DiscordSocketClient _client;
 
         static void Main(string[] args)
+            
+
             => new Program().RunBotAsync().GetAwaiter().GetResult();
+
+
 
         public async Task RunBotAsync()
         {
+            
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 GatewayIntents = GatewayIntents.All 
                
             });
 
-
+        
             ClearMessageCache();
-
             _client.Log += Log;
 
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer = new System.Timers.Timer(10000); //one hour in milliseconds
+            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            timer.Start();
+            Console.WriteLine("Timer is starting!");
+
             await _client.LoginAsync(TokenType.Bot, "MTEyNTY4NTg4NzE4ODA4Njg2Nw.Gdtnxb.9LzfrwI8CEuCtPgTmDcOcMFgrsM-NDcrDUW3rI");
-
             _client.MessageReceived += HandleCommandAsync;
-
             await _client.StartAsync();
-            
             await Task.Delay(-1);
 
-           
+       
+
+            async void OnTimedEvent(object source, ElapsedEventArgs e)
+            {
+                //Do the stuff you want to be done every hour;
+                
+                HandleCommandAsync2();
+            }
+            
         }
+
+        //private async Task HandleCommandAsync2()
+        //{
+        //    Console.WriteLine("!quote called for by automated timer");
+        //    Commands getQuote = new Commands();
+        //    string quote = getQuote.getQuote();
+        //    await message.Channel.SendMessageAsync(quote);
+
+        //}
+
+        public async Task HandleCommandAsync2() // 1
+        {
+            //DiscordSocketClient _client = new DiscordSocketClient(); // 2
+            ulong id = 1125693277295886357; // 3
+            var chnl = _client.GetChannel(id) as IMessageChannel; // 4
+            //await chnl.SendMessageAsync("Announcement - testing an automated quote!"); // 5
+            Console.WriteLine("!quote called for by automated timer");
+            Commands getQuote = new Commands();
+            string quote = getQuote.getQuote();
+            //await message.Channel.SendMessageAsync(quote);
+            await chnl.SendMessageAsync(quote);
+        }
+
 
         private Task Log(LogMessage arg)
         {
@@ -58,9 +97,7 @@ namespace CHFBot
                 propertyInfo.SetValue(_client, 0);
             }
         }
-
-       
-
+        
         private async Task HandleCommandAsync(SocketMessage message)
         {
            // Console.WriteLine("handleCommandAsync has triggered:");
