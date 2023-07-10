@@ -75,8 +75,55 @@ namespace BotCommands
             return title;
         }
 
+        async public Task<string> scrapeBody()
+        {
+            string body = "body in scrapeBody was not populated.";
+            try
+            {
+                Console.WriteLine("!scraping body.");
 
+                string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                Webscraper scraper = new Webscraper();
+                body = await scraper.ScrapeWebsiteBodyAsync(url);
+                Console.WriteLine("Website body: " + body);
 
+                return body;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Executing finally block of scrapeBody");
+            }
+            return body;
+        }
+
+        async public Task<string> scrapeAll()
+        {
+            string all = "all in scrapeAll was not populated.";
+            try
+            {
+                Console.WriteLine("!scraping all.");
+
+                string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                Webscraper scraper = new Webscraper();
+                all = await scraper.ScrapeWebsiteAllAsync(url);
+                Console.WriteLine("Website all: " + all);
+
+                return all;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Executing finally block of scrapeAll");
+            }
+            return all;
+        }
 
 
 

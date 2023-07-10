@@ -161,6 +161,24 @@ namespace CHFBot
 
                     await message.Channel.SendMessageAsync("The title of that webpage is: " + title);
                 }
+                else if (content.StartsWith("!scrapebody"))
+                {
+                    Commands scrapeBody = new Commands();
+
+                    String body = await scrapeBody.scrapeBody();
+
+                    await message.Channel.SendMessageAsync("The body of that webpage is: " + body);
+                }
+                else if (content.StartsWith("!scrapeall"))
+                {
+                    Commands scrapeAll = new Commands();
+
+                    String all = await scrapeAll.scrapeAll();
+
+                    await message.Channel.SendMessageAsync("The all of that webpage is: " + all);
+                }
+
+
                 else if (content.StartsWith("!quote"))
                 {
                     Console.WriteLine("!quote called for by "+ message.Author + ".");
