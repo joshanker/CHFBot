@@ -4,7 +4,6 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.IO;
-using Scraper;
 using BotCommands;
 using System.Threading;
 using System.Timers;
@@ -17,6 +16,7 @@ namespace CHFBot
     class Program
     {
         private DiscordSocketClient _client;
+        public ulong generalChannel = 342132137064923136;
 
         static void Main(string[] args)
             
@@ -39,48 +39,43 @@ namespace CHFBot
             _client.Log += Log;
 
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer = new System.Timers.Timer(10000); //one hour in milliseconds
+            timer = new System.Timers.Timer(10000 * 6 * 60); //one hour in milliseconds
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             timer.Start();
             Console.WriteLine("Timer is starting!");
 
             await _client.LoginAsync(TokenType.Bot, "MTEyNTY4NTg4NzE4ODA4Njg2Nw.Gdtnxb.9LzfrwI8CEuCtPgTmDcOcMFgrsM-NDcrDUW3rI");
             _client.MessageReceived += HandleCommandAsync;
+
             await _client.StartAsync();
             await Task.Delay(-1);
-
-       
+                   
 
             async void OnTimedEvent(object source, ElapsedEventArgs e)
             {
                 //Do the stuff you want to be done every hour;
-                
-                HandleCommandAsync2();
+                Commands quote = new Commands();
+
+               // await quote.sendQuote(_client);
             }
             
         }
 
-        //private async Task HandleCommandAsync2()
+        //public async Task sendQuote() // 1
         //{
+        //    //DiscordSocketClient _client = new DiscordSocketClient(); // 2
+        //    ulong id = 1125693277295886357; // 3
+        //    var chnl = _client.GetChannel(id) as IMessageChannel; // 4
+        //    //await chnl.SendMessageAsync("Announcement - testing an automated quote!"); // 5
         //    Console.WriteLine("!quote called for by automated timer");
         //    Commands getQuote = new Commands();
         //    string quote = getQuote.getQuote();
-        //    await message.Channel.SendMessageAsync(quote);
-
+        //    //await message.Channel.SendMessageAsync(quote);
+        //    await chnl.SendMessageAsync(quote);
         //}
 
-        public async Task HandleCommandAsync2() // 1
-        {
-            //DiscordSocketClient _client = new DiscordSocketClient(); // 2
-            ulong id = 1125693277295886357; // 3
-            var chnl = _client.GetChannel(id) as IMessageChannel; // 4
-            //await chnl.SendMessageAsync("Announcement - testing an automated quote!"); // 5
-            Console.WriteLine("!quote called for by automated timer");
-            Commands getQuote = new Commands();
-            string quote = getQuote.getQuote();
-            //await message.Channel.SendMessageAsync(quote);
-            await chnl.SendMessageAsync(quote);
-        }
+
+
 
 
         private Task Log(LogMessage arg)
@@ -105,7 +100,7 @@ namespace CHFBot
 
             if (message.Author.IsBot) return; // Ignore messages from other bots
 
-            if (message.Channel.Name == "chf-bot-testing")
+            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general")
             {
                // Console.WriteLine("In the correct channel: " + message.Channel.Name);
 
@@ -159,12 +154,8 @@ namespace CHFBot
                 }
                 else if (content.StartsWith("!scrapetitle"))
                 {
-                    Console.WriteLine("!scraping title.");
-
-                    string url = "https://warthunder.com/en/community/claninfo/Cadet";
-                    Webscraper scraper = new Webscraper();
-                    string title = await scraper.ScrapeWebsiteTitleAsync(url);
-                    Console.WriteLine("Website title: " + title);
+                    Commands ScrapeTitle = new Commands();
+                    String title = await ScrapeTitle.scrapeTitle();
 
                     await message.Channel.SendMessageAsync("The title of that webpage is: " + title);
                 }
@@ -180,8 +171,8 @@ namespace CHFBot
                 else
                 {
                     Console.WriteLine("No matching command detected.");
-                    await message.Channel.SendMessageAsync("This is the else triggering.");
-                    return;
+                    //await message.Channel.SendMessageAsync("This is the else triggering.");
+                    
                 }
             }
         }
