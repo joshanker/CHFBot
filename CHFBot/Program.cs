@@ -18,7 +18,7 @@ namespace CHFBot
         private DiscordSocketClient _client;
         public ulong generalChannel = 342132137064923136;
         readonly string token = File.ReadAllText(@"C:\token.txt");
-
+        //test
         static void Main(string[] args)
             
 
