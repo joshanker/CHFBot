@@ -17,6 +17,7 @@ namespace CHFBot
     {
         private DiscordSocketClient _client;
         public ulong generalChannel = 342132137064923136;
+        readonly string token = File.ReadAllText(@"C:\token.txt");
 
         static void Main(string[] args)
             
@@ -44,7 +45,8 @@ namespace CHFBot
             timer.Start();
             Console.WriteLine("Timer is starting!");
 
-            await _client.LoginAsync(TokenType.Bot, "MTEyNTY4NTg4NzE4ODA4Njg2Nw.Gdtnxb.9LzfrwI8CEuCtPgTmDcOcMFgrsM-NDcrDUW3rI");
+            await _client.LoginAsync(TokenType.Bot, token);
+
             _client.MessageReceived += HandleCommandAsync;
 
             await _client.StartAsync();
