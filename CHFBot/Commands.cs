@@ -8,6 +8,7 @@ using Scraper;
 using System.Timers;
 using Discord;
 using Discord.WebSocket;
+using SquadronObjects;
 
 
 namespace BotCommands
@@ -126,7 +127,7 @@ namespace BotCommands
             return all;
         }
 
-        async public Task<string> scrapeAllAndPopulate()
+        async public Task<string> scrapeAllAndPopulate(SquadronObj objname)
         {
             string all = "all in scrapeAllAndPopulate was not populated.";
             try

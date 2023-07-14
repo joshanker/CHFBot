@@ -182,7 +182,7 @@ namespace CHFBot
                 {
                     Commands scrapeAllAndPopulate = new Commands();
 
-                    SquadronOb cadetObj=new SquadronObj();
+                    SquadronObj cadetObj=new SquadronObj("cadet");
 
                     String all = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj);
 
