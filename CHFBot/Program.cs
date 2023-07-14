@@ -7,6 +7,7 @@ using System.IO;
 using BotCommands;
 using System.Threading;
 using System.Timers;
+using SquadronObjects;
 
 
 
@@ -177,7 +178,16 @@ namespace CHFBot
 
                     await message.Channel.SendMessageAsync("The all of that webpage is: " + all);
                 }
+                else if (content.StartsWith("!scrapeandpopulate"))
+                {
+                    Commands scrapeAllAndPopulate = new Commands();
 
+                    SquadronOb cadetObj=new SquadronObj();
+
+                    String all = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj);
+
+                    await message.Channel.SendMessageAsync("Here are your objects..." + all);
+                }
 
                 else if (content.StartsWith("!quote"))
                 {

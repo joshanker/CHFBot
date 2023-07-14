@@ -9,6 +9,7 @@ using System.Timers;
 using Discord;
 using Discord.WebSocket;
 
+
 namespace BotCommands
 {
 
@@ -52,7 +53,7 @@ namespace BotCommands
 
         async public Task<string> scrapeTitle()
         {
-            string title = "tile in scrapeTitle was not populated.";
+            string title = "title in scrapeTitle was not populated.";
             try
             {
                 Console.WriteLine("!scraping title.");
@@ -125,7 +126,30 @@ namespace BotCommands
             return all;
         }
 
+        async public Task<string> scrapeAllAndPopulate()
+        {
+            string all = "all in scrapeAllAndPopulate was not populated.";
+            try
+            {
+                Console.WriteLine("!scraping all and populating...");
 
+                string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                Webscraper scraper = new Webscraper();
+                all = await scraper.ScrapeWebsiteAllAndPopulateAsync(url);
+                Console.WriteLine("Website all and populate: " + all);
+
+                return all;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Executing finally block of scrapeAll");
+            }
+            return all;
+        }
 
 
     }
