@@ -143,7 +143,7 @@ namespace Scraper
 
                 }
 
-                objname.PrintSquadronInfo();
+                //objname.PrintSquadronInfo();
 
                 //if (rows != null)
                 //{

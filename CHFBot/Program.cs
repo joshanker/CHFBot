@@ -18,6 +18,7 @@ namespace CHFBot
     {
         private DiscordSocketClient _client;
         public ulong generalChannel = 342132137064923136;
+        public ulong testingChannel = 1125693277295886357;
         readonly string token = File.ReadAllText(@"C:\token.txt");
         
         static void Main(string[] args)
@@ -178,14 +179,29 @@ namespace CHFBot
 
                     await message.Channel.SendMessageAsync("The all of that webpage is: " + all);
                 }
-                else if (content.StartsWith("!scrapeandpopulate"))
+                else if (content.StartsWith("!sap"))
                 {
                     Commands scrapeAllAndPopulate = new Commands();
-                    SquadronObj cadetObj=new SquadronObj("cadet", "https://warthunder.com/en/community/claninfo/Cadet");
+                    SquadronObj cadetObj=new SquadronObj("Cadet", "https://warthunder.com/en/community/claninfo/Cadet");
 
                     cadetObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj).ConfigureAwait(true);
 
                     await message.Channel.SendMessageAsync("Squadron  Name: " + cadetObj.SquadronName + ". URL: " + cadetObj.sqdurl).ConfigureAwait(true);
+
+                    //scrapeAllAndPopulate.PrintSquadronInfoToDiscord(cadetObj, testingChannel);
+                    var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
+
+                    await chnl.SendMessageAsync("Squadron: " + cadetObj.SquadronName);
+                    await chnl.SendMessageAsync("Player Count: " + cadetObj.Players.Count);
+
+                    foreach (Player player in cadetObj.Players)
+                    {
+                        await chnl.SendMessageAsync(player.PlayerName);
+                    }
+
+
+                    await message.Channel.SendMessageAsync("Squadron  Name: " + cadetObj.SquadronName + ". URL: " + cadetObj.sqdurl).ConfigureAwait(true);
+
                 }
 
                 else if (content.StartsWith("!quote"))

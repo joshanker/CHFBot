@@ -16,7 +16,12 @@ namespace BotCommands
 
     public class Commands
     {
-       public string getQuote()
+        
+        //ulong id = 1125693277295886357; // 3
+        //IMessageChannel chnl = _client.GetChannel(id) as IMessageChannel; // 4
+
+
+        public string getQuote()
         {
             string quote = "quote in getQuote was not populated.";
             try
@@ -41,7 +46,7 @@ namespace BotCommands
         public async Task sendQuote(DiscordSocketClient _client) // 1
         {
             //DiscordSocketClient _client = new DiscordSocketClient(); // 2
-            ulong id = 342132137064923136; // 3
+            ulong id = 1125693277295886357; // 3
             var chnl = _client.GetChannel(id) as IMessageChannel; // 4
             //await chnl.SendMessageAsync("Announcement - testing an automated quote!"); // 5
             Console.WriteLine("!quote called for by automated timer");
@@ -152,6 +157,22 @@ namespace BotCommands
             }
             return objname;
         }
+
+        //public void PrintSquadronInfoToDiscord(SquadronObj sqdobj,ulong chanID)
+        //{
+            
+        //    var chnl = _client.GetChannel(chanID) as IMessageChannel; // 4
+
+        //    await chnl.SendMessageAsync("Squadron: " + SquadronName);
+        //    await chnl.SendMessageAsync("Player Count: " + Players.Count);
+
+        //    foreach (Player player in sqdobj.Players)
+        //    {
+        //        await chnl.SendMessageAsync(player.Name);
+        //    }
+        //}
+
+
 
 
     }

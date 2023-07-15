@@ -6,6 +6,7 @@ namespace SquadronObjects
 {
         public class Player
     {
+        public string Name { get; set; }
         public int Number { get; set; }
         public string PlayerName { get; set; }
         public double PersonalClanRating { get; set; }
