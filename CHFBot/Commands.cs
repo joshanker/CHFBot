@@ -127,19 +127,20 @@ namespace BotCommands
             return all;
         }
 
-        async public Task<string> scrapeAllAndPopulate(SquadronObj objname)
+         public async Task<SquadronObj> scrapeAllAndPopulate(SquadronObj objname)
         {
-            string all = "all in scrapeAllAndPopulate was not populated.";
+            //string all = "all in scrapeAllAndPopulate was not populated.";
             try
             {
                 Console.WriteLine("!scraping all and populating...");
 
-                string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                //string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                //string url = objname.url;
                 Webscraper scraper = new Webscraper();
-                all = await scraper.ScrapeWebsiteAllAndPopulateAsync(url);
-                Console.WriteLine("Website all and populate: " + all);
+                objname = await scraper.ScrapeWebsiteAllAndPopulateAsync(objname);
+                Console.WriteLine("Website all and populate.");
 
-                return all;
+                return objname;
             }
             catch (Exception e)
             {
@@ -149,7 +150,7 @@ namespace BotCommands
             {
                 Console.WriteLine("Executing finally block of scrapeAll");
             }
-            return all;
+            return objname;
         }
 
 

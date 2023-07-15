@@ -181,12 +181,11 @@ namespace CHFBot
                 else if (content.StartsWith("!scrapeandpopulate"))
                 {
                     Commands scrapeAllAndPopulate = new Commands();
+                    SquadronObj cadetObj=new SquadronObj("cadet", "https://warthunder.com/en/community/claninfo/Cadet");
 
-                    SquadronObj cadetObj=new SquadronObj("cadet");
+                    cadetObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj).ConfigureAwait(true);
 
-                    String all = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj);
-
-                    await message.Channel.SendMessageAsync("Here are your objects..." + all);
+                    await message.Channel.SendMessageAsync("Here are your objects..." + cadetObj.SquadronName + cadetObj.sqdurl).ConfigureAwait(true);
                 }
 
                 else if (content.StartsWith("!quote"))

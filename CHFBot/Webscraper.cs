@@ -10,7 +10,7 @@ using Scraper;
 using System.Timers;
 using Discord;
 using Discord.WebSocket;
-
+using SquadronObjects;
 
 namespace Scraper
 {
@@ -116,17 +116,17 @@ namespace Scraper
         }
 
         
-        public async Task<string> ScrapeWebsiteAllAndPopulateAsync(string url)
+        public async Task<SquadronObj> ScrapeWebsiteAllAndPopulateAsync(SquadronObj objname)
         {
             using (HttpClient client = new HttpClient())
             {
-                string htmlContent = await client.GetStringAsync(url);
+                string htmlContent = await client.GetStringAsync(objname.sqdurl);
 
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(htmlContent);
 
 
-                HtmlNodeCollection rows = doc.DocumentNode.SelectNodes("//table[@class='wt-clanlist-table']/tbody/tr");
+                //HtmlNodeCollection rows = doc.DocumentNode.SelectNodes("//table[@class='wt-clanlist-table']/tbody/tr");
 
 
                 for (int i = 8; i < 771; i = i + 6)
@@ -139,35 +139,35 @@ namespace Scraper
 
                 }
 
-                if (rows != null)
-                {
-                    foreach (HtmlNode row in rows)
-                    {
-                        string name = row.SelectSingleNode(".//td[1]").InnerText.Trim();
-                        string activity = row.SelectSingleNode(".//td[2]").InnerText.Trim();
-                        string role = row.SelectSingleNode(".//td[3]").InnerText.Trim();
-                        string rating = row.SelectSingleNode(".//td[4]").InnerText.Trim();
-                        string dateOfEntry = row.SelectSingleNode(".//td[5]").InnerText.Trim();
+                //if (rows != null)
+                //{
+                //    foreach (HtmlNode row in rows)
+                //    {
+                //        string name = row.SelectSingleNode(".//td[1]").InnerText.Trim();
+                //        string activity = row.SelectSingleNode(".//td[2]").InnerText.Trim();
+                //        string role = row.SelectSingleNode(".//td[3]").InnerText.Trim();
+                //        string rating = row.SelectSingleNode(".//td[4]").InnerText.Trim();
+                //        string dateOfEntry = row.SelectSingleNode(".//td[5]").InnerText.Trim();
 
 
-                        Console.WriteLine("Name: " + name);
-                        Console.WriteLine("Activity: " + activity);
-                        Console.WriteLine("Role: " + role);
-                        Console.WriteLine("Rating: " + rating);
-                        Console.WriteLine("Date of Entry: " + dateOfEntry);
-                        Console.WriteLine();
+                //        Console.WriteLine("Name: " + name);
+                //        Console.WriteLine("Activity: " + activity);
+                //        Console.WriteLine("Role: " + role);
+                //        Console.WriteLine("Rating: " + rating);
+                //        Console.WriteLine("Date of Entry: " + dateOfEntry);
+                //        Console.WriteLine();
 
-                        return "I hit the return in the if";
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No data found.");
-                    return "I hit the return in the else";
-                }
+                //        return "I hit the return in the if";
+                //    }
+                //}
+                //else
+                //{
+                //    Console.WriteLine("No data found.");
+                //    return "I hit the return in the else";
+                //}
 
-                Console.ReadLine();
-                return "blah blah";
+                //Console.ReadLine();
+                return objname;
 
             }
         }

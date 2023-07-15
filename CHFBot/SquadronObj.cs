@@ -19,12 +19,14 @@ namespace SquadronObjects
 
         public string SquadronName { get; set; }
         public List<Player> Players { get; set; }
+        public string sqdurl { get; set; }
 
 
-        public SquadronObj(string squadronName)
+        public SquadronObj(string squadronName, string url)
         {
             SquadronName = squadronName;
             Players = new List<Player>();
+            sqdurl = url;
         }
             
             public void AddPlayer(Player player)
