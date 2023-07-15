@@ -185,7 +185,7 @@ namespace CHFBot
 
                     cadetObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj).ConfigureAwait(true);
 
-                    await message.Channel.SendMessageAsync("Here are your objects..." + cadetObj.SquadronName + cadetObj.sqdurl).ConfigureAwait(true);
+                    await message.Channel.SendMessageAsync("Squadron  Name: " + cadetObj.SquadronName + ". URL: " + cadetObj.sqdurl).ConfigureAwait(true);
                 }
 
                 else if (content.StartsWith("!quote"))

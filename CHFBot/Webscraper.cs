@@ -135,9 +135,15 @@ namespace Scraper
 
                     HtmlNode n1 = doc.DocumentNode.SelectSingleNode(xpath);
                     String n1t = n1.InnerText;
-                    Console.WriteLine(n1t);
+                    //Console.WriteLine(n1t);
+
+                    Player newp = new Player();
+                    newp = objname.setName(newp, n1t);
+                    objname.AddPlayerTolist(newp);
 
                 }
+
+                objname.PrintSquadronInfo();
 
                 //if (rows != null)
                 //{

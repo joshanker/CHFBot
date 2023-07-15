@@ -148,7 +148,7 @@ namespace BotCommands
             }
             finally
             {
-                Console.WriteLine("Executing finally block of scrapeAll");
+                //Console.WriteLine("Executing finally block of scrapeAll");
             }
             return objname;
         }
