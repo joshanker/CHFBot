@@ -6,8 +6,8 @@ namespace SquadronObjects
 {
         public class Player
     {
-        public string Name { get; set; }
-        public int Number { get; set; }
+        //public string Name { get; set; }
+        public String Number { get; set; }
         public string PlayerName { get; set; }
         public double PersonalClanRating { get; set; }
         public string Activity { get; set; }
@@ -36,8 +36,18 @@ namespace SquadronObjects
             p.PlayerName = n;
             return p;
         }
+        
+        public Player setNumber(Player p, string num)
+        {
+            //p.Number = num.ToInt32();
+            //p.Number = Int16.Parse(num);
+            p.Number = num;
+            return p;
+        }
 
-            public void AddPlayerTolist(Player player)
+
+
+        public void AddPlayerTolist(Player player)
             {
                 Players.Add(player);
             }

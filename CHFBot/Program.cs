@@ -196,11 +196,48 @@ namespace CHFBot
 
                     foreach (Player player in cadetObj.Players)
                     {
-                        await chnl.SendMessageAsync(player.PlayerName);
+                        await chnl.SendMessageAsync("Name: " + player.PlayerName);
+                        await chnl.SendMessageAsync("Number: " + player.Number);
+                        await chnl.SendMessageAsync("Personal Clan Rating: " + player.PersonalClanRating);
+                        await chnl.SendMessageAsync("Activity: " + player.Activity);
+                        await chnl.SendMessageAsync("Role: " + player.Role);
+                        await chnl.SendMessageAsync("Date of Entry: " + player.DateOfEntry);
+                        await chnl.SendMessageAsync();
                     }
 
 
                     await message.Channel.SendMessageAsync("Squadron  Name: " + cadetObj.SquadronName + ". URL: " + cadetObj.sqdurl).ConfigureAwait(true);
+
+                }
+
+                else if (content.StartsWith("!acad"))
+                {
+                    Commands scrapeAllAndPopulate = new Commands();
+                    SquadronObj AcadObj = new SquadronObj("Academy", "https://warthunder.com/en/community/claninfo/The%20Academy");
+
+                    AcadObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(AcadObj).ConfigureAwait(true);
+
+                    await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.sqdurl).ConfigureAwait(true);
+
+                    //scrapeAllAndPopulate.PrintSquadronInfoToDiscord(AcadObj, testingChannel);
+                    var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
+
+                    await chnl.SendMessageAsync("Squadron: " + AcadObj.SquadronName);
+                    await chnl.SendMessageAsync("Player Count: " + AcadObj.Players.Count);
+                    await chnl.SendMessageAsync("-");
+
+                    foreach (Player player in AcadObj.Players)
+                    {
+                        await chnl.SendMessageAsync("Name: " + player.PlayerName);
+                        await chnl.SendMessageAsync("Number: " + player.Number);
+                        await chnl.SendMessageAsync("Personal Clan Rating: " + player.PersonalClanRating);
+                        await chnl.SendMessageAsync("Activity: " + player.Activity);
+                        await chnl.SendMessageAsync("Role: " + player.Role);
+                        await chnl.SendMessageAsync("Date of Entry: " + player.DateOfEntry);
+                        await chnl.SendMessageAsync("-");
+                    }
+
+                    await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.sqdurl).ConfigureAwait(true);
 
                 }
 

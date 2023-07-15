@@ -129,17 +129,28 @@ namespace Scraper
                 //HtmlNodeCollection rows = doc.DocumentNode.SelectNodes("//table[@class='wt-clanlist-table']/tbody/tr");
 
 
-                for (int i = 8; i < 771; i = i + 6)
+                for (int i = 8; i < 25; i = i + 6)
+                //for (int i = 8; i < 771; i = i + 6)
                 {
-                    string xpath = "//*[@id=\"bodyRoot\"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
-
-                    HtmlNode n1 = doc.DocumentNode.SelectSingleNode(xpath);
-                    String n1t = n1.InnerText;
-                    //Console.WriteLine(n1t);
-
+                    int j = i-1;
                     Player newp = new Player();
-                    newp = objname.setName(newp, n1t);
+
+                    string namexpath = "//*[@id=\"bodyRoot\"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
+                    HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
+                    String plrname = node.InnerText.Trim('\n').Trim();
+                    newp = objname.setName(newp, plrname);
+
+                    string numXpath = "//*[@id=\"bodyRoot\"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + j  + "]";
+                    node = doc.DocumentNode.SelectSingleNode(numXpath);
+                    string num = node.InnerText.Trim();
+                    newp = objname.setNumber(newp, num);
+                    
+
+
+
                     objname.AddPlayerTolist(newp);
+
+
 
                 }
 
