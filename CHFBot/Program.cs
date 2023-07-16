@@ -228,13 +228,20 @@ namespace CHFBot
 
                     foreach (Player player in AcadObj.Players)
                     {
-                        await chnl.SendMessageAsync("Name: " + player.PlayerName);
-                        await chnl.SendMessageAsync("Number: " + player.Number);
-                        await chnl.SendMessageAsync("Personal Clan Rating: " + player.PersonalClanRating);
-                        await chnl.SendMessageAsync("Activity: " + player.Activity);
-                        await chnl.SendMessageAsync("Role: " + player.Rank);
-                        await chnl.SendMessageAsync("Date of Entry: " + player.DateOfEntry);
-                        await chnl.SendMessageAsync("-");
+
+
+<<<<<<< HEAD
+                        await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
+
+=======
+                        await chnl.SendMessageAsync("Name: " + player.PlayerName + "Number: " + player.Number + "Personal Clan Rating: " + player.PersonalClanRating + "Activity: " + player.Activity + "Role: " + player.Rank + "Date of Entry: " + player.DateOfEntry);
+                        //await chnl.SendMessageAsync();
+                        //await chnl.SendMessageAsync();
+                        //await chnl.SendMessageAsync();
+                        //await chnl.SendMessageAsync();
+                        //await chnl.SendMessageAsync();
+                        //await chnl.SendMessageAsync("-");
+>>>>>>> 332bb559410ff4bf826fe5ffbce00c16684be1d0
                     }
 
                     await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
