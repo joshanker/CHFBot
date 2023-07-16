@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SquadronObjects
 {
@@ -9,10 +10,10 @@ namespace SquadronObjects
         //public string Name { get; set; }
         public String Number { get; set; }
         public string PlayerName { get; set; }
-        public double PersonalClanRating { get; set; }
+        public string PersonalClanRating { get; set; }
         public string Activity { get; set; }
-        public string Role { get; set; }
-        public DateTime DateOfEntry { get; set; }
+        public string Rank { get; set; }
+        public String DateOfEntry { get; set; }
     }
 
 
@@ -45,6 +46,34 @@ namespace SquadronObjects
             return p;
         }
 
+        public Player setRating(Player p, string num)
+        {
+            //p.Number = num.ToInt32();
+            //p.Number = Int16.Parse(num);
+            p.PersonalClanRating = num;
+            return p;
+        }
+        public Player setActivity(Player p, string num)
+        {
+            //p.Number = num.ToInt32();
+            //p.Number = Int16.Parse(num);
+            p.Activity = num;
+            return p;
+        }
+        public Player setRank(Player p, string num)
+        {
+            //p.Number = num.ToInt32();
+            //p.Number = Int16.Parse(num);
+            p.Rank = num;
+            return p;
+        }
+        public Player setDoE(Player p, String num)
+        {
+            //p.Number = num.ToInt32();
+            //p.Number = Int16.Parse(num);
+            p.DateOfEntry = num;
+            return p;
+        }
 
 
         public void AddPlayerTolist(Player player)
@@ -68,7 +97,7 @@ namespace SquadronObjects
                     Console.WriteLine("Player Name: " + player.PlayerName.TrimStart());
                     Console.WriteLine("Personal Clan Rating: " + player.PersonalClanRating);
                     Console.WriteLine("Activity: " + player.Activity);
-                    Console.WriteLine("Role: " + player.Role);
+                    Console.WriteLine("Role: " + player.Rank);
                     Console.WriteLine("Date of Entry: " + player.DateOfEntry);
                     Console.WriteLine();
                 }

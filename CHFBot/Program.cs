@@ -200,9 +200,9 @@ namespace CHFBot
                         await chnl.SendMessageAsync("Number: " + player.Number);
                         await chnl.SendMessageAsync("Personal Clan Rating: " + player.PersonalClanRating);
                         await chnl.SendMessageAsync("Activity: " + player.Activity);
-                        await chnl.SendMessageAsync("Role: " + player.Role);
+                        await chnl.SendMessageAsync("Role: " + player.Rank);
                         await chnl.SendMessageAsync("Date of Entry: " + player.DateOfEntry);
-                        await chnl.SendMessageAsync();
+                        await chnl.SendMessageAsync("-");
                     }
 
 
@@ -232,12 +232,12 @@ namespace CHFBot
                         await chnl.SendMessageAsync("Number: " + player.Number);
                         await chnl.SendMessageAsync("Personal Clan Rating: " + player.PersonalClanRating);
                         await chnl.SendMessageAsync("Activity: " + player.Activity);
-                        await chnl.SendMessageAsync("Role: " + player.Role);
+                        await chnl.SendMessageAsync("Role: " + player.Rank);
                         await chnl.SendMessageAsync("Date of Entry: " + player.DateOfEntry);
                         await chnl.SendMessageAsync("-");
                     }
 
-                    await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.sqdurl).ConfigureAwait(true);
+                    await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
 
                 }
 
