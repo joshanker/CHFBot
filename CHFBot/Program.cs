@@ -110,6 +110,15 @@ namespace CHFBot
                     Console.WriteLine("!hello detected.");
                     await message.Channel.SendMessageAsync("Well hi there.");
                 }
+                if (content.StartsWith("!embed test"))
+                {
+                    Console.WriteLine("!embed test detected.");
+                    var embedBuilder = new EmbedBuilder();
+                    embedBuilder.Description = "blah blah";
+                    await message.Channel.SendMessageAsync(embed: embedBuilder.Build());
+
+                    //await message.Channel.SendMessageAsync("Well hi there.");
+                }
                 else if (content.StartsWith("!ping"))
                 {
                     Console.WriteLine("!ping detected.");
@@ -166,6 +175,57 @@ namespace CHFBot
 
                     await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
 
+                }
+                else if (content.StartsWith("!scrapesquadron "))
+                {
+
+                    // Extract the squadron name from the message content
+                    string squadronName = content.Substring("!scrapesquadron ".Length);
+
+                    if (squadronName == "cadet" || squadronName == "BofSs" || squadronName == "Academy")
+                    {
+                        string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
+                        string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+                        string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
+
+                        string url = "not yet set...";
+                        if (squadronName == "Cadet")
+                        {
+                            url = cadetUrl;
+                        }
+                        if (squadronName == "BofSs")
+                        {
+                            url = BofSsUrl;
+                        }
+                        if (squadronName == "Academy")
+                        {
+                            url = AcademyUrl;
+                        }
+
+
+                        Commands scrapeAllAndPopulate = new Commands();
+                        SquadronObj squadronObject = new SquadronObj(squadronName, url);
+
+                        squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+                        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". URL: " + squadronObject.sqdurl).ConfigureAwait(true);
+
+                        var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
+
+                        await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+                        await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+                        await chnl.SendMessageAsync("-");
+
+                        //foreach (Player player in squadronObject.Players)
+                        //{
+                        //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
+                        //}
+
+                        scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
+
+                        await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
+                    }
+                    else await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
                 }
 
                 else if (content.StartsWith("!quote"))

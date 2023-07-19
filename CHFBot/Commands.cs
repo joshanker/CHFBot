@@ -89,25 +89,24 @@ namespace BotCommands
             //{
             //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
             //}
-            
-            
+                        
             StringBuilder sb = new StringBuilder();
             foreach (Player player in sqdobj.Players)
             {
 
-                sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
+                //This works just fine... It prints everything.  Commented out because I only want names/points here.
+                //sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
+                
+                sb.Append("Name: " + player.PlayerName + "          Personal Clan Rating: " + player.PersonalClanRating + " \n-\n");
 
             }
             sqdobj.allsqd = sb.ToString();
+            var embedBuilder = new EmbedBuilder();
+            embedBuilder.Description = sqdobj.allsqd;
 
 
-            //sqdobj.allsqd =foreach (Player player in AcadObj.Players)
-            //{
-            //    ("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
-            //}
-
-
-            await chnl.SendMessageAsync(sqdobj.allsqd);
+            await chnl.SendMessageAsync(embed: embedBuilder.Build());
+            //await chnl.SendMessageAsync(sqdobj.allsqd);
 
 
         }
