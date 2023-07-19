@@ -23,6 +23,7 @@ namespace SquadronObjects
         public string SquadronName { get; set; }
         public List<Player> Players { get; set; }
         public string sqdurl { get; set; }
+        public string allsqd { get; set; }
 
 
         public SquadronObj(string squadronName, string url)
@@ -86,22 +87,24 @@ namespace SquadronObjects
                 Players.Remove(player);
             }
 
-        public void PrintSquadronInfo()
-            {
-                Console.WriteLine("Squadron: " + SquadronName);
-                Console.WriteLine("Player Count: " + Players.Count);
 
-                foreach (Player player in Players)
-                {
-                    Console.WriteLine("Number: " + player.Number);
-                    Console.WriteLine("Player Name: " + player.PlayerName.TrimStart());
-                    Console.WriteLine("Personal Clan Rating: " + player.PersonalClanRating);
-                    Console.WriteLine("Activity: " + player.Activity);
-                    Console.WriteLine("Role: " + player.Rank);
-                    Console.WriteLine("Date of Entry: " + player.DateOfEntry);
-                    Console.WriteLine();
-                }
-            }
+
+        //public void PrintSquadronInfo()
+        //    {
+        //        Console.WriteLine("Squadron: " + SquadronName);
+        //        Console.WriteLine("Player Count: " + Players.Count);
+
+        //        foreach (Player player in Players)
+        //        {
+        //            Console.WriteLine("Number: " + player.Number);
+        //            Console.WriteLine("Player Name: " + player.PlayerName.TrimStart());
+        //            Console.WriteLine("Personal Clan Rating: " + player.PersonalClanRating);
+        //            Console.WriteLine("Activity: " + player.Activity);
+        //            Console.WriteLine("Role: " + player.Rank);
+        //            Console.WriteLine("Date of Entry: " + player.DateOfEntry);
+        //            Console.WriteLine();
+        //        }
+        //    }
         
 
 

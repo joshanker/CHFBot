@@ -56,9 +56,6 @@ namespace BotCommands
             await chnl.SendMessageAsync(quote);
         }
 
-
-
-
         public async Task<SquadronObj> scrapeAllAndPopulate(SquadronObj objname)
         {
             //string all = "all in scrapeAllAndPopulate was not populated.";
@@ -83,6 +80,36 @@ namespace BotCommands
                 //Console.WriteLine("Executing finally block of scrapeAll");
             }
             return objname;
+        }
+
+
+        public async void printPlayers(IMessageChannel chnl,SquadronObj sqdobj)
+        {
+            //foreach (Player player in AcadObj.Players)
+            //{
+            //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
+            //}
+            
+            
+            StringBuilder sb = new StringBuilder();
+            foreach (Player player in sqdobj.Players)
+            {
+
+                sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
+
+            }
+            sqdobj.allsqd = sb.ToString();
+
+
+            //sqdobj.allsqd =foreach (Player player in AcadObj.Players)
+            //{
+            //    ("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
+            //}
+
+
+            await chnl.SendMessageAsync(sqdobj.allsqd);
+
+
         }
 
 

@@ -151,26 +151,18 @@ namespace CHFBot
 
                     await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.sqdurl).ConfigureAwait(true);
 
-                    //scrapeAllAndPopulate.PrintSquadronInfoToDiscord(AcadObj, testingChannel);
                     var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
 
                     await chnl.SendMessageAsync("Squadron: " + AcadObj.SquadronName);
                     await chnl.SendMessageAsync("Player Count: " + AcadObj.Players.Count);
                     await chnl.SendMessageAsync("-");
 
-                    foreach (Player player in AcadObj.Players)
-                    {
+                    //foreach (Player player in AcadObj.Players)
+                    //{
+                    //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
+                    //}
 
-                        await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
-
-                        //await chnl.SendMessageAsync();
-                        //await chnl.SendMessageAsync();
-                        //await chnl.SendMessageAsync();
-                        //await chnl.SendMessageAsync();
-                        //await chnl.SendMessageAsync();
-                        //await chnl.SendMessageAsync("-");
-
-                    }
+                    scrapeAllAndPopulate.printPlayers(chnl, AcadObj);
 
                     await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
 
