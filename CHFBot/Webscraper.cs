@@ -23,47 +23,9 @@ namespace Scraper
             // Constructor logic here
         }
 
-        public async Task<string> ScrapeWebsiteTitleAsync(string url)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                string htmlContent = await client.GetStringAsync(url);
+        
 
-                HtmlDocument document = new HtmlDocument();
-                document.LoadHtml(htmlContent);
-
-                HtmlNode titleNode = document.DocumentNode.SelectSingleNode("//title");
-
-                if (titleNode != null)
-                {
-                    string title = titleNode.InnerText.Trim();
-                    return title;
-                }
-
-                return "Title not found";
-            }
-        }
-
-        public async Task<string> ScrapeWebsiteBodyAsync(string url)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                string htmlContent = await client.GetStringAsync(url);
-
-                HtmlDocument document = new HtmlDocument();
-                document.LoadHtml(htmlContent);
-
-                HtmlNode bodyNode = document.DocumentNode.SelectSingleNode("//body");
-
-                if (bodyNode != null)
-                {
-                    string body = bodyNode.InnerText.Trim();
-                    return body;
-                }
-
-                return "body not found";
-            }
-        }
+       
 
         public async Task<string> ScrapeWebsiteAllAsync(string url)
         {
@@ -141,9 +103,6 @@ namespace Scraper
                 char[] charsToTrim = {'"'};
 
                 int number = Int32.Parse(digitsOnly);
-
-
-                
 
                 //for (int i = 8; i < 25; i = i + 6)
                 //for (int i = 8; i < 771; i = i + 6)

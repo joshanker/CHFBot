@@ -65,22 +65,6 @@ namespace CHFBot
             
         }
 
-        //public async Task sendQuote() // 1
-        //{
-        //    //DiscordSocketClient _client = new DiscordSocketClient(); // 2
-        //    ulong id = 1125693277295886357; // 3
-        //    var chnl = _client.GetChannel(id) as IMessageChannel; // 4
-        //    //await chnl.SendMessageAsync("Announcement - testing an automated quote!"); // 5
-        //    Console.WriteLine("!quote called for by automated timer");
-        //    Commands getQuote = new Commands();
-        //    string quote = getQuote.getQuote();
-        //    //await message.Channel.SendMessageAsync(quote);
-        //    await chnl.SendMessageAsync(quote);
-        //}
-
-
-
-
 
         private Task Log(LogMessage arg)
         {
@@ -156,59 +140,7 @@ namespace CHFBot
                     }
 
                 }
-                else if (content.StartsWith("!scrapetitle"))
-                {
-                    Commands ScrapeTitle = new Commands();
-                    String title = await ScrapeTitle.scrapeTitle();
 
-                    await message.Channel.SendMessageAsync("The title of that webpage is: " + title);
-                }
-                else if (content.StartsWith("!scrapebody"))
-                {
-                    Commands scrapeBody = new Commands();
-
-                    String body = await scrapeBody.scrapeBody();
-
-                    await message.Channel.SendMessageAsync("The body of that webpage is: " + body);
-                }
-                else if (content.StartsWith("!scrapeall"))
-                {
-                    Commands scrapeAll = new Commands();
-
-                    String all = await scrapeAll.scrapeAll();
-
-                    await message.Channel.SendMessageAsync("The all of that webpage is: " + all);
-                }
-                else if (content.StartsWith("!sap"))
-                {
-                    Commands scrapeAllAndPopulate = new Commands();
-                    SquadronObj cadetObj=new SquadronObj("Cadet", "https://warthunder.com/en/community/claninfo/Cadet");
-
-                    cadetObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(cadetObj).ConfigureAwait(true);
-
-                    await message.Channel.SendMessageAsync("Squadron  Name: " + cadetObj.SquadronName + ". URL: " + cadetObj.sqdurl).ConfigureAwait(true);
-
-                    //scrapeAllAndPopulate.PrintSquadronInfoToDiscord(cadetObj, testingChannel);
-                    var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
-
-                    await chnl.SendMessageAsync("Squadron: " + cadetObj.SquadronName);
-                    await chnl.SendMessageAsync("Player Count: " + cadetObj.Players.Count);
-
-                    foreach (Player player in cadetObj.Players)
-                    {
-                        await chnl.SendMessageAsync("Name: " + player.PlayerName);
-                        await chnl.SendMessageAsync("Number: " + player.Number);
-                        await chnl.SendMessageAsync("Personal Clan Rating: " + player.PersonalClanRating);
-                        await chnl.SendMessageAsync("Activity: " + player.Activity);
-                        await chnl.SendMessageAsync("Role: " + player.Rank);
-                        await chnl.SendMessageAsync("Date of Entry: " + player.DateOfEntry);
-                        await chnl.SendMessageAsync("-");
-                    }
-
-
-                    await message.Channel.SendMessageAsync("Squadron  Name: " + cadetObj.SquadronName + ". URL: " + cadetObj.sqdurl).ConfigureAwait(true);
-
-                }
 
                 else if (content.StartsWith("!acad"))
                 {
@@ -229,12 +161,8 @@ namespace CHFBot
                     foreach (Player player in AcadObj.Players)
                     {
 
-
-
                         await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
 
-
-                        
                         //await chnl.SendMessageAsync();
                         //await chnl.SendMessageAsync();
                         //await chnl.SendMessageAsync();
@@ -255,7 +183,6 @@ namespace CHFBot
                     string quote = getQuote.getQuote();
                     await message.Channel.SendMessageAsync(quote);
                 }
-
 
                 else
                 {
