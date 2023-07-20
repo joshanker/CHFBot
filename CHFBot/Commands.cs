@@ -97,21 +97,56 @@ namespace BotCommands
                 //This works just fine... It prints everything.  Commented out because I only want names/points here.
                 //sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
                 
-                sb.Append("Name: " + player.PlayerName + "          Personal Clan Rating: " + player.PersonalClanRating + " \n-\n");
-
+                sb.AppendLine($"Name: { player.PlayerName} Personal Clan Rating: {player.PersonalClanRating}");
             }
             sqdobj.allsqd = sb.ToString();
-            var embedBuilder = new EmbedBuilder();
+            string longContent = sqdobj.allsqd;
+            await SendLongContentAsEmbedAsync(chnl, longContent);
+
+
+            //var embedBuilder = new EmbedBuilder();
             //embedBuilder.Description = sqdobj.allsqd;
 
 
             //await chnl.SendMessageAsync(embed: embedBuilder.Build());
             //await chnl.SendMessageAsync(sqdobj.allsqd);
 
-            string longContent = sqdobj.allsqd;
-            await SendLongContentAsEmbedAsync(chnl, longContent);
+            
+            
 
         }
+
+        //public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
+        //{
+        //    const int maxEmbedLength = 4096;
+        //    const int maxChunkLength = 2000;
+
+        //    if (content.Length <= maxEmbedLength)
+        //    {
+        //        // If the content fits within the limit, send it as a single embedded message
+        //        await channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(content).Build());
+        //    }
+        //    else
+        //    {
+        //        // Split the content into chunks of maxChunkLength
+        //        List<string> chunks = new List<string>();
+        //        for (int i = 0; i < content.Length; i += maxChunkLength)
+        //        {
+        //            int chunkLength = Math.Min(maxChunkLength, content.Length - i);
+        //            chunks.Add(content.Substring(i, chunkLength));
+        //        }
+
+        //        // Send each chunk as a separate embedded message
+        //        for (int i = 0; i < chunks.Count; i++)
+        //        {
+        //            EmbedBuilder embedBuilder = new EmbedBuilder()
+        //                .WithDescription(chunks[i])
+        //                .WithFooter($"Chunk {i + 1}/{chunks.Count}");
+
+        //            await channel.SendMessageAsync(embed: embedBuilder.Build());
+        //        }
+        //    }
+        //}
 
         public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
         {
@@ -127,10 +162,26 @@ namespace BotCommands
             {
                 // Split the content into chunks of maxChunkLength
                 List<string> chunks = new List<string>();
-                for (int i = 0; i < content.Length; i += maxChunkLength)
+                StringBuilder currentChunk = new StringBuilder();
+
+                foreach (string line in content.Split('\n'))
                 {
-                    int chunkLength = Math.Min(maxChunkLength, content.Length - i);
-                    chunks.Add(content.Substring(i, chunkLength));
+                    if (currentChunk.Length + line.Length + 2 <= maxChunkLength) // Adding 2 for the newline characters that will be added later
+                    {
+                        currentChunk.Append(line);
+                    }
+                    else
+                    {
+                        chunks.Add(currentChunk.ToString());
+                        currentChunk.Clear();
+                        currentChunk.AppendLine(line);
+                    }
+                }
+
+                // Add the last chunk
+                if (currentChunk.Length > 0)
+                {
+                    chunks.Add(currentChunk.ToString());
                 }
 
                 // Send each chunk as a separate embedded message

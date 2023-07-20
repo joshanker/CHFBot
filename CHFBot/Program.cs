@@ -182,7 +182,7 @@ namespace CHFBot
                     // Extract the squadron name from the message content
                     string squadronName = content.Substring("!scrapesquadron ".Length);
 
-                    if (squadronName == "cadet" || squadronName == "BofSs" || squadronName == "Academy")
+                    if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
                     {
                         string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
                         string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
