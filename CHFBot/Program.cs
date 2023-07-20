@@ -173,7 +173,7 @@ namespace CHFBot
 
                     scrapeAllAndPopulate.printPlayers(chnl, AcadObj);
 
-                    await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
+                    //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
 
                 }
                 else if (content.StartsWith("!scrapesquadron "))

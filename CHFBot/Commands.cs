@@ -102,14 +102,50 @@ namespace BotCommands
             }
             sqdobj.allsqd = sb.ToString();
             var embedBuilder = new EmbedBuilder();
-            embedBuilder.Description = sqdobj.allsqd;
+            //embedBuilder.Description = sqdobj.allsqd;
 
 
-            await chnl.SendMessageAsync(embed: embedBuilder.Build());
+            //await chnl.SendMessageAsync(embed: embedBuilder.Build());
             //await chnl.SendMessageAsync(sqdobj.allsqd);
 
+            string longContent = sqdobj.allsqd;
+            await SendLongContentAsEmbedAsync(chnl, longContent);
 
         }
+
+        public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
+        {
+            const int maxEmbedLength = 4096;
+            const int maxChunkLength = 2000;
+
+            if (content.Length <= maxEmbedLength)
+            {
+                // If the content fits within the limit, send it as a single embedded message
+                await channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(content).Build());
+            }
+            else
+            {
+                // Split the content into chunks of maxChunkLength
+                List<string> chunks = new List<string>();
+                for (int i = 0; i < content.Length; i += maxChunkLength)
+                {
+                    int chunkLength = Math.Min(maxChunkLength, content.Length - i);
+                    chunks.Add(content.Substring(i, chunkLength));
+                }
+
+                // Send each chunk as a separate embedded message
+                for (int i = 0; i < chunks.Count; i++)
+                {
+                    EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .WithDescription(chunks[i])
+                        .WithFooter($"Chunk {i + 1}/{chunks.Count}");
+
+                    await channel.SendMessageAsync(embed: embedBuilder.Build());
+                }
+            }
+        }
+
+
 
 
     }
