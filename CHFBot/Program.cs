@@ -223,7 +223,7 @@ namespace CHFBot
 
                         scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
 
-                        await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
+                        //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
                     }
                     else await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
                 }

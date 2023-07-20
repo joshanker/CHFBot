@@ -67,7 +67,7 @@ namespace BotCommands
                 //string url = objname.url;
                 Webscraper scraper = new Webscraper();
                 objname = await scraper.ScrapeWebsiteAllAndPopulateAsync(objname);
-                Console.WriteLine("Website all and populate.");
+                //Console.WriteLine("Website all and populate.");
 
                 return objname;
             }
@@ -97,7 +97,7 @@ namespace BotCommands
                 //This works just fine... It prints everything.  Commented out because I only want names/points here.
                 //sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
                 
-                sb.AppendLine($"Name: { player.PlayerName} Personal Clan Rating: {player.PersonalClanRating}");
+                sb.AppendLine($"{player.Number}: { player.PlayerName}      SQB Points: {player.PersonalClanRating}");
             }
             sqdobj.allsqd = sb.ToString();
             string longContent = sqdobj.allsqd;
@@ -115,38 +115,6 @@ namespace BotCommands
             
 
         }
-
-        //public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
-        //{
-        //    const int maxEmbedLength = 4096;
-        //    const int maxChunkLength = 2000;
-
-        //    if (content.Length <= maxEmbedLength)
-        //    {
-        //        // If the content fits within the limit, send it as a single embedded message
-        //        await channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(content).Build());
-        //    }
-        //    else
-        //    {
-        //        // Split the content into chunks of maxChunkLength
-        //        List<string> chunks = new List<string>();
-        //        for (int i = 0; i < content.Length; i += maxChunkLength)
-        //        {
-        //            int chunkLength = Math.Min(maxChunkLength, content.Length - i);
-        //            chunks.Add(content.Substring(i, chunkLength));
-        //        }
-
-        //        // Send each chunk as a separate embedded message
-        //        for (int i = 0; i < chunks.Count; i++)
-        //        {
-        //            EmbedBuilder embedBuilder = new EmbedBuilder()
-        //                .WithDescription(chunks[i])
-        //                .WithFooter($"Chunk {i + 1}/{chunks.Count}");
-
-        //            await channel.SendMessageAsync(embed: embedBuilder.Build());
-        //        }
-        //    }
-        //}
 
         public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
         {
@@ -193,6 +161,8 @@ namespace BotCommands
 
                     await channel.SendMessageAsync(embed: embedBuilder.Build());
                 }
+                await channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
+
             }
         }
 

@@ -11,8 +11,9 @@ using System.Timers;
 using Discord;
 using Discord.WebSocket;
 using SquadronObjects;
-using System;
+using System.Net;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace Scraper
 {
@@ -79,7 +80,8 @@ namespace Scraper
             }
         }
 
-        
+
+
         public async Task<SquadronObj> ScrapeWebsiteAllAndPopulateAsync(SquadronObj objname)
         {
             using (HttpClient client = new HttpClient())
@@ -110,11 +112,45 @@ namespace Scraper
                 {
 
                     Player newp = new Player();
-                    
+
+                    //string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
+
+                    //string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/div";
+
+                    //HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
+                    //String plrname = node.InnerText.Trim('\n').Trim();
+                    //newp = objname.setName(newp, plrname);
+
                     string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
                     HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
-                    String plrname = node.InnerText.Trim('\n').Trim();
+
+                    String plrname = WebUtility.HtmlDecode(node.InnerHtml.Trim('\n').Trim());
+
+                    // Check if the node's OuterHtml contains the email flag
+                    if (node.OuterHtml.Contains("<span class=\"__cf_email__\""))
+                    {
+
+                        {
+                            // Extract the player nickname from the URL part of OuterHtml
+                            int index = node.OuterHtml.IndexOf("nick=");
+                            if (index >= 0)
+                            {
+                                plrname = node.OuterHtml.Substring(index + 5);
+                                int endIndex = plrname.IndexOf('"');
+                                if (endIndex >= 0)
+                                {
+                                    plrname = plrname.Substring(0, endIndex);
+                                }
+                            }
+
+                        }
+
+
+                    }
+                                        
                     newp = objname.setName(newp, plrname);
+
+
 
                     int j = i - 1;
                     string numXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + j  + "]";
@@ -152,7 +188,9 @@ namespace Scraper
                     objname.AddPlayerTolist(newp);
 
                 }
-                
+
+                return objname;
+
 
                 //objname.PrintSquadronInfo();
 
@@ -184,7 +222,7 @@ namespace Scraper
                 //}
 
                 //Console.ReadLine();
-                return objname;
+
 
             }
         }
