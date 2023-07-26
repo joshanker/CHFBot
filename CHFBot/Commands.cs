@@ -110,11 +110,40 @@ namespace BotCommands
 
             //await chnl.SendMessageAsync(embed: embedBuilder.Build());
             //await chnl.SendMessageAsync(sqdobj.allsqd);
+            
+        }
 
-            
-            
+        public async void printSum(IMessageChannel chnl, SquadronObj sqdobj)
+        {
+            //foreach (Player player in AcadObj.Players)
+            //{
+            //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
+            //}
+            int sum = 0;
+            //StringBuilder sb = new StringBuilder();
+            foreach (Player player in sqdobj.Players)
+            {
+
+                //This works just fine... It prints everything.  Commented out because I only want names/points here.
+                //sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
+                sum = sum + player.PersonalClanRating;
+                //sb.AppendLine($"{player.Number}: {player.PlayerName,-20} SQB Points: {player.PersonalClanRating}");
+            }
+            sqdobj.totalRating = sum;
+
+            await chnl.SendMessageAsync("Total Squadron Score: " + sqdobj.totalRating);
+
+
+            //var embedBuilder = new EmbedBuilder();
+            //embedBuilder.Description = sqdobj.allsqd;
+
+
+            //await chnl.SendMessageAsync(embed: embedBuilder.Build());
+            //await chnl.SendMessageAsync(sqdobj.allsqd);
 
         }
+
+
 
         public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
         {

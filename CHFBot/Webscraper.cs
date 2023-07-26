@@ -145,7 +145,6 @@ namespace Scraper
 
                         }
 
-
                     }
                                         
                     newp = objname.setName(newp, plrname);
@@ -162,7 +161,7 @@ namespace Scraper
                     string ratingXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + k + "]";
                     node = doc.DocumentNode.SelectSingleNode(ratingXpath);
                     string rating = node.InnerText.Trim();
-                    newp = objname.setRating(newp, rating);
+                    newp = objname.setRating(newp, Int32.Parse(rating));
 
                     int l = i + 2;
                     string ActivityXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + l + "]/text()";

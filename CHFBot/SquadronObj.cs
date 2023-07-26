@@ -10,7 +10,7 @@ namespace SquadronObjects
         //public string Name { get; set; }
         public String Number { get; set; }
         public string PlayerName { get; set; }
-        public string PersonalClanRating { get; set; }
+        public int PersonalClanRating { get; set; }
         public string Activity { get; set; }
         public string Rank { get; set; }
         public String DateOfEntry { get; set; }
@@ -24,6 +24,7 @@ namespace SquadronObjects
         public List<Player> Players { get; set; }
         public string sqdurl { get; set; }
         public string allsqd { get; set; }
+        public int totalRating { get; set; }
 
 
         public SquadronObj(string squadronName, string url)
@@ -47,7 +48,7 @@ namespace SquadronObjects
             return p;
         }
 
-        public Player setRating(Player p, string num)
+        public Player setRating(Player p, int num)
         {
             //p.Number = num.ToInt32();
             //p.Number = Int16.Parse(num);
