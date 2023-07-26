@@ -134,15 +134,16 @@ namespace BotCommands
 
                 foreach (string line in content.Split('\n'))
                 {
-                    if (currentChunk.Length + line.Length + 2 <= maxChunkLength) // Adding 2 for the newline characters that will be added later
-                    {
-                        currentChunk.Append(line);
-                    }
+                    if (currentChunk.Length + line.Length + 6 <= maxChunkLength) // Adding 2 for the newline characters that will be added later
+                    { 
+
+                            currentChunk.Append(line);
+                        }
                     else
                     {
                         chunks.Add(currentChunk.ToString());
                         currentChunk.Clear();
-                        currentChunk.AppendLine(line);
+                        
                     }
                 }
 
