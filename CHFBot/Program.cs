@@ -88,7 +88,7 @@ namespace CHFBot
 
             if (message.Author.IsBot) return; // Ignore messages from other bots
 
-            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general")
+            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general" || message.Channel.Name == "esper-bot-testing")
             {
                // Console.WriteLine("In the correct channel: " + message.Channel.Name);
 
@@ -98,10 +98,8 @@ namespace CHFBot
                     Console.WriteLine("Empty or whitespace message content. Ignoring...");
                     return;
                 }
-
                 // Trim any leading or trailing whitespaces from the content
                 string content = message.Content.Trim();
-
                 // Debug statement to check the trimmed message content
                 //Console.WriteLine("Trimmed message content: " + content);
 
@@ -210,7 +208,11 @@ namespace CHFBot
 
                         await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". URL: " + squadronObject.sqdurl).ConfigureAwait(true);
 
-                        var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
+                        //var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
+                        //this is the line that works, but only for one discord server.  need to send on same discord server as detected.
+
+                        //var chnl = _client.GetChannel(message.Channel) as IMessageChannel;
+                        var chnl = message.Channel as IMessageChannel;
 
                         await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
                         await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
@@ -235,12 +237,10 @@ namespace CHFBot
                     string quote = getQuote.getQuote();
                     await message.Channel.SendMessageAsync(quote);
                 }
-
                 else
                 {
                     Console.WriteLine("No matching command detected.");
                     //await message.Channel.SendMessageAsync("This is the else triggering.");
-                    
                 }
             }
         }
