@@ -156,7 +156,7 @@ namespace CHFBot
 
                     AcadObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(AcadObj).ConfigureAwait(true);
 
-                    await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.sqdurl).ConfigureAwait(true);
+                    await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.url).ConfigureAwait(true);
 
                     var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
 
@@ -206,7 +206,7 @@ namespace CHFBot
 
                         squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
 
-                        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.sqdurl).ConfigureAwait(true);
+                        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.url).ConfigureAwait(true);
 
                         //var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
                         //this is the line that works, but only for one discord server.  need to send on same discord server as detected.
@@ -234,36 +234,19 @@ namespace CHFBot
                 else if (content.StartsWith("!squadronsum "))
                 {
                     // Extract the squadron name from the message content
-                    string squadronName = content.Substring("!squadronsum ".Length);
-                    if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
+                    string input = content.Substring("!squadronsum ".Length);
+                                        
+                    if (input == "Cadet" || input == "BofSs" || input == "Academy")
                     {
-                        string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
-                        string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
-                        string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
-
-                        string url = "not yet set...";
-                        if (squadronName == "Cadet")
-                        {
-                            url = cadetUrl;
-                        }
-                        if (squadronName == "BofSs")
-                        {
-                            url = BofSsUrl;
-                        }
-                        if (squadronName == "Academy")
-                        {
-                            url = AcademyUrl;
-                        }
-
                         Commands scrapeAllAndPopulate = new Commands();
-                        SquadronObj squadronObject = new SquadronObj(squadronName, url);
+                        SquadronObj squadronObject = new SquadronObj();
+                        
+                        squadronObject = scrapeAllAndPopulate.validateSquadron(input);
+                        
+                       squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
 
-                        squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+                        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.url).ConfigureAwait(true);
 
-                        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.sqdurl).ConfigureAwait(true);
-
-                        //var chnl = _client.GetChannel(testingChannel) as IMessageChannel; // 4
-                        //this is the line that works, but only for one discord server.  need to send on same discord server as detected.
 
                         //var chnl = _client.GetChannel(message.Channel) as IMessageChannel;
                         var chnl = message.Channel as IMessageChannel;
@@ -272,12 +255,10 @@ namespace CHFBot
                         await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
                         await chnl.SendMessageAsync("-");
 
-                        //foreach (Player player in squadronObject.Players)
-                        //{
-                        //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
-                        //}
 
-                        scrapeAllAndPopulate.printSum(chnl, squadronObject);
+                        //scrapeAllAndPopulate.printSum(chnl, squadronObject);
+                        await chnl.SendMessageAsync(squadronObject.Score.ToString());
+
 
                         //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
                     }

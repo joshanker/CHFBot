@@ -14,7 +14,7 @@ namespace SquadronObjects
         public string Activity { get; set; }
         public string Rank { get; set; }
         public String DateOfEntry { get; set; }
-    }
+     }
 
 
     public class SquadronObj
@@ -22,16 +22,23 @@ namespace SquadronObjects
 
         public string SquadronName { get; set; }
         public List<Player> Players { get; set; }
-        public string sqdurl { get; set; }
         public string allsqd { get; set; }
         public int totalRating { get; set; }
+        public Boolean isValidSquadron { get; set; }
+        public string url { get; set; }
+        public int Score { get; set; }   
 
+
+        public SquadronObj()
+        {
+                        
+        }
 
         public SquadronObj(string squadronName, string url)
         {
             SquadronName = squadronName;
             Players = new List<Player>();
-            sqdurl = url;
+            url = url;
         }
             
             public Player setName(Player p, string n)

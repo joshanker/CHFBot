@@ -13,7 +13,7 @@ using Discord.WebSocket;
 using SquadronObjects;
 using System.Net;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Scraper
 {
@@ -24,9 +24,9 @@ namespace Scraper
             // Constructor logic here
         }
 
-        
 
-       
+
+
 
         public async Task<string> ScrapeWebsiteAllAsync(string url)
         {
@@ -37,7 +37,7 @@ namespace Scraper
                 doc.LoadHtml(htmlContent);
                 HtmlNodeCollection rows = doc.DocumentNode.SelectNodes("//table[@class='wt-clanlist-table']/tbody/tr");
 
-                for (int i = 8; i < 771; i = i+6)
+                for (int i = 8; i < 771; i = i + 6)
                 {
                     string xpath = "//*[@id=\"bodyRoot\"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
 
@@ -46,7 +46,7 @@ namespace Scraper
                     Console.WriteLine(n1t);
 
                 }
-            
+
                 //if (rows != null)
                 //{
                 //    foreach (HtmlNode row in rows)
@@ -57,7 +57,7 @@ namespace Scraper
                 //        string rating = row.SelectSingleNode(".//td[4]").InnerText.Trim();
                 //        string dateOfEntry = row.SelectSingleNode(".//td[5]").InnerText.Trim();
 
-                        
+
                 //        Console.WriteLine("Name: " + name);
                 //        Console.WriteLine("Activity: " + activity);
                 //        Console.WriteLine("Role: " + role);
@@ -76,7 +76,7 @@ namespace Scraper
 
                 Console.ReadLine();
                 return "blah blah";
-                
+
             }
         }
 
@@ -86,7 +86,7 @@ namespace Scraper
         {
             using (HttpClient client = new HttpClient())
             {
-                string htmlContent = await client.GetStringAsync(objname.sqdurl);
+                string htmlContent = await client.GetStringAsync(objname.url);
 
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(htmlContent);
@@ -102,7 +102,7 @@ namespace Scraper
                 HtmlNode howMany = doc.DocumentNode.SelectSingleNode(playerCountPath);
                 string value = howMany?.InnerText;
                 string digitsOnly = Regex.Replace(value, @"\D", "");
-                char[] charsToTrim = {'"'};
+                char[] charsToTrim = { '"' };
 
                 int number = Int32.Parse(digitsOnly);
 
@@ -146,15 +146,15 @@ namespace Scraper
                         }
 
                     }
-                                        
+
                     newp = objname.setName(newp, plrname);
 
 
 
                     int j = i - 1;
-                    string numXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + j  + "]";
+                    string numXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + j + "]";
                     node = doc.DocumentNode.SelectSingleNode(numXpath);
-                    string num = node.InnerText.Trim(); 
+                    string num = node.InnerText.Trim();
                     newp = objname.setNumber(newp, num);
 
                     int k = i + 1;
@@ -225,7 +225,42 @@ namespace Scraper
 
             }
         }
+             public async Task<SquadronObj> scrapeWebsiteAndPopulateScoreAsync(SquadronObj sqdobj)
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string htmlContent = await client.GetStringAsync(sqdobj.url);
+
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(htmlContent);
 
 
-    }
-}
+                    string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
+
+                    HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
+                    string value = score.InnerText;
+
+                sqdobj.Score = Int32.Parse(value);
+
+
+
+                    string digitsOnly = Regex.Replace(value, @"\D", "");
+                    char[] charsToTrim = { '"' };
+
+                    int number = Int32.Parse(digitsOnly);
+                                                        
+                    
+                    return sqdobj;
+
+
+
+
+                }
+
+
+
+            }
+
+
+        }
+    } 

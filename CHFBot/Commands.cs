@@ -16,7 +16,7 @@ namespace BotCommands
 
     public class Commands
     {
-        
+
         //ulong id = 1125693277295886357; // 3
         //IMessageChannel chnl = _client.GetChannel(id) as IMessageChannel; // 4
 
@@ -83,20 +83,20 @@ namespace BotCommands
         }
 
 
-        public async void printPlayers(IMessageChannel chnl,SquadronObj sqdobj)
+        public async void printPlayers(IMessageChannel chnl, SquadronObj sqdobj)
         {
             //foreach (Player player in AcadObj.Players)
             //{
             //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
             //}
-                        
+
             StringBuilder sb = new StringBuilder();
             foreach (Player player in sqdobj.Players)
             {
 
                 //This works just fine... It prints everything.  Commented out because I only want names/points here.
                 //sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
-                
+
                 sb.AppendLine($"{player.Number}: {player.PlayerName,-20} SQB Points: {player.PersonalClanRating}");
             }
             sqdobj.allsqd = sb.ToString();
@@ -110,7 +110,7 @@ namespace BotCommands
 
             //await chnl.SendMessageAsync(embed: embedBuilder.Build());
             //await chnl.SendMessageAsync(sqdobj.allsqd);
-            
+
         }
 
         public async void printSum(IMessageChannel chnl, SquadronObj sqdobj)
@@ -164,15 +164,15 @@ namespace BotCommands
                 foreach (string line in content.Split('\n'))
                 {
                     if (currentChunk.Length + line.Length + 6 <= maxChunkLength) // Adding 2 for the newline characters that will be added later
-                    { 
+                    {
 
-                            currentChunk.Append(line);
-                        }
+                        currentChunk.Append(line);
+                    }
                     else
                     {
                         chunks.Add(currentChunk.ToString());
                         currentChunk.Clear();
-                        
+
                     }
                 }
 
@@ -194,6 +194,69 @@ namespace BotCommands
                 await channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
 
             }
+        }
+
+        public SquadronObj validateSquadron(string input)
+        {
+
+            string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
+            string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+            string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
+
+            string url = "not yet set...";
+            SquadronObj squadronObject = new SquadronObj(input, url);
+
+            if (input == "Cadet")
+            {
+                url = cadetUrl;
+            }
+            if (input == "BofSs")
+            {
+                url = BofSsUrl;
+            }
+            if (input == "Academy")
+            {
+                url = AcademyUrl;
+            }
+            if(url == "not yet set...")
+            {
+                squadronObject.isValidSquadron = false;
+                return squadronObject;
+            }
+            else
+            {
+                squadronObject.isValidSquadron = true;
+                squadronObject.url = url;
+                squadronObject.SquadronName = input;
+                return squadronObject;
+            }
+
+        }
+
+        public async Task<SquadronObj> populateScore(SquadronObj sqdobj)
+        {
+            
+            
+                try
+                {
+                    Console.WriteLine("Populating score...");
+
+                    //string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                    //string url = objname.url;
+                    Webscraper scraper = new Webscraper();
+                    sqdobj = await scraper.scrapeWebsiteAndPopulateScoreAsync(sqdobj);
+                    //Console.WriteLine("Website all and populate.");
+
+                    return sqdobj;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception: " + e.Message);
+                return null;
+                }
+                
+            
+
         }
 
 
