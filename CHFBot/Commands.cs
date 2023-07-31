@@ -198,7 +198,6 @@ namespace BotCommands
 
         public SquadronObj validateSquadron(string input)
         {
-
             string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
             string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
             string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
@@ -230,7 +229,6 @@ namespace BotCommands
                 squadronObject.SquadronName = input;
                 return squadronObject;
             }
-
         }
 
         public async Task<SquadronObj> populateScore(SquadronObj sqdobj)
@@ -255,10 +253,80 @@ namespace BotCommands
                 return null;
                 }
                 
-            
-
         }
+        public SquadronObj PopulateSquadronFromTextFile(string filePath)
+        {
+            SquadronObj squadronObj = new SquadronObj();
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.StartsWith("Squadron: "))
+                    {
+                        squadronObj.SquadronName = line.Substring("Squadron: ".Length);
+                    }
+                    else if (line.StartsWith("Player Count: "))
+                    {
+                        int playerCount;
+                        if (int.TryParse(line.Substring("Player Count: ".Length), out playerCount))
+                        {
+                            squadronObj.Players = new List<Player>(playerCount);
+                        }
+                    }
+                    else if (line.StartsWith("Score: "))
+                    {
+                        int score;
+                        if (int.TryParse(line.Substring("Score: ".Length), out score))
+                        {
+                            squadronObj.Score = score;
+                        }
+                    }
+                    else if (line.StartsWith("Name: "))
+                    {
+                        Player player = new Player();
+                        player.PlayerName = line.Substring("Name: ".Length);
+                        line = reader.ReadLine(); // Read the next line
+                        if (line.StartsWith("Number: "))
+                        {
+                            int number;
+                            if (int.TryParse(line.Substring("Number: ".Length), out number))
+                            {
+                                player.Number = number;
+                            }
+                        }
+                        line = reader.ReadLine(); // Read the next line
+                        if (line.StartsWith("Personal Clan Rating: "))
+                        {
+                            int rating;
+                            if (int.TryParse(line.Substring("Personal Clan Rating: ".Length), out rating))
+                            {
+                                player.PersonalClanRating = rating;
+                            }
+                        }
+                        line = reader.ReadLine(); // Read the next line
+                        if (line.StartsWith("Activity: "))
+                        {
+                            player.Activity = line.Substring("Activity: ".Length);
+                        }
+                        line = reader.ReadLine(); // Read the next line
+                        if (line.StartsWith("Role: "))
+                        {
+                            player.Rank = line.Substring("Role: ".Length);
+                        }
+                        line = reader.ReadLine(); // Read the next line
+                        if (line.StartsWith("Date of Entry: "))
+                        {
+                            player.DateOfEntry = line.Substring("Date of Entry: ".Length);
+                        }
+                        line = reader.ReadLine(); // Read the delimiter line "-------------------------"
 
+                        squadronObj.Players.Add(player);
+                    }
+                }
+            }
+            return squadronObj;
+        }
 
 
 

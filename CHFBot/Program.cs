@@ -181,8 +181,6 @@ namespace CHFBot
 
                     if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
                     {
-
-
                         Commands scrapeAllAndPopulate = new Commands();
                         SquadronObj squadronObject = new SquadronObj();
 
@@ -197,7 +195,6 @@ namespace CHFBot
                         await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
                         await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
                         await chnl.SendMessageAsync("-");
-
 
                         scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
 
@@ -238,6 +235,105 @@ namespace CHFBot
                         //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
                     }
                     else await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                }
+                else if (content.StartsWith("!totals "))
+                {
+                    string input = content.Substring("!totals ".Length);
+
+                    if (input == "Cadet" || input == "BofSs" || input == "Academy")
+                    {
+                        Commands scrapeAllAndPopulate = new Commands();
+                        SquadronObj squadronObject = new SquadronObj();
+
+                        squadronObject = scrapeAllAndPopulate.validateSquadron(input);
+
+                        squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
+                        squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+                        var chnl = message.Channel as IMessageChannel;
+
+                        await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+                        await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+                        await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+                        scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
+                    }
+                    else await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                }
+                else if (content.StartsWith("!writesqd "))
+                {
+                    string input = content.Substring("!writesqd ".Length);
+
+                    if (input == "Cadet" || input == "BofSs" || input == "Academy")
+                    {
+                        Commands scrapeAllAndPopulate = new Commands();
+                        SquadronObj squadronObject = new SquadronObj();
+
+                        squadronObject = scrapeAllAndPopulate.validateSquadron(input);
+
+                        squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
+                        squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+                        var chnl = message.Channel as IMessageChannel;
+
+
+
+                        string fileName = $"C:\\{input}.txt"; // Customize the file path and name as needed
+                        using (StreamWriter writer = new StreamWriter(fileName))
+                        {
+                            writer.WriteLine("Squadron: " + squadronObject.SquadronName);
+                            writer.WriteLine("Player Count: " + squadronObject.Players.Count);
+                            writer.WriteLine("Score: " + squadronObject.Score.ToString());
+
+                            foreach (Player player in squadronObject.Players)
+                            {
+                                writer.WriteLine($"Name: {player.PlayerName}");
+                                writer.WriteLine($"Number: {player.Number}");
+                                writer.WriteLine($"Personal Clan Rating: {player.PersonalClanRating}");
+                                writer.WriteLine($"Activity: {player.Activity}");
+                                writer.WriteLine($"Role: {player.Rank}");
+                                writer.WriteLine($"Date of Entry: {player.DateOfEntry}");
+                                writer.WriteLine("-------------------------");
+                            }
+
+                            await chnl.SendMessageAsync("complete");
+                        }
+
+                        //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+                        //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+                        //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+                        //scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
+
+                    }
+                    else await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                }
+
+                else if (content.StartsWith("!readsqd "))
+                {
+                    string input = content.Substring("!readsqd ".Length);
+
+                    if (input == "Cadet" || input == "BofSs" || input == "Academy")
+                    {
+                        var chnl = message.Channel as IMessageChannel;
+
+                        string fileName = $"C:\\{input}.txt"; // Customize the file path and name as needed
+                        if (File.Exists(fileName))
+                        {
+                            // Populate the SquadronObj from the file
+                            Commands scrapeAllAndPopulate = new Commands();
+                            SquadronObj squadronObject = scrapeAllAndPopulate.PopulateSquadronFromTextFile(fileName);
+
+                            // Use the squadronObject as needed
+                            scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
+
+                            await chnl.SendMessageAsync("Reading the file for " + input + ":");
+                        }
+                        else
+                        {
+                            await chnl.SendMessageAsync("The file for " + input + " does not exist.");
+                        }
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                    }
                 }
 
 

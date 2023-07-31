@@ -154,7 +154,7 @@ namespace Scraper
                     int j = i - 1;
                     string numXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + j + "]";
                     node = doc.DocumentNode.SelectSingleNode(numXpath);
-                    string num = node.InnerText.Trim();
+                    int num = Int32.Parse(node.InnerText.Trim());
                     newp = objname.setNumber(newp, num);
 
                     int k = i + 1;
