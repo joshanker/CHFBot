@@ -273,10 +273,11 @@ namespace CHFBot
                         squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
                         var chnl = message.Channel as IMessageChannel;
 
+                        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{input}.txt");
+                        //C:\Users\josh1\Desktop\CHFBot\CHFBot\bin\Debug
 
-
-                        string fileName = $"C:\\{input}.txt"; // Customize the file path and name as needed
-                        using (StreamWriter writer = new StreamWriter(fileName))
+                        //string fileName = $"C:\\Users\\josh1\\Documents\\{input}.txt"; // Customize the file path and name as needed
+                        using (StreamWriter writer = new StreamWriter(filePath))
                         {
                             writer.WriteLine("Squadron: " + squadronObject.SquadronName);
                             writer.WriteLine("Player Count: " + squadronObject.Players.Count);
@@ -296,10 +297,6 @@ namespace CHFBot
                             await chnl.SendMessageAsync("complete");
                         }
 
-                        //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
-                        //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
-                        //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
-                        //scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
 
                     }
                     else await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
