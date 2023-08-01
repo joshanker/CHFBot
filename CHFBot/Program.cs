@@ -8,6 +8,7 @@ using BotCommands;
 using System.Threading;
 using System.Timers;
 using SquadronObjects;
+using System.Linq;
 
 
 
@@ -315,22 +316,28 @@ namespace CHFBot
                     if (input == "Cadet" || input == "BofSs" || input == "Academy")
                     {
                         var chnl = message.Channel as IMessageChannel;
+                        string directoryPath = AppDomain.CurrentDomain.BaseDirectory;
 
-                        string fileName = $"C:\\{input}.txt"; // Customize the file path and name as needed
-                        if (File.Exists(fileName))
+                        // Search for files in the directory with the specified squadron name in the filename
+                        string[] files = Directory.GetFiles(directoryPath, $"{input}_*.txt");
+
+                        if (files.Length > 0)
                         {
-                            // Populate the SquadronObj from the file
+                            // Get the most recent file based on creation time
+                            string mostRecentFile = files.OrderByDescending(f => File.GetCreationTime(f)).First();
+
+                            // Populate the SquadronObj from the most recent file
                             Commands scrapeAllAndPopulate = new Commands();
-                            SquadronObj squadronObject = scrapeAllAndPopulate.PopulateSquadronFromTextFile(fileName);
+                            SquadronObj squadronObject = scrapeAllAndPopulate.PopulateSquadronFromTextFile(mostRecentFile);
 
                             // Use the squadronObject as needed
                             scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
 
-                            await chnl.SendMessageAsync("Reading the file for " + input + ":");
+                            await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
                         }
                         else
                         {
-                            await chnl.SendMessageAsync("The file for " + input + " does not exist.");
+                            await chnl.SendMessageAsync("No files found for " + input + ".");
                         }
                     }
                     else
@@ -338,6 +345,7 @@ namespace CHFBot
                         await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
                     }
                 }
+
 
 
 
