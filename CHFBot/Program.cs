@@ -273,8 +273,14 @@ namespace CHFBot
                         squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
                         var chnl = message.Channel as IMessageChannel;
 
-                        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{input}.txt");
+                        //string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{input}.txt");
                         //C:\Users\josh1\Desktop\CHFBot\CHFBot\bin\Debug
+
+
+                        string dateTimeString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                        string fileName = $"{input}_{dateTimeString}.txt";
+                        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+
 
                         //string fileName = $"C:\\Users\\josh1\\Documents\\{input}.txt"; // Customize the file path and name as needed
                         using (StreamWriter writer = new StreamWriter(filePath))
