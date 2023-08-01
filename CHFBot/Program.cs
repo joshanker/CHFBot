@@ -333,6 +333,8 @@ namespace CHFBot
 
                 if (files.Length > 0)
                 {
+                    await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
+
                     // Get the most recent file based on creation time
                     string mostRecentFile = files.OrderByDescending(f => File.GetCreationTime(f)).First();
 
@@ -343,7 +345,7 @@ namespace CHFBot
                     // Use the squadronObject as needed
                     scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
 
-                    await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
+                   
                 }
                 else
                 {
