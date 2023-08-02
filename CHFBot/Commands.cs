@@ -9,6 +9,7 @@ using System.Timers;
 using Discord;
 using Discord.WebSocket;
 using SquadronObjects;
+using System.Globalization;
 
 
 namespace BotCommands
@@ -16,10 +17,6 @@ namespace BotCommands
 
     public class Commands
     {
-
-        //ulong id = 1125693277295886357; // 3
-        //IMessageChannel chnl = _client.GetChannel(id) as IMessageChannel; // 4
-
 
         public string getQuote()
         {
@@ -82,7 +79,6 @@ namespace BotCommands
             return objname;
         }
 
-
         public async void printPlayers(IMessageChannel chnl, SquadronObj sqdobj)
         {
             StringBuilder sb = new StringBuilder();
@@ -106,7 +102,6 @@ namespace BotCommands
             string longContent = sb.ToString();
             await SendLongContentAsEmbedAsync(chnl, longContent);
         }
-
 
         public async void printSum(IMessageChannel chnl, SquadronObj sqdobj)
         {
@@ -137,8 +132,6 @@ namespace BotCommands
             //await chnl.SendMessageAsync(sqdobj.allsqd);
 
         }
-
-
 
         public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
         {
@@ -249,6 +242,7 @@ namespace BotCommands
                 }
                 
         }
+       
         public SquadronObj PopulateSquadronFromTextFile(string filePath)
         {
             SquadronObj squadronObj = new SquadronObj();
@@ -312,8 +306,14 @@ namespace BotCommands
                         line = reader.ReadLine(); // Read the next line
                         if (line.StartsWith("Date of Entry: "))
                         {
-                            player.DateOfEntry = line.Substring("Date of Entry: ".Length);
+                            DateTime date;
+                            if (DateTime.TryParse(line.Substring("Date of Entry: ".Length), out date))
+                            {
+                                player.DateOfEntry = date;
+                            }
                         }
+
+
                         line = reader.ReadLine(); // Read the delimiter line "-------------------------"
 
                         squadronObj.Players.Add(player);
@@ -322,6 +322,107 @@ namespace BotCommands
             }
             return squadronObj;
         }
+
+
+        public async Task CompareSquadronFiles(IMessageChannel chnl, string filePath1, string filePath2)
+        {
+            SquadronObj squadron1 = PopulateSquadronFromTextFile(filePath1);
+            SquadronObj squadron2 = PopulateSquadronFromTextFile(filePath2);
+
+            if (squadron1 == null || squadron2 == null)
+            {
+                // Error reading the files or creating the SquadronObj objects
+                return;
+            }
+
+            List<string> joiners = new List<string>();
+            List<string> leavers = new List<string>();
+
+            foreach (Player player in squadron2.Players)
+            {
+                bool found = false;
+                foreach (Player player2 in squadron1.Players)
+                {
+                    if (player.PlayerName == player2.PlayerName)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    leavers.Add(player.PlayerName);
+                }
+            }
+
+            foreach (Player player in squadron1.Players)
+            {
+                bool found = false;
+                foreach (Player player2 in squadron2.Players)
+                {
+                    if (player.PlayerName == player2.PlayerName)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    joiners.Add(player.PlayerName);
+                }
+            }
+
+            await SendJoinersAndLeaversAsync(chnl, joiners, leavers);
+        }
+
+
+        private async Task SendJoinersAndLeaversAsync(IMessageChannel chnl, List<string> joiners, List<string> leavers)
+        {
+            // Create and send the messages
+            StringBuilder messageBuilder = new StringBuilder();
+
+            if (joiners.Count > 0)
+            {
+                messageBuilder.AppendLine("New joiners:");
+                messageBuilder.AppendLine(string.Join("\n", joiners));
+                messageBuilder.AppendLine(); // Add an empty line for spacing
+            }
+
+            if (leavers.Count > 0)
+            {
+                messageBuilder.AppendLine("Leavers:");
+                messageBuilder.AppendLine(string.Join("\n", leavers));
+            }
+
+            await chnl.SendMessageAsync(messageBuilder.ToString());
+        }
+
+
+
+        //private async Task SendJoinersAndLeaversAsync(IMessageChannel chnl, List<string> joiners, List<string> leavers)
+        //{
+        //    // Create and send the messages
+        //    if (joiners.Count > 0)
+        //    {
+        //        StringBuilder joinersMessage = new StringBuilder("New joiners:\n");
+        //        foreach (string joiner in joiners)
+        //        {
+        //            joinersMessage.AppendLine(joiner);
+        //        }
+        //        await chnl.SendMessageAsync(joinersMessage.ToString());
+        //    }
+
+        //    if (leavers.Count > 0)
+        //    {
+        //        StringBuilder leaversMessage = new StringBuilder("Leavers:\n");
+        //        foreach (string leaver in leavers)
+        //        {
+        //            leaversMessage.AppendLine(leaver);
+        //        }
+        //        await chnl.SendMessageAsync(leaversMessage.ToString());
+        //    }
+        //}
+
 
 
 

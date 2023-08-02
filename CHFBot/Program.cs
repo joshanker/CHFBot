@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using BotCommands;
 using System.Collections.Generic;
+using System.Text;
 
 
 namespace CHFBot
@@ -132,6 +133,10 @@ namespace CHFBot
                     Commands getQuote = new Commands();
                     string quote = getQuote.getQuote();
                     await message.Channel.SendMessageAsync(quote);
+                }
+                else if (content.StartsWith("!compare "))
+                {
+                    await HandleCompareCommand(message);
                 }
                 else
                 {
@@ -400,6 +405,56 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
             }
         }
+
+        private async Task HandleCompareCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+            string squadronName = content.Substring("!compare ".Length);
+
+            if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
+            {
+                Commands commands = new Commands();
+
+                var chnl = message.Channel as IMessageChannel;
+
+                string[] mostRecentFiles = GetMostRecentFiles(squadronName, 2);
+
+                if (mostRecentFiles.Length >= 2)
+                {
+                    await commands.CompareSquadronFiles(chnl, mostRecentFiles[0], mostRecentFiles[1]);
+                }
+                else
+                {
+                    await chnl.SendMessageAsync("There are not enough recent files to compare.");
+                }
+
+                
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+            }
+        }
+
+        private string[] GetMostRecentFiles(string squadronName, int count)
+        {
+            // Get the directory path where the files are stored
+            string directoryPath = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Search for files in the directory with the specified squadron name in the filename
+            string[] files = Directory.GetFiles(directoryPath, $"{squadronName}_*.txt");
+
+            // Get the most recent 'count' files based on creation time
+            string[] mostRecentFiles = files.OrderByDescending(f => File.GetCreationTime(f)).Take(count).ToArray();
+
+            return mostRecentFiles;
+        }
+
+
+
+
+
+
 
 
     }

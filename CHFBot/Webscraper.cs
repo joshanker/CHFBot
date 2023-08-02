@@ -181,7 +181,7 @@ namespace Scraper
                     String DoEXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + n + "]";
                     node = doc.DocumentNode.SelectSingleNode(DoEXpath);
                     //*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[12]
-                    String DoE = node.InnerText.Trim();
+                    DateTime DoE = DateTime.Parse(node.InnerText.Trim());
                     newp = objname.setDoE(newp, DoE);
 
                     objname.AddPlayerTolist(newp);

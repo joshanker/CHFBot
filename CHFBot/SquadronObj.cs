@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
+
+
 namespace SquadronObjects
 {
         public class Player
@@ -13,8 +15,26 @@ namespace SquadronObjects
         public int PersonalClanRating { get; set; }
         public string Activity { get; set; }
         public string Rank { get; set; }
-        public String DateOfEntry { get; set; }
-     }
+        public DateTime DateOfEntry { get; set; }
+
+        public Player()
+        {
+        }
+
+        public Player(string playerName, int number, int personalClanRating, string activity, string rank, DateTime dateOfEntry)
+        {
+            PlayerName = playerName;
+            Number = number;
+            PersonalClanRating = personalClanRating;
+            Activity = activity;
+            Rank = rank;
+            DateOfEntry = dateOfEntry;
+        }
+
+
+
+
+    }
 
 
     public class SquadronObj
@@ -76,7 +96,7 @@ namespace SquadronObjects
             p.Rank = num;
             return p;
         }
-        public Player setDoE(Player p, String num)
+        public Player setDoE(Player p, DateTime num)
         {
             //p.Number = num.ToInt32();
             //p.Number = Int16.Parse(num);
@@ -95,26 +115,10 @@ namespace SquadronObjects
                 Players.Remove(player);
             }
 
-
-
-        //public void PrintSquadronInfo()
-        //    {
-        //        Console.WriteLine("Squadron: " + SquadronName);
-        //        Console.WriteLine("Player Count: " + Players.Count);
-
-        //        foreach (Player player in Players)
-        //        {
-        //            Console.WriteLine("Number: " + player.Number);
-        //            Console.WriteLine("Player Name: " + player.PlayerName.TrimStart());
-        //            Console.WriteLine("Personal Clan Rating: " + player.PersonalClanRating);
-        //            Console.WriteLine("Activity: " + player.Activity);
-        //            Console.WriteLine("Role: " + player.Rank);
-        //            Console.WriteLine("Date of Entry: " + player.DateOfEntry);
-        //            Console.WriteLine();
-        //        }
-        //    }
         
-
-
     }
+
+
+
+
 }
