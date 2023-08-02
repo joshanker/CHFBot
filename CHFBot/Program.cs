@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using BotCommands;
+using System.Collections.Generic;
 
 
 namespace CHFBot
@@ -121,6 +122,10 @@ namespace CHFBot
                 else if (content.StartsWith("!readsqd "))
                 {
                     await HandleReadSqdCommand(message);
+                }
+                else if (content.StartsWith("!top20 "))
+                {
+                    await HandleTop20Command(message);
                 }
                 else if (content.StartsWith("!quote"))
                 {
@@ -333,10 +338,13 @@ namespace CHFBot
 
                 if (files.Length > 0)
                 {
-                    await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
 
                     // Get the most recent file based on creation time
                     string mostRecentFile = files.OrderByDescending(f => File.GetCreationTime(f)).First();
+
+                    await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
+
+
 
                     // Populate the SquadronObj from the most recent file
                     Commands scrapeAllAndPopulate = new Commands();
@@ -357,5 +365,42 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
             }
         }
+
+        private async Task HandleTop20Command(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+            string input = content.Substring("!top20 ".Length);
+
+            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            {
+                Commands scrapeAllAndPopulate = new Commands();
+                SquadronObj squadronObject = new SquadronObj();
+
+                squadronObject = scrapeAllAndPopulate.validateSquadron(input);
+
+                squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject);
+
+                var chnl = message.Channel as IMessageChannel;
+
+                if (squadronObject.Players.Count == 0)
+                {
+                    await chnl.SendMessageAsync("No players found for " + input + ".");
+                    return;
+                }
+
+                // Sort players by score in descending order
+                List<Player> top20Players = squadronObject.Players.OrderByDescending(p => p.PersonalClanRating).Take(20).ToList();
+
+               scrapeAllAndPopulate.PrintTop20Players(chnl, squadronObject, top20Players);
+
+
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+            }
+        }
+
+
     }
 }

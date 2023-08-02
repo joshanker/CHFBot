@@ -85,33 +85,28 @@ namespace BotCommands
 
         public async void printPlayers(IMessageChannel chnl, SquadronObj sqdobj)
         {
-            //foreach (Player player in AcadObj.Players)
-            //{
-            //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
-            //}
-
             StringBuilder sb = new StringBuilder();
             foreach (Player player in sqdobj.Players)
             {
-
-                //This works just fine... It prints everything.  Commented out because I only want names/points here.
-                //sb.Append("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-\n");
-
                 sb.AppendLine($"{player.Number}: {player.PlayerName,-20} SQB Points: {player.PersonalClanRating}");
             }
             sqdobj.allsqd = sb.ToString();
             string longContent = sqdobj.allsqd;
             await SendLongContentAsEmbedAsync(chnl, longContent);
-
-
-            //var embedBuilder = new EmbedBuilder();
-            //embedBuilder.Description = sqdobj.allsqd;
-
-
-            //await chnl.SendMessageAsync(embed: embedBuilder.Build());
-            //await chnl.SendMessageAsync(sqdobj.allsqd);
-
         }
+
+        public async Task PrintTop20Players(IMessageChannel chnl, SquadronObj sqdobj, List<Player> top20Players)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < top20Players.Count; i++)
+            {
+                Player player = top20Players[i];
+                sb.AppendLine($"{i + 1}. {player.PlayerName} (Score: {player.PersonalClanRating})");
+            }
+            string longContent = sb.ToString();
+            await SendLongContentAsEmbedAsync(chnl, longContent);
+        }
+
 
         public async void printSum(IMessageChannel chnl, SquadronObj sqdobj)
         {
