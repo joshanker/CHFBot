@@ -191,7 +191,6 @@ namespace CHFBot
             //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
         }
 
-
         private async Task HandleScrapeSquadronCommand(SocketMessage message)
         {
             string content = message.Content.Trim();

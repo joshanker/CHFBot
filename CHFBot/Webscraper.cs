@@ -14,6 +14,7 @@ using SquadronObjects;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
+using System.Globalization;
 
 namespace Scraper
 {
@@ -181,7 +182,8 @@ namespace Scraper
                     String DoEXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + n + "]";
                     node = doc.DocumentNode.SelectSingleNode(DoEXpath);
                     //*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[12]
-                    DateTime DoE = DateTime.Parse(node.InnerText.Trim());
+                    string test = node.InnerText.Trim();
+                    DateTime DoE = DateTime.ParseExact(node.InnerText.Trim(),"dd.MM.yyyy", CultureInfo.InvariantCulture);
                     newp = objname.setDoE(newp, DoE);
 
                     objname.AddPlayerTolist(newp);
