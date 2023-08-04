@@ -241,11 +241,11 @@ namespace CHFBot
 
                 var chnl = message.Channel as IMessageChannel;
 
-                await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
-                await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+                
+                
                 await chnl.SendMessageAsync("-");
 
-                await chnl.SendMessageAsync(squadronObject.Score.ToString());
+                await chnl.SendMessageAsync("Total Score: " + squadronObject.Score.ToString());
             }
             else
             {

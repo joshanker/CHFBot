@@ -94,11 +94,16 @@ namespace BotCommands
         public async Task PrintTop20Players(IMessageChannel chnl, SquadronObj sqdobj, List<Player> top20Players)
         {
             StringBuilder sb = new StringBuilder();
+            int totalScore = 0;
             for (int i = 0; i < top20Players.Count; i++)
             {
                 Player player = top20Players[i];
                 sb.AppendLine($"{i + 1}. {player.PlayerName} (Score: {player.PersonalClanRating})");
+                totalScore = totalScore + player.PersonalClanRating;
+                
             }
+            sb.AppendLine();
+            sb.AppendLine("Total score of Top20: " + totalScore.ToString());
             string longContent = sb.ToString();
             await SendLongContentAsEmbedAsync(chnl, longContent);
         }
