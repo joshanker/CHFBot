@@ -142,6 +142,10 @@ namespace CHFBot
                 {
                     await HandleRandoCommandoCommand(message);
                 }
+                else if (content.StartsWith("!commands"))
+                {
+                    await HandleCommandsCommand(message);
+                }
                 else
                 {
                     Console.WriteLine("No matching command detected.");
@@ -482,6 +486,56 @@ namespace CHFBot
 
             return battleRatings.ToArray();
         }
+
+        //private async Task HandleCommandsCommand(SocketMessage message)
+        //{
+        //    if (message.Author.IsBot)
+        //        return;
+
+
+        //        string[] commandPrefixes = { "!hello", "!embed test", "!ping", "!join", "!acad", "!scrapesquadron", "!squadronsum", "!totals", "!writesqd", "!readsqd", "!top20", "!quote", "!compare", "!randocommando", "!commands" };
+
+        //        StringBuilder commandsList = new StringBuilder("Available commands:\n");
+
+        //        foreach (string commandPrefix in commandPrefixes)
+        //        {
+        //            string commandName = commandPrefix.TrimStart('!', ' '); // Extract the command name
+        //            commandsList.AppendLine(commandName);
+        //        }
+
+        //        await message.Channel.SendMessageAsync(commandsList.ToString());
+        // }
+
+        private async Task HandleCommandsCommand(SocketMessage message)
+        {
+            if (message.Author.IsBot)
+                return;
+
+            string content = message.Content.Trim();
+
+            if (content.StartsWith("!commands"))
+            {
+                MethodInfo[] methods = typeof(Program).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(method => method.Name.StartsWith("Handle") && method.Name.EndsWith("Command") && method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(SocketMessage))
+                    .ToArray();
+
+                List<string> commandList = new List<string>();
+
+                foreach (MethodInfo method in methods)
+                {
+                    string methodName = method.Name;
+                    string command = "!" + methodName.Substring("Handle".Length, methodName.Length - "HandleCommand".Length).ToLower();
+                    commandList.Add(command);
+                }
+
+                string commandsText = string.Join("\n", commandList);
+
+                await message.Channel.SendMessageAsync("Available commands:\n" + commandsText);
+            }
+        }
+
+
+
 
 
 
