@@ -65,6 +65,7 @@ namespace BotCommands
                 Webscraper scraper = new Webscraper();
                 objname = await scraper.ScrapeWebsiteAllAndPopulateAsync(objname);
                 //Console.WriteLine("Website all and populate.");
+                
 
                 return objname;
             }
@@ -103,7 +104,7 @@ namespace BotCommands
                 
             }
             sb.AppendLine();
-            sb.AppendLine("Total score of Top20: " + totalScore.ToString());
+            sb.AppendLine("Total score of Top20: " + totalScore.ToString() + " / " + sqdobj.totalRating);
             string longContent = sb.ToString();
             await SendLongContentAsEmbedAsync(chnl, longContent);
         }
@@ -226,7 +227,6 @@ namespace BotCommands
 
         public async Task<SquadronObj> populateScore(SquadronObj sqdobj)
         {
-            
             
                 try
                 {

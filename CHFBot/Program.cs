@@ -19,7 +19,7 @@ namespace CHFBot
         private DiscordSocketClient _client;
         private readonly ulong generalChannel = 342132137064923136;
         private readonly ulong testingChannel = 1125693277295886357;
-        private readonly string token = File.ReadAllText(@"C:\token.txt");
+        private readonly string token = File.ReadAllText(@"token.txt");
 
         static void Main(string[] args)
         {
@@ -138,10 +138,15 @@ namespace CHFBot
                 {
                     await HandleCompareCommand(message);
                 }
+                else if (content.StartsWith("!randocommando"))
+                {
+                    await HandleRandoCommandoCommand(message);
+                }
                 else
                 {
                     Console.WriteLine("No matching command detected.");
                 }
+
             }
         }
 
@@ -426,8 +431,6 @@ namespace CHFBot
                 {
                     await chnl.SendMessageAsync("There are not enough recent files to compare.");
                 }
-
-                
             }
             else
             {
@@ -449,7 +452,36 @@ namespace CHFBot
             return mostRecentFiles;
         }
 
+        private async Task HandleRandoCommandoCommand(SocketMessage message)
+        {
+            string[] gameModes = { "AB", "RB" }; // Available game modes
+            double[] battleRatings = GenerateBattleRatings(); // Generate the list of battle ratings
+            string[] battleTypes = { "ground", "air" }; // Available battle types
 
+            Random random = new Random();
+
+            string selectedGameMode = gameModes[random.Next(0, gameModes.Length)]; // Randomly choose a game mode
+            double selectedBattleRating = battleRatings[random.Next(0, battleRatings.Length)]; // Randomly choose a battle rating
+            string selectedBattleType = battleTypes[random.Next(0, battleTypes.Length)]; // Randomly choose a battle type
+
+            string response = $"Okay, how about: {selectedBattleRating:F1}, {selectedBattleType} {selectedGameMode}?";
+
+            await message.Channel.SendMessageAsync(response);
+        }
+
+        private double[] GenerateBattleRatings()
+        {
+            List<double> battleRatings = new List<double>();
+
+            for (double wholePart = 1.0; wholePart <= 12.0; wholePart++)
+            {
+                battleRatings.Add(wholePart);
+                battleRatings.Add(wholePart + 0.3);
+                battleRatings.Add(wholePart + 0.7);
+            }
+
+            return battleRatings.ToArray();
+        }
 
 
 

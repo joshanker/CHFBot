@@ -227,7 +227,8 @@ namespace Scraper
 
             }
         }
-             public async Task<SquadronObj> scrapeWebsiteAndPopulateScoreAsync(SquadronObj sqdobj)
+        
+        public async Task<SquadronObj> scrapeWebsiteAndPopulateScoreAsync(SquadronObj sqdobj)
             {
                 using (HttpClient client = new HttpClient())
                 {
@@ -242,16 +243,13 @@ namespace Scraper
                     HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
                     string value = score.InnerText;
 
-                sqdobj.Score = Int32.Parse(value);
-
-
+                    sqdobj.Score = Int32.Parse(value);
 
                     string digitsOnly = Regex.Replace(value, @"\D", "");
                     char[] charsToTrim = { '"' };
 
                     int number = Int32.Parse(digitsOnly);
-                                                        
-                    
+                   
                     return sqdobj;
 
 
