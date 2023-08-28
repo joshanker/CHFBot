@@ -524,7 +524,7 @@ namespace CHFBot
                 foreach (MethodInfo method in methods)
                 {
                     string methodName = method.Name;
-                    string command = "!" + methodName.Substring("Handle".Length, methodName.Length - "HandleCommand".Length).ToLower();
+                    string command = "!" + methodName.Substring("Handle".Length, methodName.Length - "HandleCommand".Length);
                     commandList.Add(command);
                 }
 
