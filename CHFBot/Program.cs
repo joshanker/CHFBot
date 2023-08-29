@@ -146,6 +146,11 @@ namespace CHFBot
                 {
                     await HandleCommandsCommand(message);
                 }
+                else if (content.StartsWith("!qpoints"))
+                {
+                    await HandleQpointsCommand(message);
+                }
+
                 else
                 {
                     Console.WriteLine("No matching command detected.");
@@ -487,30 +492,8 @@ namespace CHFBot
             return battleRatings.ToArray();
         }
 
-        //private async Task HandleCommandsCommand(SocketMessage message)
-        //{
-        //    if (message.Author.IsBot)
-        //        return;
-
-
-        //        string[] commandPrefixes = { "!hello", "!embed test", "!ping", "!join", "!acad", "!scrapesquadron", "!squadronsum", "!totals", "!writesqd", "!readsqd", "!top20", "!quote", "!compare", "!randocommando", "!commands" };
-
-        //        StringBuilder commandsList = new StringBuilder("Available commands:\n");
-
-        //        foreach (string commandPrefix in commandPrefixes)
-        //        {
-        //            string commandName = commandPrefix.TrimStart('!', ' '); // Extract the command name
-        //            commandsList.AppendLine(commandName);
-        //        }
-
-        //        await message.Channel.SendMessageAsync(commandsList.ToString());
-        // }
-
         private async Task HandleCommandsCommand(SocketMessage message)
         {
-            if (message.Author.IsBot)
-                return;
-
             string content = message.Content.Trim();
 
             if (content.StartsWith("!commands"))
@@ -534,13 +517,83 @@ namespace CHFBot
             }
         }
 
+        private async Task HandleQpointsCommand(SocketMessage message)
+        {
+            //Commands scrapeAllAndPopulate = new Commands();
+            //SquadronObj squadronObject = new SquadronObj();
 
 
+            //squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+            //700529928948678777 (Lounge)
+            //1133615880488628344 (esper bot testing)
+            //200594110044700675 (server ID)
+
+            var chnl = message.Channel as IMessageChannel; // 4
+            //chnl.Id = 700529928948678777;
+            
+            
+            ulong channelId = (ulong)700529928948678777;
+            IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
 
 
+            GeneratePlayerListAsync(voiceChannel.Id);
+
+            //await message.Channel.SendMessageAsync(response);
+        }
+
+        private async Task GeneratePlayerListAsync(ulong channelId)
+        {
+            // Fetch the voice channel using its ID
+            var voiceChannel = _client.GetChannel(channelId) as SocketVoiceChannel;
+
+            if (voiceChannel != null)
+            {
+                // Fetch the voice states of users in the voice channel
+                var allusers = voiceChannel.Users;
+
+                // Create a list to store member usernames
+                List<string> playerList = new List<string>();
+
+                foreach (var user in allusers)
+                {
+                    var currUser = user;
+
+
+                    if (currUser.VoiceState != null)
+                    {
+                        playerList.Add(currUser.DisplayName);
+                    }
+
+                    
+                }
+
+                // Join the usernames into a single string
+                string playerListString = string.Join(", ", playerList);
+
+                // Fetch the text channel for sending the message
+                ulong textChannelId = (ulong)1133615880488628344;
+                ITextChannel textChannel = _client.GetChannel(textChannelId) as ITextChannel;
+
+                if (textChannel != null)
+                {
+                    // Send the list of players to the text channel
+                    await textChannel.SendMessageAsync($"Players in the voice channel: {playerListString}");
+                }
+                else
+                {
+                    Console.WriteLine("Text channel not found.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Voice channel not found.");
+            }
+        }
 
 
 
 
     }
+
+
 }
