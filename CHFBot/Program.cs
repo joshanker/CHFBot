@@ -522,7 +522,6 @@ namespace CHFBot
             //Commands scrapeAllAndPopulate = new Commands();
             //SquadronObj squadronObject = new SquadronObj();
 
-
             //squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
             //700529928948678777 (Lounge)
             //1133615880488628344 (esper bot testing)
@@ -530,18 +529,27 @@ namespace CHFBot
 
             var chnl = message.Channel as IMessageChannel; // 4
             //chnl.Id = 700529928948678777;
-            
-            
+                        
             ulong channelId = (ulong)700529928948678777;
             IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
 
+            // Create a list to store member usernames
+            List<string> playerList = new List<string>();
 
-            GeneratePlayerListAsync(voiceChannel.Id);
+            playerList = GeneratePlayerList(voiceChannel.Id, playerList);
+
+            Commands we = new Commands();
+
+            string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
+            string playerListString = string.Join(",", itemsToJoin);
+
+            await message.Channel.SendMessageAsync($"Connected Players: {playerListString}");
+
 
             //await message.Channel.SendMessageAsync(response);
         }
 
-        private async Task GeneratePlayerListAsync(ulong channelId)
+        private List<String> GeneratePlayerList(ulong channelId, List<string> playerList)
         {
             // Fetch the voice channel using its ID
             var voiceChannel = _client.GetChannel(channelId) as SocketVoiceChannel;
@@ -551,24 +559,18 @@ namespace CHFBot
                 // Fetch the voice states of users in the voice channel
                 var allusers = voiceChannel.Users;
 
-                // Create a list to store member usernames
-                List<string> playerList = new List<string>();
-
                 foreach (var user in allusers)
                 {
                     var currUser = user;
 
-
                     if (currUser.VoiceState != null)
                     {
                         playerList.Add(currUser.DisplayName);
-                    }
-
-                    
+                    }                   
                 }
 
                 // Join the usernames into a single string
-                string playerListString = string.Join(", ", playerList);
+                playerList.Add(String.Join(", ", playerList));
 
                 // Fetch the text channel for sending the message
                 ulong textChannelId = (ulong)1133615880488628344;
@@ -577,16 +579,19 @@ namespace CHFBot
                 if (textChannel != null)
                 {
                     // Send the list of players to the text channel
-                    await textChannel.SendMessageAsync($"Players in the voice channel: {playerListString}");
+                    // await textChannel.SendMessageAsync($"Connected Players: {playerListString}");
+                    return playerList;
                 }
                 else
                 {
                     Console.WriteLine("Text channel not found.");
+                    return null;
                 }
             }
             else
             {
                 Console.WriteLine("Voice channel not found.");
+                return null;
             }
         }
 

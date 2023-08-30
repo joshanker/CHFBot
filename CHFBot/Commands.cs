@@ -380,7 +380,6 @@ namespace BotCommands
             await SendJoinersAndLeaversAsync(chnl, joiners, leavers);
         }
 
-
         private async Task SendJoinersAndLeaversAsync(IMessageChannel chnl, List<string> joiners, List<string> leavers)
         {
             // Create and send the messages
