@@ -538,8 +538,6 @@ namespace CHFBot
 
             playerList = GeneratePlayerList(voiceChannel.Id, playerList);
 
-            Commands we = new Commands();
-
             string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
             string playerListString = string.Join(",", itemsToJoin);
 
@@ -565,7 +563,7 @@ namespace CHFBot
 
                     if (currUser.VoiceState != null)
                     {
-                        playerList.Add(currUser.DisplayName);
+                        playerList.Add(currUser.DisplayName + " (" + currUser.Id + ")");
                     }                   
                 }
 
