@@ -302,13 +302,15 @@ namespace CHFBot
 
             if (input == "Cadet" || input == "BofSs" || input == "Academy")
             {
+                var chnl = message.Channel as IMessageChannel;
+                await chnl.SendMessageAsync("Scraping and writing - please hold...");
                 Commands scrapeAllAndPopulate = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
 
                 squadronObject = scrapeAllAndPopulate.validateSquadron(input);
                 squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
                 squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
-                var chnl = message.Channel as IMessageChannel;
+                
 
                 string dateTimeString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 string fileName = $"{input}_{dateTimeString}.txt";
@@ -332,7 +334,7 @@ namespace CHFBot
                         writer.WriteLine("-------------------------");
                     }
 
-                    await chnl.SendMessageAsync("complete");
+                    await chnl.SendMessageAsync("complete!");
                 }
             }
             else
@@ -356,13 +358,10 @@ namespace CHFBot
 
                 if (files.Length > 0)
                 {
-
                     // Get the most recent file based on creation time
                     string mostRecentFile = files.OrderByDescending(f => File.GetCreationTime(f)).First();
 
                     await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
-
-
 
                     // Populate the SquadronObj from the most recent file
                     Commands scrapeAllAndPopulate = new Commands();
@@ -370,8 +369,7 @@ namespace CHFBot
 
                     // Use the squadronObject as needed
                     scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
-
-                   
+                                       
                 }
                 else
                 {
@@ -519,82 +517,86 @@ namespace CHFBot
 
         private async Task HandleQpointsCommand(SocketMessage message)
         {
-            //Commands scrapeAllAndPopulate = new Commands();
-            //SquadronObj squadronObject = new SquadronObj();
+            message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
-            //squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+            Commands commands = new Commands();
+            //Commands scrapeAllAndPopulate = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+            squadronObject = commands.validateSquadron("BofSs");
+
+
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+            
             //700529928948678777 (Lounge)
             //1133615880488628344 (esper bot testing)
             //200594110044700675 (server ID)
 
-            var chnl = message.Channel as IMessageChannel; // 4
-            //chnl.Id = 700529928948678777;
-                        
+           // var chnl = message.Channel as IMessageChannel; // 4
+                                    
             ulong channelId = (ulong)700529928948678777;
             IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
 
             // Create a list to store member usernames
             List<string> playerList = new List<string>();
 
-            playerList = GeneratePlayerList(voiceChannel.Id, playerList);
+            await Task.Delay(1000);
+            playerList = await commands.GeneratePlayerList(_client, voiceChannel.Id, playerList);
 
             string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
-            string playerListString = string.Join(",", itemsToJoin);
+            string playerListString = string.Join("", itemsToJoin).ToString();
+            //await message.Channel.SendMessageAsync($"Connected Players:\n{playerListString}");
 
-            await message.Channel.SendMessageAsync($"Connected Players: {playerListString}");
+            string filePath = "C:\\Users\\josh1\\Desktop\\CHFBot\\CHFBot\\bin\\Debug\\PlayersToIDs.txt"; // Replace with the actual file path
+
+            await Task.Delay(1000);
+            commands.UpdatePlayerIDs(squadronObject, filePath);
+            await Task.Delay(1000);
+
+
+
+
+
+            StringBuilder responseBuilder = new StringBuilder();
+
+            foreach (var playerName in playerList)
+            {
+                // Parse the Discord ID from the playerName
+                if (ulong.TryParse(playerName.Split(' ')[0], out ulong discordId))
+                {
+                    // Find the player in squadronObject by their Discord ID
+                    Player player = squadronObject.Players.FirstOrDefault(p => p.DiscordID == discordId);
+
+                    if (player != null)
+                    {
+                        // Append the player's name and points to the response
+                        responseBuilder.AppendLine($"{player.PlayerName}: {player.PersonalClanRating} points");
+                    }
+                    else
+                    {
+                        // Player not found in squadronObject, handle this case as needed
+                        responseBuilder.AppendLine($"{discordId} (Player not found)");
+                    }
+                }
+                else
+                {
+                    // Unable to parse the Discord ID, handle this case as needed
+                    responseBuilder.AppendLine($"{playerName} (Invalid format)");
+                }
+            }
+
+            // Send the response as a message
+            
+            //await message.Channel.SendMessageAsync(responseBuilder.ToString());
+
+            commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString());
+
+            commands.SendLongContentAsEmbedAsync(message.Channel, playerListString);
 
 
             //await message.Channel.SendMessageAsync(response);
         }
 
-        private List<String> GeneratePlayerList(ulong channelId, List<string> playerList)
-        {
-            // Fetch the voice channel using its ID
-            var voiceChannel = _client.GetChannel(channelId) as SocketVoiceChannel;
-
-            if (voiceChannel != null)
-            {
-                // Fetch the voice states of users in the voice channel
-                var allusers = voiceChannel.Users;
-
-                foreach (var user in allusers)
-                {
-                    var currUser = user;
-
-                    if (currUser.VoiceState != null)
-                    {
-                        playerList.Add(currUser.DisplayName + " (" + currUser.Id + ")");
-                    }                   
-                }
-
-                // Join the usernames into a single string
-                playerList.Add(String.Join(", ", playerList));
-
-                // Fetch the text channel for sending the message
-                ulong textChannelId = (ulong)1133615880488628344;
-                ITextChannel textChannel = _client.GetChannel(textChannelId) as ITextChannel;
-
-                if (textChannel != null)
-                {
-                    // Send the list of players to the text channel
-                    // await textChannel.SendMessageAsync($"Connected Players: {playerListString}");
-                    return playerList;
-                }
-                else
-                {
-                    Console.WriteLine("Text channel not found.");
-                    return null;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Voice channel not found.");
-                return null;
-            }
-        }
-
-
-
+       
 
     }
 

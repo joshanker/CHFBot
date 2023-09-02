@@ -16,6 +16,7 @@ namespace SquadronObjects
         public string Activity { get; set; }
         public string Rank { get; set; }
         public DateTime DateOfEntry { get; set; }
+        public ulong DiscordID { get; set; }
 
         public Player()
         {

@@ -139,7 +139,7 @@ namespace BotCommands
 
         }
 
-        public static async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
+        public async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
         {
             const int maxEmbedLength = 4096;
             const int maxChunkLength = 2000;
@@ -401,7 +401,52 @@ namespace BotCommands
             await chnl.SendMessageAsync(messageBuilder.ToString());
         }
 
+        public async Task<List<String>> GeneratePlayerList(DiscordSocketClient _client, ulong channelId, List<string> playerList)
+        {
+            // Fetch the voice channel using its ID
+            var voiceChannel = _client.GetChannel(channelId) as SocketVoiceChannel;
 
+            if (voiceChannel != null)
+            {
+                // Fetch the voice states of users in the voice channel
+                var allusers = voiceChannel.Users;
+
+                foreach (var user in allusers)
+                {
+                    var currUser = user;
+
+                    if (currUser.VoiceState != null)
+                    {
+                        //playerList.Add(currUser.Id + " (" + currUser.DisplayName + ")\n");
+                        playerList.Add($"{currUser.Id} ({currUser.DisplayName})\n");
+                    }
+                }
+
+                // Join the usernames into a single string
+               // playerList.Add(String.Join(", ", playerList));
+
+                // Fetch the text channel for sending the message
+                ulong textChannelId = (ulong)1133615880488628344;
+                ITextChannel textChannel = _client.GetChannel(textChannelId) as ITextChannel;
+
+                if (textChannel != null)
+                {
+                    // Send the list of players to the text channel
+                    // await textChannel.SendMessageAsync($"Connected Players: {playerListString}");
+                    return playerList;
+                }
+                else
+                {
+                    Console.WriteLine("Text channel not found.");
+                    return null;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Voice channel not found.");
+                return null;
+            }
+        }
 
         //private async Task SendJoinersAndLeaversAsync(IMessageChannel chnl, List<string> joiners, List<string> leavers)
         //{
@@ -426,9 +471,54 @@ namespace BotCommands
         //        await chnl.SendMessageAsync(leaversMessage.ToString());
         //    }
         //}
+        public async Task UpdatePlayerIDs(SquadronObj squadronObject, string filePath)
+        {
+            try
+            {
+                // Read all lines from the file
+                string[] lines = await Task.Run(() => File.ReadAllLines(filePath));
+
+                string currentPlayerName = null;
+                ulong currentPlayerID = 0;
+
+                foreach (string line in lines)
+                {
+                    // Reset player data at the start of each iteration
+                    if (line.StartsWith("Name: "))
+                    {
+                        currentPlayerName = line.Replace("Name: ", "").Trim();
+                        currentPlayerID = 0; // Reset the ID
+                    }
+
+                    if (line.StartsWith("ID: "))
+                    {
+                        string lineid = line.Replace("ID: ", "");
+                        lineid.Trim();
+                        ulong.TryParse(lineid, out ulong lineid2);
+                        currentPlayerID = lineid2;
+
+                    }
+
+                    if (line == "-------------------------" && currentPlayerName != null && currentPlayerID != 0)
+                    {
+                        // Find the player in squadronObject and update the ID
+                        var player = squadronObject.Players.FirstOrDefault(p => p.PlayerName == currentPlayerName);
+                        if (player != null)
+                        {
+                            player.DiscordID = currentPlayerID;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while updating player IDs: {ex.Message}");
+            }
+        }
+
 
 
 
 
     }
- }
+}
