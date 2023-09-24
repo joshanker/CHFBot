@@ -100,10 +100,10 @@ namespace CHFBot
                 {
                     await HandleJoinCommand(message);
                 }
-                else if (content.StartsWith("!acad"))
-                {
-                    await HandleAcadCommand(message);
-                }
+                //else if (content.StartsWith("!acad"))
+                //{
+                //    await HandleAcadCommand(message);
+                //}
                 else if (content.StartsWith("!scrapesquadron "))
                 {
                     await HandleScrapeSquadronCommand(message);
@@ -150,7 +150,10 @@ namespace CHFBot
                 {
                     await HandleQpointsCommand(message);
                 }
-
+                else if (content.StartsWith("!help"))
+                {
+                    await HandleCommandsCommand(message);
+                }
                 else
                 {
                     Console.WriteLine("No matching command detected.");
@@ -184,26 +187,26 @@ namespace CHFBot
             }
         }
 
-        private async Task HandleAcadCommand(SocketMessage message)
-        {
-            // Implementation for the !acad command
-            Commands scrapeAllAndPopulate = new Commands();
-            SquadronObj AcadObj = new SquadronObj("Academy", "https://warthunder.com/en/community/claninfo/The%20Academy");
+        //private async Task HandleAcadCommand(SocketMessage message)
+        //{
+        //    // Implementation for the !acad command
+        //    Commands scrapeAllAndPopulate = new Commands();
+        //    SquadronObj AcadObj = new SquadronObj("Academy", "https://warthunder.com/en/community/claninfo/The%20Academy");
 
-            AcadObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(AcadObj).ConfigureAwait(true);
+        //    AcadObj = await scrapeAllAndPopulate.scrapeAllAndPopulate(AcadObj).ConfigureAwait(true);
 
-            await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.url).ConfigureAwait(true);
+        //    await message.Channel.SendMessageAsync("Squadron  Name: " + AcadObj.SquadronName + ". URL: " + AcadObj.url).ConfigureAwait(true);
 
-            var chnl = message.Channel as IMessageChannel; // 4
+        //    var chnl = message.Channel as IMessageChannel; // 4
 
-            await chnl.SendMessageAsync("Squadron: " + AcadObj.SquadronName);
-            await chnl.SendMessageAsync("Player Count: " + AcadObj.Players.Count);
-            await chnl.SendMessageAsync("-");
+        //    await chnl.SendMessageAsync("Squadron: " + AcadObj.SquadronName);
+        //    await chnl.SendMessageAsync("Player Count: " + AcadObj.Players.Count);
+        //    await chnl.SendMessageAsync("-");
 
-            scrapeAllAndPopulate.printPlayers(chnl, AcadObj);
+        //    scrapeAllAndPopulate.printPlayers(chnl, AcadObj);
 
-            //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
-        }
+        //    //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
+        //}
 
         private async Task HandleScrapeSquadronCommand(SocketMessage message)
         {
@@ -494,7 +497,7 @@ namespace CHFBot
         {
             string content = message.Content.Trim();
 
-            if (content.StartsWith("!commands"))
+            if (content.StartsWith("!commands")  || content.StartsWith("!help"))
             {
                 MethodInfo[] methods = typeof(Program).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(method => method.Name.StartsWith("Handle") && method.Name.EndsWith("Command") && method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(SocketMessage))
@@ -552,10 +555,6 @@ namespace CHFBot
             commands.UpdatePlayerIDs(squadronObject, filePath);
             await Task.Delay(1000);
 
-
-
-
-
             StringBuilder responseBuilder = new StringBuilder();
 
             foreach (var playerName in playerList)
@@ -569,12 +568,14 @@ namespace CHFBot
                     if (player != null)
                     {
                         // Append the player's name and points to the response
-                        responseBuilder.AppendLine($"{player.PlayerName}: {player.PersonalClanRating} points");
+                        ///responseBuilder.AppendLine($"{player.PlayerName}: \t\t\t{player.PersonalClanRating} points");
+                        responseBuilder.AppendLine($"{player.PlayerName,-20}: {player.PersonalClanRating,-6} points");
+
                     }
                     else
                     {
                         // Player not found in squadronObject, handle this case as needed
-                        responseBuilder.AppendLine($"{discordId} (Player not found)");
+                        responseBuilder.AppendLine($"{discordId,-20}: (Player not found)");
                     }
                 }
                 else
@@ -588,15 +589,15 @@ namespace CHFBot
             
             //await message.Channel.SendMessageAsync(responseBuilder.ToString());
 
-            commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString());
+            commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString()); //Player Names and Points
 
-            commands.SendLongContentAsEmbedAsync(message.Channel, playerListString);
+            commands.SendLongContentAsEmbedAsync(message.Channel, playerListString); //IDs and Discord Names
 
 
             //await message.Channel.SendMessageAsync(response);
         }
 
-       
+    
 
     }
 
