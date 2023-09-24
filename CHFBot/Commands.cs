@@ -23,7 +23,7 @@ namespace BotCommands
             string quote = "quote in getQuote was not populated.";
             try
             {
-                var lines = File.ReadAllLines("C:\\quotes.txt");
+                var lines = File.ReadAllLines("quotes.txt");
                 var r = new Random();
                 var randomLineNumber = r.Next(0, lines.Length - 1);
                 var line = lines[randomLineNumber];

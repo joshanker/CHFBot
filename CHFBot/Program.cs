@@ -14,6 +14,18 @@ using System.Text;
 
 namespace CHFBot
 {
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    sealed class CommandDescriptionAttribute : Attribute
+    {
+        public string Description { get; }
+
+        public CommandDescriptionAttribute(string description)
+        {
+            Description = description;
+        }
+    }
+
     class Program
     {
         private DiscordSocketClient _client;
@@ -208,6 +220,7 @@ namespace CHFBot
         //    //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
         //}
 
+        [CommandDescription("This might be the same as !totals... !scrapesquadron BofSs gives link, name, count, and each players' score")]
         private async Task HandleScrapeSquadronCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -240,6 +253,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Gives a link to BofSs webpage and the total score of the squadron. (!squadronsum BofSs)")]
         private async Task HandleSquadronSumCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -270,6 +284,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Gives player count, totals score, and each players' score.  Needs an input (!totals BofSs)")]
         private async Task HandleTotalsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -298,6 +313,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Scrapes a squadron and write the info to a file.")]
         private async Task HandleWriteSqdCommand(SocketMessage message)
         {
             // Implementation for the !writesqd command
@@ -307,12 +323,12 @@ namespace CHFBot
             {
                 var chnl = message.Channel as IMessageChannel;
                 await chnl.SendMessageAsync("Scraping and writing - please hold...");
-                Commands scrapeAllAndPopulate = new Commands();
+                Commands command = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
 
-                squadronObject = scrapeAllAndPopulate.validateSquadron(input);
-                squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
-                squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+                squadronObject = command.validateSquadron(input);
+                squadronObject = await command.populateScore(squadronObject).ConfigureAwait(true);
+                squadronObject = await command.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
                 
 
                 string dateTimeString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
@@ -346,6 +362,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Reads the most recently saved squadron file and then prints all players & points. !readsqd BofSs")]
         private async Task HandleReadSqdCommand(SocketMessage message)
         {
             // Implementation for the !readsqd command
@@ -385,6 +402,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Lists the top 20 players in the squadron and how many points they have.")]
         private async Task HandleTop20Command(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -420,6 +438,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Examines the last two written files for BofSs and lists joiners & leavers. !compare BofSs")]
         private async Task HandleCompareCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -462,6 +481,7 @@ namespace CHFBot
             return mostRecentFiles;
         }
 
+        [CommandDescription("Picks a gamemode, type, and BR.  If you don't like what it chooses, just spam it until you get one you like.")]
         private async Task HandleRandoCommandoCommand(SocketMessage message)
         {
             string[] gameModes = { "AB", "RB" }; // Available game modes
@@ -493,6 +513,7 @@ namespace CHFBot
             return battleRatings.ToArray();
         }
 
+        [CommandDescription("This is a list of commands you can use. Some need modifiers, like a squadron.")]
         private async Task HandleCommandsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -509,15 +530,29 @@ namespace CHFBot
                 {
                     string methodName = method.Name;
                     string command = "!" + methodName.Substring("Handle".Length, methodName.Length - "HandleCommand".Length);
-                    commandList.Add(command);
+
+                    var descriptionAttribute = method.GetCustomAttribute<CommandDescriptionAttribute>();
+                    if (descriptionAttribute != null)
+                    {
+                        string description = descriptionAttribute.Description;
+                        string paddedCommand = command.PadRight(20); // Adjust the width as needed
+                        commandList.Add($"{paddedCommand} - {description}");
+                    }
+                    else
+                    {
+                        commandList.Add(command);
+                    }
                 }
+
+
 
                 string commandsText = string.Join("\n", commandList);
 
-                await message.Channel.SendMessageAsync("Available commands:\n" + commandsText);
+                await message.Channel.SendMessageAsync("Available commands:\n```" + commandsText + "```");
             }
         }
-
+    
+        [CommandDescription("Who is online and how many points do they have? If it says player not found, give the player name and Discord ID to Esper.")]
         private async Task HandleQpointsCommand(SocketMessage message)
         {
             message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
