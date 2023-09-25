@@ -99,7 +99,7 @@ namespace BotCommands
             for (int i = 0; i < top20Players.Count; i++)
             {
                 Player player = top20Players[i];
-                sb.AppendLine($"{i + 1}. {player.PlayerName} (Score: {player.PersonalClanRating})");
+                sb.AppendLine($"{i + 1}. {player.PlayerName,-20} (Score: {player.PersonalClanRating})");
                 totalScore = totalScore + player.PersonalClanRating;
                 
             }

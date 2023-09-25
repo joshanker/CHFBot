@@ -189,11 +189,6 @@ namespace Scraper
                     objname.AddPlayerTolist(newp);
 
 
-
-
-                   
-
-
                 }
 
                 string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
