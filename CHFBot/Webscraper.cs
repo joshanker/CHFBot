@@ -191,15 +191,18 @@ namespace Scraper
 
 
 
-                    string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
-
-                    HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
-                    string valueScore = score.InnerText;
-
-                    objname.Score = Int32.Parse(valueScore);
+                   
 
 
                 }
+
+                string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
+
+                HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
+                string valueScore = score.InnerText;
+
+                objname.Score = Int32.Parse(valueScore);
+
 
                 return objname;
 
