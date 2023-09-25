@@ -104,7 +104,7 @@ namespace BotCommands
                 
             }
             sb.AppendLine();
-            sb.AppendLine("Total score of Top20: " + totalScore.ToString() + " / " + sqdobj.totalRating);
+            sb.AppendLine("Total score of Top20: " + totalScore.ToString() + " / " + sqdobj.Score);
             string longContent = sb.ToString();
             await SendLongContentAsEmbedAsync(chnl, longContent);
         }

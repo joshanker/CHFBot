@@ -188,42 +188,20 @@ namespace Scraper
 
                     objname.AddPlayerTolist(newp);
 
+
+
+
+                    string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
+
+                    HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
+                    string valueScore = score.InnerText;
+
+                    objname.Score = Int32.Parse(valueScore);
+
+
                 }
 
                 return objname;
-
-
-                //objname.PrintSquadronInfo();
-
-                //if (rows != null)
-                //{
-                //    foreach (HtmlNode row in rows)
-                //    {
-                //        string name = row.SelectSingleNode(".//td[1]").InnerText.Trim();
-                //        string activity = row.SelectSingleNode(".//td[2]").InnerText.Trim();
-                //        string role = row.SelectSingleNode(".//td[3]").InnerText.Trim();
-                //        string rating = row.SelectSingleNode(".//td[4]").InnerText.Trim();
-                //        string dateOfEntry = row.SelectSingleNode(".//td[5]").InnerText.Trim();
-
-
-                //        Console.WriteLine("Name: " + name);
-                //        Console.WriteLine("Activity: " + activity);
-                //        Console.WriteLine("Role: " + role);
-                //        Console.WriteLine("Rating: " + rating);
-                //        Console.WriteLine("Date of Entry: " + dateOfEntry);
-                //        Console.WriteLine();
-
-                //        return "I hit the return in the if";
-                //    }
-                //}
-                //else
-                //{
-                //    Console.WriteLine("No data found.");
-                //    return "I hit the return in the else";
-                //}
-
-                //Console.ReadLine();
-
 
             }
         }
@@ -236,7 +214,6 @@ namespace Scraper
 
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(htmlContent);
-
 
                     string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
 

@@ -112,11 +112,7 @@ namespace CHFBot
                 {
                     await HandleJoinCommand(message);
                 }
-                //else if (content.StartsWith("!acad"))
-                //{
-                //    await HandleAcadCommand(message);
-                //}
-                else if (content.StartsWith("!scrapesquadron "))
+                 else if (content.StartsWith("!scrapesquadron "))
                 {
                     await HandleScrapeSquadronCommand(message);
                 }
@@ -220,7 +216,7 @@ namespace CHFBot
         //    //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
         //}
 
-        [CommandDescription("This might be the same as !totals... !scrapesquadron BofSs gives link, name, count, and each players' score")]
+        [CommandDescription("This might be the same as !totals... !scrapesquadron BofSs gives link, name, count, and each players' score. Doesn't give total score.")]
         private async Task HandleScrapeSquadronCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -261,6 +257,8 @@ namespace CHFBot
 
             if (input == "Cadet" || input == "BofSs" || input == "Academy")
             {
+                message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+
                 Commands scrapeAllAndPopulate = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
 
@@ -284,7 +282,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Gives player count, totals score, and each players' score.  Needs an input (!totals BofSs)")]
+        [CommandDescription("Gives player count, totals score, and each players' score.  Needs an input (!totals BofSs). Doesn't link to webpage.")]
         private async Task HandleTotalsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -402,7 +400,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Lists the top 20 players in the squadron and how many points they have.")]
+        [CommandDescription("Lists the top 20 players in the squadron and how many points they have. !top20 BofSs")]
         private async Task HandleTop20Command(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -410,6 +408,8 @@ namespace CHFBot
 
             if (input == "Cadet" || input == "BofSs" || input == "Academy")
             {
+                message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+
                 Commands scrapeAllAndPopulate = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
 
