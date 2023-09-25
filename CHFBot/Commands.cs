@@ -101,8 +101,7 @@ namespace BotCommands
                 Player player = top20Players[i];
                 sb.AppendLine($"{i + 1}. {player.PlayerName,-20} (Score: {player.PersonalClanRating})");
                 totalScore = totalScore + player.PersonalClanRating;
-                
-            }
+             }
             sb.AppendLine();
             sb.AppendLine("Total score of Top20: " + totalScore.ToString() + " / " + sqdobj.Score);
             string longContent = sb.ToString();

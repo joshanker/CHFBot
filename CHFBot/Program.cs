@@ -112,14 +112,14 @@ namespace CHFBot
                 {
                     await HandleJoinCommand(message);
                 }
-                 else if (content.StartsWith("!scrapesquadron "))
-                {
-                    await HandleScrapeSquadronCommand(message);
-                }
-                else if (content.StartsWith("!squadronsum "))
-                {
-                    await HandleSquadronSumCommand(message);
-                }
+                // else if (content.StartsWith("!scrapesquadron "))
+                //{
+                //    await HandleScrapeSquadronCommand(message);
+                //}
+                //else if (content.StartsWith("!squadronsum "))
+                //{
+                //    await HandleSquadronSumCommand(message);
+                //}
                 else if (content.StartsWith("!totals "))
                 {
                     await HandleTotalsCommand(message);
@@ -216,71 +216,71 @@ namespace CHFBot
         //    //await message.Channel.SendMessageAsync("End of squadron printout.").ConfigureAwait(true);
         //}
 
-        [CommandDescription("This might be the same as !totals... !scrapesquadron BofSs gives link, name, count, and each players' score. Doesn't give total score.")]
-        private async Task HandleScrapeSquadronCommand(SocketMessage message)
-        {
-            string content = message.Content.Trim();
-            string squadronName = content.Substring("!scrapesquadron ".Length);
+        //[CommandDescription("This might be the same as !totals... !scrapesquadron BofSs gives link, name, count, and each players' score. Doesn't give total score.")]
+        //private async Task HandleScrapeSquadronCommand(SocketMessage message)
+        //{
+        //    string content = message.Content.Trim();
+        //    string squadronName = content.Substring("!scrapesquadron ".Length);
 
-            if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
-            {
-                Commands scrapeAllAndPopulate = new Commands();
-                SquadronObj squadronObject = new SquadronObj();
+        //    if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
+        //    {
+        //        Commands scrapeAllAndPopulate = new Commands();
+        //        SquadronObj squadronObject = new SquadronObj();
 
-                squadronObject = scrapeAllAndPopulate.validateSquadron(squadronName);
+        //        squadronObject = scrapeAllAndPopulate.validateSquadron(squadronName);
 
-                squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+        //        squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
 
-                await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.url).ConfigureAwait(true);
+        //        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.url).ConfigureAwait(true);
 
-                var chnl = message.Channel as IMessageChannel; // 4
+        //        var chnl = message.Channel as IMessageChannel; // 4
 
-                await message.Channel.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
-                //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
-                await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
-                await chnl.SendMessageAsync("-");
+        //        await message.Channel.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+        //        //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+        //        await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+        //        await chnl.SendMessageAsync("-");
                 
 
-                scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
-            }
-        }
+        //        scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
+        //    }
+        //    else
+        //    {
+        //        await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+        //    }
+        //}
 
-        [CommandDescription("Gives a link to BofSs webpage and the total score of the squadron. (!squadronsum BofSs)")]
-        private async Task HandleSquadronSumCommand(SocketMessage message)
-        {
-            string content = message.Content.Trim();
-            string input = content.Substring("!squadronsum ".Length);
+        //[CommandDescription("Gives a link to BofSs webpage and the total score of the squadron. (!squadronsum BofSs)")]
+        //private async Task HandleSquadronSumCommand(SocketMessage message)
+        //{
+        //    string content = message.Content.Trim();
+        //    string input = content.Substring("!squadronsum ".Length);
 
-            if (input == "Cadet" || input == "BofSs" || input == "Academy")
-            {
-                message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+        //    if (input == "Cadet" || input == "BofSs" || input == "Academy")
+        //    {
+        //        message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
-                Commands scrapeAllAndPopulate = new Commands();
-                SquadronObj squadronObject = new SquadronObj();
+        //        Commands scrapeAllAndPopulate = new Commands();
+        //        SquadronObj squadronObject = new SquadronObj();
 
-                squadronObject = scrapeAllAndPopulate.validateSquadron(input);
+        //        squadronObject = scrapeAllAndPopulate.validateSquadron(input);
 
-                squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
+        //        squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
 
-                await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.url).ConfigureAwait(true);
+        //        await message.Channel.SendMessageAsync("Squadron  Name: " + squadronObject.SquadronName + ". \rSquadron URL: " + squadronObject.url).ConfigureAwait(true);
 
-                var chnl = message.Channel as IMessageChannel;
+        //        var chnl = message.Channel as IMessageChannel;
 
                 
                 
-                await chnl.SendMessageAsync("-");
+        //        await chnl.SendMessageAsync("-");
 
-                await chnl.SendMessageAsync("Total Score: " + squadronObject.Score.ToString());
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
-            }
-        }
+        //        await chnl.SendMessageAsync("Total Score: " + squadronObject.Score.ToString());
+        //    }
+        //    else
+        //    {
+        //        await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+        //    }
+        //}
 
         [CommandDescription("Gives player count, totals score, and each players' score.  Needs an input (!totals BofSs). Doesn't link to webpage.")]
         private async Task HandleTotalsCommand(SocketMessage message)
