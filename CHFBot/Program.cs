@@ -170,6 +170,7 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Currently unused")]
         private async Task HandleJoinCommand(SocketMessage message)
         {
             // Implementation for the !join command
@@ -290,6 +291,8 @@ namespace CHFBot
 
             if (input == "Cadet" || input == "BofSs" || input == "Academy")
             {
+                message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+
                 Commands scrapeAllAndPopulate = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
 
@@ -298,7 +301,7 @@ namespace CHFBot
                 squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
                 squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
                 var chnl = message.Channel as IMessageChannel;
-
+                                
                 await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
                 await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
                 await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());

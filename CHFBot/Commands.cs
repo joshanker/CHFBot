@@ -85,7 +85,7 @@ namespace BotCommands
             StringBuilder sb = new StringBuilder();
             foreach (Player player in sqdobj.Players)
             {
-                sb.AppendLine($"{player.Number}: {player.PlayerName,-20} SQB Points: {player.PersonalClanRating}");
+                sb.AppendLine($"{player.Number}: {player.PlayerName,-20} Pts: {player.PersonalClanRating}");
             }
             sqdobj.allsqd = sb.ToString();
             string longContent = sqdobj.allsqd;
@@ -327,7 +327,6 @@ namespace BotCommands
             return squadronObj;
         }
 
-
         public async Task CompareSquadronFiles(IMessageChannel chnl, string filePath1, string filePath2)
         {
             SquadronObj squadron1 = PopulateSquadronFromTextFile(filePath1);
@@ -397,7 +396,15 @@ namespace BotCommands
                 messageBuilder.AppendLine(string.Join("\n", leavers));
             }
 
-            await chnl.SendMessageAsync(messageBuilder.ToString());
+            if (messageBuilder.Length > 0)
+            {
+                await chnl.SendMessageAsync(messageBuilder.ToString());
+            }
+            else
+            {
+                await chnl.SendMessageAsync("No changes.");
+            }
+            
         }
 
         public async Task<List<String>> GeneratePlayerList(DiscordSocketClient _client, ulong channelId, List<string> playerList)
