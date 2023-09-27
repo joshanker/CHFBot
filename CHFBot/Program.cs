@@ -29,6 +29,7 @@ namespace CHFBot
     class Program
     {
         private DiscordSocketClient _client;
+        private readonly ulong EsperBotTestingChannel = 1133615880488628344;
         private readonly ulong generalChannel = 342132137064923136;
         private readonly ulong testingChannel = 1125693277295886357;
         private readonly string token = File.ReadAllText(@"token.txt");
@@ -74,15 +75,26 @@ namespace CHFBot
 
         private void SetupTimer()
         {
-            System.Timers.Timer timer = new System.Timers.Timer(10000 * 6 * 60); //one hour in milliseconds
+            System.Timers.Timer timer = new System.Timers.Timer(1000 * 60 * 2); //one hour in milliseconds
             timer.Elapsed += OnTimedEvent;
             timer.Start();
         }
 
         private async void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            Commands quote = new Commands();
-            // await quote.sendQuote(_client);
+            //Commands quote = new Commands();
+            //await quote.sendQuote(_client);
+            Commands command = new Commands();
+            //ulong id = 1125693277295886357; // 3
+            var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+            string quote = command.getQuote();
+            await chnl.SendMessageAsync(quote);
+
+            chnl.SendMessageAsync("test");
+            
+            
+            //await message.Channel.SendMessageAsync(quote);
+            
         }
 
         private async Task HandleCommandAsync(SocketMessage message)
@@ -138,8 +150,8 @@ namespace CHFBot
                 }
                 else if (content.StartsWith("!quote"))
                 {
-                    Commands getQuote = new Commands();
-                    string quote = getQuote.getQuote();
+                    Commands command = new Commands();
+                    string quote = command.getQuote();
                     await message.Channel.SendMessageAsync(quote);
                 }
                 else if (content.StartsWith("!compare "))

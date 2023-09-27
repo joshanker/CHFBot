@@ -42,14 +42,14 @@ namespace BotCommands
 
         public async Task sendQuote(DiscordSocketClient _client) // 1
         {
-            //DiscordSocketClient _client = new DiscordSocketClient(); // 2
+            
             ulong id = 1125693277295886357; // 3
             var chnl = _client.GetChannel(id) as IMessageChannel; // 4
-            //await chnl.SendMessageAsync("Announcement - testing an automated quote!"); // 5
+            
             Console.WriteLine("!quote called for by automated timer");
             Commands getQuote = new Commands();
             string quote = getQuote.getQuote();
-            //await message.Channel.SendMessageAsync(quote);
+            
             await chnl.SendMessageAsync(quote);
         }
 
