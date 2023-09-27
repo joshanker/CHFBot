@@ -30,8 +30,9 @@ namespace CHFBot
     {
         private DiscordSocketClient _client;
         private readonly ulong EsperBotTestingChannel = 1133615880488628344;
+        private readonly ulong DefaultTextChannel = 1133615880488628344;
         private readonly ulong generalChannel = 342132137064923136;
-        private readonly ulong testingChannel = 1125693277295886357;
+        private readonly ulong CadetTestingChannel = 1125693277295886357;
         private readonly string token = File.ReadAllText(@"token.txt");
 
         static void Main(string[] args)
@@ -49,6 +50,7 @@ namespace CHFBot
             ClearMessageCache();
             _client.Log += Log;
             _client.MessageReceived += HandleCommandAsync;
+            _client.UserVoiceStateUpdated += HandleVoiceStateUpdated;
 
             SetupTimer();
             Console.WriteLine("Timer is starting!");
@@ -75,7 +77,7 @@ namespace CHFBot
 
         private void SetupTimer()
         {
-            System.Timers.Timer timer = new System.Timers.Timer(1000 * 60 * 2); //one hour in milliseconds
+            System.Timers.Timer timer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
             timer.Elapsed += OnTimedEvent;
             timer.Start();
         }
@@ -96,6 +98,50 @@ namespace CHFBot
             //await message.Channel.SendMessageAsync(quote);
             
         }
+
+
+        private async Task HandleVoiceStateUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
+        {
+            var guild = (user as SocketGuildUser)?.Guild; // Get the guild associated with the user
+
+            // Check if the user has joined a voice channel
+            if (oldState.VoiceChannel == null && newState.VoiceChannel != null)
+            {
+                // User has joined a voice channel
+                // Find the text channel by name and send a message
+                var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
+                if (textChannel != null)
+                {
+                    await textChannel.SendMessageAsync($"{user.Username} has connected to the Discord and joined {newState.VoiceChannel.Name} at { DateTime.Now}");
+                }
+            }
+            // Check if the user has left a voice channel
+            else if (oldState.VoiceChannel != null && newState.VoiceChannel == null)
+            {
+                // User has left a voice channel
+                // Find the text channel by name and send a message
+                var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
+                if (textChannel != null)
+                {
+                    await textChannel.SendMessageAsync($"{user.Username} has signed off from {oldState.VoiceChannel.Name} at { DateTime.Now}");
+                }
+            }
+            // Check if the user has moved between voice channels
+            else if (oldState.VoiceChannel != newState.VoiceChannel)
+            {
+                // User has moved between voice channels
+                // Find the text channel by name and send a message
+                var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
+                if (textChannel != null)
+                {
+                    await textChannel.SendMessageAsync($"{user.Username} has moved from {oldState.VoiceChannel.Name} to {newState.VoiceChannel.Name} at {DateTime.Now}");
+                }
+            }
+        }
+
+
+
+
 
         private async Task HandleCommandAsync(SocketMessage message)
         {
