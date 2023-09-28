@@ -123,7 +123,7 @@ namespace CHFBot
                 var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
                 if (textChannel != null)
                 {
-                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username}) has signed off from {oldState.VoiceChannel.Name} ({oldState.VoiceChannel.Id}) at { DateTime.Now}");
+                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username})({user.Id}) has signed off from {oldState.VoiceChannel.Name} ({oldState.VoiceChannel.Id}) at { DateTime.Now}");
                 }
             }
             // Check if the user has moved between voice channels
