@@ -189,6 +189,10 @@ namespace CHFBot
                 {
                     await HandleTop20Command(message);
                 }
+                else if (content.StartsWith("!top20"))
+                {
+                    await HandleTop20NoArgCommand(message);
+                }
                 else if (content.StartsWith("!quote"))
                 {
                     Commands command = new Commands();
@@ -688,7 +692,12 @@ namespace CHFBot
             //await message.Channel.SendMessageAsync(response);
         }
 
-    
+        private async Task HandleTop20NoArgCommand(SocketMessage message)
+        {
+            await message.Channel.SendMessageAsync("Use Top20 BofSs.");
+        }
+
+
 
     }
 
