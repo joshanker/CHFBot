@@ -194,6 +194,15 @@ namespace BotCommands
             string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
             string EarlyUrl = "https://warthunder.com/en/community/claninfo/EARLY";
             string RO6Url = "https://warthunder.com/en/community/claninfo/Revenge%20of%20Six";
+            string AVR="https://warthunder.com/en/community/claninfo/AVANGARD";
+            string ILWI="https://warthunder.com/en/community/claninfo/LIGHTWAY";
+            string iNut="https://warthunder.com/en/community/claninfo/Team%20iNut";
+            string SKAL="https://warthunder.com/en/community/claninfo/SKAL%20-%20Pirates%20of%20the%s0North"; 
+            string NEURO="https://warthunder.com/en/community/claninfo/NEURO";
+            string LEDAC="https://warthunder.com/en/community/claninfo/La%20Legion%20d%20Acier";
+            string B0AR="https://warthunder.com/en/community/claninfo/MAD%20BOARS";
+            string SOFUA= "https://warthunder.com/en/community/claninfo/Welcome%20to%20Ukraine";
+
 
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
@@ -204,7 +213,16 @@ namespace BotCommands
                     { "BofSs", BofSsUrl },
                     { "Academy", AcademyUrl },
                     { "Early", EarlyUrl },
-                    { "RO6", RO6Url }
+                    { "RO6", RO6Url },
+                    { "AVR", AVR },
+                    { "ILWI", ILWI },
+                    { "iNut",  iNut},
+                    { "SKAL",  SKAL},
+                    { "NEURO",  NEURO},
+                    { "LEDAC",  LEDAC},
+                    { "B0AR",  B0AR},
+                    { "SOFUA", SOFUA }
+
                 };
 
             if (urlMap.ContainsKey(input))
