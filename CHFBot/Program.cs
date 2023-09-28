@@ -90,8 +90,10 @@ namespace CHFBot
             //ulong id = 1125693277295886357; // 3
             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             string quote = command.getQuote();
+            
+            
+            
             await chnl.SendMessageAsync(quote);
-
             chnl.SendMessageAsync("test");
             
             
@@ -108,33 +110,30 @@ namespace CHFBot
             if (oldState.VoiceChannel == null && newState.VoiceChannel != null)
             {
                 // User has joined a voice channel
-                // Find the text channel by name and send a message
                 var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
                 if (textChannel != null)
                 {
-                    await textChannel.SendMessageAsync($"{user.Username} has connected to the Discord and joined {newState.VoiceChannel.Name} at { DateTime.Now}");
+                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username}) ({user.Id}) has connected to the Discord and joined {newState.VoiceChannel.Name} ({newState.VoiceChannel.Id}) at {DateTime.Now}");
                 }
             }
             // Check if the user has left a voice channel
             else if (oldState.VoiceChannel != null && newState.VoiceChannel == null)
             {
                 // User has left a voice channel
-                // Find the text channel by name and send a message
                 var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
                 if (textChannel != null)
                 {
-                    await textChannel.SendMessageAsync($"{user.Username} has signed off from {oldState.VoiceChannel.Name} at { DateTime.Now}");
+                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username}) has signed off from {oldState.VoiceChannel.Name} ({oldState.VoiceChannel.Id}) at { DateTime.Now}");
                 }
             }
             // Check if the user has moved between voice channels
             else if (oldState.VoiceChannel != newState.VoiceChannel)
             {
                 // User has moved between voice channels
-                // Find the text channel by name and send a message
                 var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
                 if (textChannel != null)
                 {
-                    await textChannel.SendMessageAsync($"{user.Username} has moved from {oldState.VoiceChannel.Name} to {newState.VoiceChannel.Name} at {DateTime.Now}");
+                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username}) ({user.Id}) has moved from {oldState.VoiceChannel.Name} ({newState.VoiceChannel.Id}) to {newState.VoiceChannel.Name} ({newState.VoiceChannel.Id}) at {DateTime.Now}");
                 }
             }
         }
