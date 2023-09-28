@@ -466,7 +466,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string input = content.Substring("!top20 ".Length);
 
-            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            if (input == "Cadet" || input == "BofSs" || input == "Academy" || input == "Early" || input == "RO6")
             {
                 message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
@@ -489,7 +489,6 @@ namespace CHFBot
                 List<Player> top20Players = squadronObject.Players.OrderByDescending(p => p.PersonalClanRating).Take(20).ToList();
 
                Command.PrintTop20Players(chnl, squadronObject, top20Players);
-
 
             }
             else
@@ -694,7 +693,7 @@ namespace CHFBot
 
         private async Task HandleTop20NoArgCommand(SocketMessage message)
         {
-            await message.Channel.SendMessageAsync("Use Top20 BofSs.");
+            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter BofSs, Early, RO6... actually this command is in progress of being changed....");
         }
 
 

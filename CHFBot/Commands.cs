@@ -59,9 +59,7 @@ namespace BotCommands
             try
             {
                 Console.WriteLine("!scraping all and populating...");
-
-                //string url = "https://warthunder.com/en/community/claninfo/Cadet";
-                //string url = objname.url;
+                              
                 Webscraper scraper = new Webscraper();
                 objname = await scraper.ScrapeWebsiteAllAndPopulateAsync(objname);
                 //Console.WriteLine("Website all and populate.");
@@ -194,23 +192,27 @@ namespace BotCommands
             string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
             string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
             string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
+            string EarlyUrl = "https://warthunder.com/en/community/claninfo/EARLY";
+            string RO6Url = "https://warthunder.com/en/community/claninfo/Revenge%20of%20Six";
 
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
 
-            if (input == "Cadet")
+            var urlMap = new Dictionary<string, string>
+                {
+                    { "Cadet", cadetUrl },
+                    { "BofSs", BofSsUrl },
+                    { "Academy", AcademyUrl },
+                    { "Early", EarlyUrl },
+                    { "RO6", RO6Url }
+                };
+
+            if (urlMap.ContainsKey(input))
             {
-                url = cadetUrl;
+                url = urlMap[input];
             }
-            if (input == "BofSs")
-            {
-                url = BofSsUrl;
-            }
-            if (input == "Academy")
-            {
-                url = AcademyUrl;
-            }
-            if(url == "not yet set...")
+                        
+            if (url == "URL not yet set...")
             {
                 squadronObject.isValidSquadron = false;
                 return squadronObject;
