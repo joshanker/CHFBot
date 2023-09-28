@@ -138,10 +138,6 @@ namespace CHFBot
             }
         }
 
-
-
-
-
         private async Task HandleCommandAsync(SocketMessage message)
         {
             if (message.Author.IsBot)
@@ -644,10 +640,10 @@ namespace CHFBot
             string playerListString = string.Join("", itemsToJoin).ToString();
             //await message.Channel.SendMessageAsync($"Connected Players:\n{playerListString}");
 
-            string filePath = "C:\\Users\\josh1\\Desktop\\CHFBot\\CHFBot\\bin\\Debug\\PlayersToIDs.txt"; // Replace with the actual file path
+            //string filePath = "C:\\Users\\josh1\\Desktop\\CHFBot\\CHFBot\\bin\\Debug\\PlayersToIDs.txt"; // Replace with the actual file path
 
             await Task.Delay(1000);
-            commands.UpdatePlayerIDs(squadronObject, filePath);
+            commands.UpdatePlayerIDs(squadronObject);
             await Task.Delay(1000);
 
             StringBuilder responseBuilder = new StringBuilder();

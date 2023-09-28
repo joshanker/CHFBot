@@ -477,12 +477,12 @@ namespace BotCommands
         //        await chnl.SendMessageAsync(leaversMessage.ToString());
         //    }
         //}
-        public async Task UpdatePlayerIDs(SquadronObj squadronObject, string filePath)
+        public async Task UpdatePlayerIDs(SquadronObj squadronObject)
         {
             try
             {
                 // Read all lines from the file
-                string[] lines = await Task.Run(() => File.ReadAllLines(filePath));
+                string[] lines = await Task.Run(() => File.ReadAllLines("PlayersToIDs.txt"));
 
                 string currentPlayerName = null;
                 ulong currentPlayerID = 0;
