@@ -470,12 +470,12 @@ namespace CHFBot
             {
                 message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
-                Commands scrapeAllAndPopulate = new Commands();
+                Commands Command = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
 
-                squadronObject = scrapeAllAndPopulate.validateSquadron(input);
+                squadronObject = Command.validateSquadron(input);
 
-                squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject);
+                squadronObject = await Command.scrapeAllAndPopulate(squadronObject);
 
                 var chnl = message.Channel as IMessageChannel;
 
@@ -488,7 +488,7 @@ namespace CHFBot
                 // Sort players by score in descending order
                 List<Player> top20Players = squadronObject.Players.OrderByDescending(p => p.PersonalClanRating).Take(20).ToList();
 
-               scrapeAllAndPopulate.PrintTop20Players(chnl, squadronObject, top20Players);
+               Command.PrintTop20Players(chnl, squadronObject, top20Players);
 
 
             }
