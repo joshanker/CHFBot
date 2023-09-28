@@ -25,10 +25,6 @@ namespace Scraper
             // Constructor logic here
         }
 
-
-
-
-
         public async Task<string> ScrapeWebsiteAllAsync(string url)
         {
             using (HttpClient client = new HttpClient())
@@ -81,8 +77,6 @@ namespace Scraper
             }
         }
 
-
-
         public async Task<SquadronObj> ScrapeWebsiteAllAndPopulateAsync(SquadronObj objname)
         {
             using (HttpClient client = new HttpClient())
@@ -114,14 +108,6 @@ namespace Scraper
 
                     Player newp = new Player();
 
-                    //string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
-
-                    //string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/div";
-
-                    //HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
-                    //String plrname = node.InnerText.Trim('\n').Trim();
-                    //newp = objname.setName(newp, plrname);
-
                     string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
                     HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
 
@@ -130,7 +116,6 @@ namespace Scraper
                     // Check if the node's OuterHtml contains the email flag
                     if (node.OuterHtml.Contains("<span class=\"__cf_email__\""))
                     {
-
                         {
                             // Extract the player nickname from the URL part of OuterHtml
                             int index = node.OuterHtml.IndexOf("nick=");
@@ -143,14 +128,10 @@ namespace Scraper
                                     plrname = plrname.Substring(0, endIndex);
                                 }
                             }
-
                         }
-
                     }
 
                     newp = objname.setName(newp, plrname);
-
-
 
                     int j = i - 1;
                     string numXpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + j + "]";
@@ -188,7 +169,6 @@ namespace Scraper
 
                     objname.AddPlayerTolist(newp);
 
-
                 }
 
                 string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
@@ -197,7 +177,6 @@ namespace Scraper
                 string valueScore = score.InnerText;
 
                 objname.Score = Int32.Parse(valueScore);
-
 
                 return objname;
 
@@ -226,9 +205,6 @@ namespace Scraper
                     int number = Int32.Parse(digitsOnly);
                    
                     return sqdobj;
-
-
-
 
                 }
 

@@ -460,7 +460,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Lists the top 20 players in the squadron and how many points they have. !top20 BofSs")]
+        [CommandDescription("Lists the top 20 players in any of the top 10 squadrons and how many points they have.")]
         private async Task HandleTop20Command(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -693,7 +693,7 @@ namespace CHFBot
 
         private async Task HandleTop20NoArgCommand(SocketMessage message)
         {
-            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter BofSs, Early, RO6... actually this command is in progress of being changed....");
+            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\"... actually this command is in progress of being changed....");
         }
 
 

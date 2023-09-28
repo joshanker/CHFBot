@@ -126,14 +126,6 @@ namespace BotCommands
 
             await chnl.SendMessageAsync("Total Squadron Score: " + sqdobj.totalRating);
 
-
-            //var embedBuilder = new EmbedBuilder();
-            //embedBuilder.Description = sqdobj.allsqd;
-
-
-            //await chnl.SendMessageAsync(embed: embedBuilder.Build());
-            //await chnl.SendMessageAsync(sqdobj.allsqd);
-
         }
 
         public async Task SendLongContentAsEmbedAsync(IMessageChannel channel, string content)
@@ -203,7 +195,6 @@ namespace BotCommands
             string B0AR="https://warthunder.com/en/community/claninfo/MAD%20BOARS";
             string SOFUA= "https://warthunder.com/en/community/claninfo/Welcome%20to%20Ukraine";
 
-
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
 
@@ -222,7 +213,6 @@ namespace BotCommands
                     { "LEDAC",  LEDAC},
                     { "B0AR",  B0AR},
                     { "SOFUA", SOFUA }
-
                 };
 
             if (urlMap.ContainsKey(input))
@@ -230,7 +220,7 @@ namespace BotCommands
                 url = urlMap[input];
             }
                         
-            if (url == "URL not yet set...")
+            if (url == "not yet set...")
             {
                 squadronObject.isValidSquadron = false;
                 return squadronObject;
@@ -246,7 +236,6 @@ namespace BotCommands
 
         public async Task<SquadronObj> populateScore(SquadronObj sqdobj)
         {
-            
                 try
                 {
                     Console.WriteLine("Populating score...");
@@ -448,9 +437,6 @@ namespace BotCommands
                     }
                 }
 
-                // Join the usernames into a single string
-               // playerList.Add(String.Join(", ", playerList));
-
                 // Fetch the text channel for sending the message
                 ulong textChannelId = (ulong)1133615880488628344;
                 ITextChannel textChannel = _client.GetChannel(textChannelId) as ITextChannel;
@@ -474,29 +460,6 @@ namespace BotCommands
             }
         }
 
-        //private async Task SendJoinersAndLeaversAsync(IMessageChannel chnl, List<string> joiners, List<string> leavers)
-        //{
-        //    // Create and send the messages
-        //    if (joiners.Count > 0)
-        //    {
-        //        StringBuilder joinersMessage = new StringBuilder("New joiners:\n");
-        //        foreach (string joiner in joiners)
-        //        {
-        //            joinersMessage.AppendLine(joiner);
-        //        }
-        //        await chnl.SendMessageAsync(joinersMessage.ToString());
-        //    }
-
-        //    if (leavers.Count > 0)
-        //    {
-        //        StringBuilder leaversMessage = new StringBuilder("Leavers:\n");
-        //        foreach (string leaver in leavers)
-        //        {
-        //            leaversMessage.AppendLine(leaver);
-        //        }
-        //        await chnl.SendMessageAsync(leaversMessage.ToString());
-        //    }
-        //}
         public async Task UpdatePlayerIDs(SquadronObj squadronObject)
         {
             try
@@ -541,9 +504,6 @@ namespace BotCommands
                 Console.WriteLine($"An error occurred while updating player IDs: {ex.Message}");
             }
         }
-
-
-
 
 
     }
