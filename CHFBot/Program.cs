@@ -104,6 +104,11 @@ namespace CHFBot
         {
             var guild = (user as SocketGuildUser)?.Guild; // Get the guild associated with the user
 
+            if (trackVoiceUpdates == false) 
+            {
+                return;
+            }
+
             // Check if the user has joined a voice channel
             if (oldState.VoiceChannel == null && newState.VoiceChannel != null)
             {
