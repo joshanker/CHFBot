@@ -34,6 +34,7 @@ namespace CHFBot
         private readonly ulong generalChannel = 342132137064923136;
         private readonly ulong CadetTestingChannel = 1125693277295886357;
         private readonly string token = File.ReadAllText(@"token.txt");
+        public bool trackVoiceUpdates = false;
 
         static void Main(string[] args)
         {
@@ -92,7 +93,7 @@ namespace CHFBot
             string quote = command.getQuote();
             
             await chnl.SendMessageAsync(quote);
-            chnl.SendMessageAsync("test");
+            //chnl.SendMessageAsync("test");
             
             //await message.Channel.SendMessageAsync(quote);
             
@@ -120,7 +121,7 @@ namespace CHFBot
                 var textChannel = guild?.TextChannels.FirstOrDefault(x => x.Name == "esper-bot-testing");
                 if (textChannel != null)
                 {
-                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username})({user.Id}) has signed off from {oldState.VoiceChannel.Name} ({oldState.VoiceChannel.Id}) at { DateTime.Now}");
+                    await textChannel.SendMessageAsync($"{guild.GetUser(user.Id).Nickname} ({user.Username})({user.Id}) has signed off from {oldState.VoiceChannel.Name} ({oldState.VoiceChannel.Id}) at {DateTime.Now}");
                 }
             }
             // Check if the user has moved between voice channels
@@ -270,6 +271,10 @@ namespace CHFBot
                 else if (content.StartsWith("!help"))
                 {
                     await HandleCommandsCommand(message);
+                }
+                else if (content.StartsWith("!trackvoiceupdates"))
+                {
+                    await HandleTrackVoiceUpdatesCommand(message);
                 }
                 else
                 {
@@ -744,6 +749,28 @@ namespace CHFBot
         {
             await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\"... actually this command is in progress of being changed....");
         }
+
+        [CommandDescription("turns on and off login/logoff/move notifications.")]
+        private async Task HandleTrackVoiceUpdatesCommand(SocketMessage message)
+        {
+            if (message.Content == "!trackvoiceupdates on")
+            {
+                trackVoiceUpdates = true;
+                await message.Channel.SendMessageAsync("OK, turning on voice channel update tracking.");
+            }
+
+            else if (message.Content == "!trackvoiceupdates off")
+            {
+                trackVoiceUpdates = false;
+                await message.Channel.SendMessageAsync("OK, turning off voice channel update tracking.");
+            }
+            else
+            {
+               await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\"");
+            }
+
+        }
+
 
 
 
