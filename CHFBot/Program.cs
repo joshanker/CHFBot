@@ -91,11 +91,8 @@ namespace CHFBot
             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             string quote = command.getQuote();
             
-            
-            
             await chnl.SendMessageAsync(quote);
             chnl.SendMessageAsync("test");
-            
             
             //await message.Channel.SendMessageAsync(quote);
             
@@ -140,6 +137,61 @@ namespace CHFBot
 
         private async Task HandleCommandAsync(SocketMessage message)
         {
+            if (message.Channel.Name == "esper-bot-testing")
+            {
+                string content = message.Content.Trim();
+                
+                if (message.Embeds.Any())
+                {
+                    var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+                    //message.Channel.SendMessageAsync($"OK, triggering Embeds");
+                    Console.WriteLine("embed detected!");
+
+                    chnl.SendMessageAsync("I have detected an Embed.");
+                 var embed2 = message.Embeds.First();
+                    string title = embed2.Title;
+                    string desc = embed2.Description;
+                    chnl.SendMessageAsync($"{embed2.Description}");    
+                    // Loop through each embed in the message
+                    foreach (var embed in message.Embeds)
+                    {
+                        // Check if the embed has a title
+                        if (!string.IsNullOrEmpty(embed.Title))
+                        {
+                            // Check if the title contains specific text
+                            if (embed.Title.Contains("Squadron gained"))
+                            {
+                                await message.Channel.SendMessageAsync("I have detected a win.");
+                                //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+                                chnl.SendMessageAsync("success - We won a game.");
+
+                            }
+                            else if (embed.Title.Contains("Squadron lost"))
+                            {
+                                await message.Channel.SendMessageAsync("I have detected a loss.");
+                                //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+                                chnl.SendMessageAsync("success - We lost a game.");
+                            }
+                        }
+                    }
+                }
+
+                else if (content.StartsWith("Squadron lost"))
+                {
+                    await message.Channel.SendMessageAsync("I have detected a loss.");
+                    Console.WriteLine($"Loss Detected.");
+                    var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+                }
+                else
+                {
+                    Console.WriteLine("No matching command detected in sre-score-tracking.");
+                }
+            }
+
+
             if (message.Author.IsBot)
                 return;
 
@@ -641,10 +693,7 @@ namespace CHFBot
 
             string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
             string playerListString = string.Join("", itemsToJoin).ToString();
-            //await message.Channel.SendMessageAsync($"Connected Players:\n{playerListString}");
-
-            //string filePath = "C:\\Users\\josh1\\Desktop\\CHFBot\\CHFBot\\bin\\Debug\\PlayersToIDs.txt"; // Replace with the actual file path
-
+       
             await Task.Delay(1000);
             commands.UpdatePlayerIDs(squadronObject);
             await Task.Delay(1000);
