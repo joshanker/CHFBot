@@ -37,6 +37,13 @@ namespace CHFBot
         public bool trackVoiceUpdates = false;
         int winCounter = 0;
         int lossCounter = 0;
+        public bool quotes = false;
+        System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
+        System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
+        System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
+        System.Timers.Timer tDailyTimer = new System.Timers.Timer(24 * 60 * 60 * 1000); // 24 hours in milliseconds
+
+
 
         static void Main(string[] args)
         {
@@ -80,8 +87,9 @@ namespace CHFBot
 
         private void SetupTimer()
         {
-            System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
+            
             hourlyTimer.Elapsed += OnHourlyEvent;
+            hourlyTimer.AutoReset = false;
 
             // Calculate the time until 4:30 AM tomorrow
             DateTime now = DateTime.Now;
@@ -95,8 +103,9 @@ namespace CHFBot
 
             double interval = (targetTime - now).TotalMilliseconds;
 
-            System.Timers.Timer dailyTimer = new System.Timers.Timer(interval);
+            
             dailyTimer.Elapsed += OnDailyEvent;
+            dailyTimer.AutoReset = false;
 
             // Calculate the time until 19:00 tomorrow
             DateTime midNow = DateTime.Now;
@@ -110,40 +119,86 @@ namespace CHFBot
 
             double midInterval = (midTargetTime - midNow).TotalMilliseconds;
 
-            System.Timers.Timer midDailyTimer = new System.Timers.Timer(midInterval);
+            
             midDailyTimer.Elapsed += OnMidDailyEvent;
+            midDailyTimer.AutoReset = false;
+
+
+
+
+
+            // Calculate the time until 1:27 AM tomorrow
+            DateTime tNow = DateTime.Now;
+            DateTime tTargetTime = new DateTime(tNow.Year, tNow.Month, tNow.Day, 1, 31, 0);
+
+            if (tNow > tTargetTime)
+            {
+                // If it's already past 1:27 AM, schedule for the next day
+                tTargetTime = tTargetTime.AddDays(1);
+            }
+
+            //double tInterval = (tTargetTime - tNow).TotalMilliseconds;
+            
+            tDailyTimer.Elapsed += tOnDailyEvent;
+            tDailyTimer.AutoReset = false;
+
+
+
 
 
             dailyTimer.Start();
             hourlyTimer.Start();
             midDailyTimer.Start();
+            tDailyTimer.Start();
         }
 
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
         {
              Commands command = new Commands();
              var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-             string quote = command.getQuote();
-           
-             await chnl.SendMessageAsync(quote);
-         }
 
+            if (quotes == true)
+            {
+                string quote = command.getQuote();
+                await chnl.SendMessageAsync(quote);
+            }
+
+            
+            hourlyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            hourlyTimer.Start();
+        }
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             await chnl.SendMessageAsync("Should be 4:15 AM!");
+            await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
-            chnl.SendMessageAsync("Win and Loss counters reset. (" +winCounter + "/" + lossCounter + ").");
+            chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            dailyTimer.Start();
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+            
             await chnl.SendMessageAsync("Should be 19:00!");
+            await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
-            chnl.SendMessageAsync("Midday Win and Loss counters reset. (" + winCounter + "/" + lossCounter + ").");
+            chnl.SendMessageAsync("Midday Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            midDailyTimer.Start();
         }
+
+        private async void tOnDailyEvent(object source, ElapsedEventArgs e)
+        {
+            var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+            await chnl.SendMessageAsync("I think it's 1:27.");
+            tDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            tDailyTimer.Start();
+        }
+
 
 
         private async Task HandleVoiceStateUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
@@ -293,9 +348,13 @@ namespace CHFBot
                 }
                 else if (content.StartsWith("!quote"))
                 {
-                    Commands command = new Commands();
-                    string quote = command.getQuote();
-                    await message.Channel.SendMessageAsync(quote);
+                    if (content == "!quote")
+                    {
+                        Commands command = new Commands();
+                        string quote = command.getQuote();
+                        await message.Channel.SendMessageAsync(quote);
+                    }
+                                        
                 }
                 else if (content.StartsWith("!compare "))
                 {
@@ -320,6 +379,14 @@ namespace CHFBot
                 else if (content.StartsWith("!trackvoiceupdates"))
                 {
                     await HandleTrackVoiceUpdatesCommand(message);
+                }
+                else if (content.StartsWith("!turnquotes"))
+                {
+                    await HandleTurnQuotesCommand(message);
+                }
+                else if (content.StartsWith("!winlosscount"))
+                {
+                    await HandleWinlossCountCommand(message);
                 }
                 else
                 {
@@ -816,6 +883,42 @@ namespace CHFBot
             }
 
         }
+
+        [CommandDescription("Displays the win/loss counts for this SRE session.")]
+        private async Task HandleWinlossCountCommand(SocketMessage message)
+        {
+            if (message.Content == "!winlosscount")
+            {
+               await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+            }
+
+
+        }
+
+
+        [CommandDescription("turns on and off hourly Quotes.")]
+        private async Task HandleTurnQuotesCommand(SocketMessage message)
+        {
+            if (message.Content == "!turnquotes on")
+            {
+                quotes = true;
+                await message.Channel.SendMessageAsync("OK, turning on hourly quotes.");
+            }
+
+            else if (message.Content == "!turnquotes off")
+            {
+                quotes = false;
+                await message.Channel.SendMessageAsync("OK, turning off hourly quotes.");
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of quotes is: " + quotes.ToString());
+
+            }
+        }
+
+
+            
 
 
 
