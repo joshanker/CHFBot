@@ -108,14 +108,15 @@ namespace CHFBot
                 midTargetTime = midTargetTime.AddDays(1);
             }
 
-            double interval = (midTargetTime - midNow).TotalMilliseconds;
+            double midInterval = (midTargetTime - midNow).TotalMilliseconds;
 
-            System.Timers.Timer midDailyTimer = new System.Timers.Timer(interval);
+            System.Timers.Timer midDailyTimer = new System.Timers.Timer(midInterval);
             midDailyTimer.Elapsed += OnMidDailyEvent;
 
 
             dailyTimer.Start();
-            timer.Start();
+            hourlyTimer.Start();
+            midDailyTimer.Start();
         }
 
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
