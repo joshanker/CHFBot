@@ -143,7 +143,7 @@ namespace CHFBot
 
         private async Task HandleCommandAsync(SocketMessage message)
         {
-            if (message.Channel.Name == "esper-bot-testing")
+            if (message.Channel.Name == "esper-bot-testing" || message.Channel.Name == "sre-score-tracking")
             {
                 string content = message.Content.Trim();
                 
@@ -158,7 +158,7 @@ namespace CHFBot
                  var embed2 = message.Embeds.First();
                     string title = embed2.Title;
                     string desc = embed2.Description;
-                    chnl.SendMessageAsync($"{embed2.Description}");    
+                    chnl.SendMessageAsync($"Description: {embed2.Description}");    
                     // Loop through each embed in the message
                     foreach (var embed in message.Embeds)
                     {
@@ -178,22 +178,15 @@ namespace CHFBot
                             {
                                 await message.Channel.SendMessageAsync("I have detected a loss.");
                                 //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-
+                                Console.WriteLine($"Loss Detected.");
                                 chnl.SendMessageAsync("success - We lost a game.");
                             }
                         }
                     }
                 }
-
-                else if (content.StartsWith("Squadron lost"))
-                {
-                    await message.Channel.SendMessageAsync("I have detected a loss.");
-                    Console.WriteLine($"Loss Detected.");
-                    var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-                }
                 else
                 {
-                    Console.WriteLine("No matching command detected in sre-score-tracking.");
+                    Console.WriteLine("No matching embeds detected in sre-score-tracking.");
                 }
             }
 
@@ -771,7 +764,8 @@ namespace CHFBot
             }
             else
             {
-               await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\"");
+               await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  The current status of tracking Voice Channel User Updates is: " + trackVoiceUpdates.ToString());
+
             }
 
         }
