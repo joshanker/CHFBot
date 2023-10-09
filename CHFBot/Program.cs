@@ -80,25 +80,68 @@ namespace CHFBot
 
         private void SetupTimer()
         {
-            System.Timers.Timer timer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
-            timer.Elapsed += OnTimedEvent;
+            System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
+            hourlyTimer.Elapsed += OnHourlyEvent;
+
+            // Calculate the time until 4:30 AM tomorrow
+            DateTime now = DateTime.Now;
+            DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 4, 30, 0);
+
+            if (now > targetTime)
+            {
+                // If it's already past 4:30 AM, schedule for the next day
+                targetTime = targetTime.AddDays(1);
+            }
+
+            double interval = (targetTime - now).TotalMilliseconds;
+
+            System.Timers.Timer dailyTimer = new System.Timers.Timer(interval);
+            dailyTimer.Elapsed += OnDailyEvent;
+
+            // Calculate the time until 19:00 tomorrow
+            DateTime midNow = DateTime.Now;
+            DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
+
+            if (midNow > midTargetTime)
+            {
+                // If it's already past 19:00, schedule for the next day
+                midTargetTime = midTargetTime.AddDays(1);
+            }
+
+            double interval = (midTargetTime - midNow).TotalMilliseconds;
+
+            System.Timers.Timer midDailyTimer = new System.Timers.Timer(interval);
+            midDailyTimer.Elapsed += OnMidDailyEvent;
+
+
+            dailyTimer.Start();
             timer.Start();
         }
 
-        private async void OnTimedEvent(object source, ElapsedEventArgs e)
+        private async void OnHourlyEvent(object source, ElapsedEventArgs e)
         {
-            //Commands quote = new Commands();
-            //await quote.sendQuote(_client);
-            Commands command = new Commands();
-            //ulong id = 1125693277295886357; // 3
+             Commands command = new Commands();
+             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+             string quote = command.getQuote();
+           
+             await chnl.SendMessageAsync(quote);
+         }
+
+        private async void OnDailyEvent(object source, ElapsedEventArgs e)
+        {
             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            string quote = command.getQuote();
-            
-            await chnl.SendMessageAsync(quote);
-            //chnl.SendMessageAsync("test");
-            
-            //await message.Channel.SendMessageAsync(quote);
-            
+            await chnl.SendMessageAsync("Should be 4:15 AM!");
+            winCounter = 0;
+            lossCounter = 0;
+            chnl.SendMessageAsync("Win and Loss counters reset. (" +winCounter + "/" + lossCounter + ").");
+        }
+        private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
+        {
+            var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+            await chnl.SendMessageAsync("Should be 19:00!");
+            winCounter = 0;
+            lossCounter = 0;
+            chnl.SendMessageAsync("Midday Win and Loss counters reset. (" + winCounter + "/" + lossCounter + ").");
         }
 
 
