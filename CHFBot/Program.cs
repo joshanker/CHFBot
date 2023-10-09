@@ -35,6 +35,8 @@ namespace CHFBot
         private readonly ulong CadetTestingChannel = 1125693277295886357;
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
+        int winCounter = 0;
+        int lossCounter = 0;
 
         static void Main(string[] args)
         {
@@ -168,18 +170,20 @@ namespace CHFBot
                             // Check if the title contains specific text
                             if (embed.Title.Contains("Squadron gained"))
                             {
-                                await message.Channel.SendMessageAsync("I have detected a win.");
+                                winCounter++;
+                                await message.Channel.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter);
                                 //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-
-                                chnl.SendMessageAsync("success - We won a game.");
-
+                                //chnl.SendMessageAsync($"Description: {embed2.Description}");
+                                //chnl.SendMessageAsync("success - We won a game.);
                             }
                             else if (embed.Title.Contains("Squadron lost"))
                             {
-                                await message.Channel.SendMessageAsync("I have detected a loss.");
+                                lossCounter++;
+                                await message.Channel.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
                                 //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-                                Console.WriteLine($"Loss Detected.");
-                                chnl.SendMessageAsync("success - We lost a game.");
+                                //Console.WriteLine($"Loss Detected.");
+                                //chnl.SendMessageAsync("success - We lost a game. This makes us \" + winCounter + \"and \" + lossCounter");
+                                
                             }
                         }
                     }
@@ -189,7 +193,6 @@ namespace CHFBot
                     Console.WriteLine("No matching embeds detected in sre-score-tracking.");
                 }
             }
-
 
             if (message.Author.IsBot)
                 return;
@@ -764,7 +767,7 @@ namespace CHFBot
             }
             else
             {
-               await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  The current status of tracking Voice Channel User Updates is: " + trackVoiceUpdates.ToString());
+               await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of tracking Voice Channel User Updates is: " + trackVoiceUpdates.ToString());
 
             }
 
