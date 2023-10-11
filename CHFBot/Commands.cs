@@ -418,6 +418,7 @@ namespace BotCommands
 
         public async Task<List<String>> GeneratePlayerList(DiscordSocketClient _client, ulong channelId, List<string> playerList)
         {
+            await Task.Yield();
             // Fetch the voice channel using its ID
             var voiceChannel = _client.GetChannel(channelId) as SocketVoiceChannel;
 

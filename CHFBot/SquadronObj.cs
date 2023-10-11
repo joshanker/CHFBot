@@ -57,7 +57,7 @@ namespace SquadronObjects
         {
             SquadronName = squadronName;
             Players = new List<Player>();
-            url = url;
+            //url = url;
         }
             
             public Player setName(Player p, string n)

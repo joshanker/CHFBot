@@ -41,10 +41,7 @@ namespace CHFBot
         System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
-        System.Timers.Timer tDailyTimer = new System.Timers.Timer(24 * 60 * 60 * 1000); // 24 hours in milliseconds
-
-
-
+        
         static void Main(string[] args)
         {
             new Program().RunBotAsync().GetAwaiter().GetResult();
@@ -88,68 +85,65 @@ namespace CHFBot
         private void SetupTimer()
         {
             
-            hourlyTimer.Elapsed += OnHourlyEvent;
+            //hourlyTimer.Elapsed += OnHourlyEvent;
             hourlyTimer.AutoReset = false;
 
-            // Calculate the time until 4:30 AM tomorrow
-            DateTime now = DateTime.Now;
-            DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 4, 30, 0);
+            //// Calculate the time until 4:30 AM tomorrow
+            //DateTime now = DateTime.Now;
+            //DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 4, 30, 0);
 
-            if (now > targetTime)
-            {
-                // If it's already past 4:30 AM, schedule for the next day
-                targetTime = targetTime.AddDays(1);
-            }
+            //if (now > targetTime)
+            //{
+            //    // If it's already past 4:30 AM, schedule for the next day
+            //    targetTime = targetTime.AddDays(1);
+            //}
+            //double interval = (targetTime - now).TotalMilliseconds;
+                        
+            //dailyTimer.Elapsed += OnDailyEvent;
+            //dailyTimer.AutoReset = false;
 
-            double interval = (targetTime - now).TotalMilliseconds;
+
+            //// Calculate the time until 19:00 tomorrow
+            //DateTime midNow = DateTime.Now;
+            //DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
+
+            //if (midNow > midTargetTime)
+            //{
+            //    // If it's already past 19:00, schedule for the next day
+            //    midTargetTime = midTargetTime.AddDays(1);
+            //}
+
+            //double midInterval = (midTargetTime - midNow).TotalMilliseconds;
 
             
-            dailyTimer.Elapsed += OnDailyEvent;
-            dailyTimer.AutoReset = false;
-
-            // Calculate the time until 19:00 tomorrow
-            DateTime midNow = DateTime.Now;
-            DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
-
-            if (midNow > midTargetTime)
-            {
-                // If it's already past 19:00, schedule for the next day
-                midTargetTime = midTargetTime.AddDays(1);
-            }
-
-            double midInterval = (midTargetTime - midNow).TotalMilliseconds;
-
-            
-            midDailyTimer.Elapsed += OnMidDailyEvent;
-            midDailyTimer.AutoReset = false;
+            //midDailyTimer.Elapsed += OnMidDailyEvent;
+            //midDailyTimer.AutoReset = false;
 
 
 
 
 
             // Calculate the time until 1:27 AM tomorrow
-            DateTime tNow = DateTime.Now;
-            DateTime tTargetTime = new DateTime(tNow.Year, tNow.Month, tNow.Day, 1, 31, 0);
+            //DateTime tNow = DateTime.Now;
+            //DateTime tTargetTime = new DateTime(tNow.Year, tNow.Month, tNow.Day, 1, 31, 0);
 
-            if (tNow > tTargetTime)
-            {
-                // If it's already past 1:27 AM, schedule for the next day
-                tTargetTime = tTargetTime.AddDays(1);
-            }
+            //if (tNow > tTargetTime)
+            //{
+            //     If it's already past 1:27 AM, schedule for the next day
+            //    tTargetTime = tTargetTime.AddDays(1);
+            //}
 
             //double tInterval = (tTargetTime - tNow).TotalMilliseconds;
             
-            tDailyTimer.Elapsed += tOnDailyEvent;
-            tDailyTimer.AutoReset = false;
-
-
+            //tDailyTimer.Elapsed += tOnDailyEvent;
+            //tDailyTimer.AutoReset = false;
 
 
 
             dailyTimer.Start();
             hourlyTimer.Start();
             midDailyTimer.Start();
-            tDailyTimer.Start();
+            //tDailyTimer.Start();
         }
 
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
@@ -162,8 +156,7 @@ namespace CHFBot
                 string quote = command.getQuote();
                 await chnl.SendMessageAsync(quote);
             }
-
-            
+                        
             hourlyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             hourlyTimer.Start();
         }
@@ -174,7 +167,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
-            chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
         }
@@ -186,7 +179,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
-            chnl.SendMessageAsync("Midday Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            await chnl.SendMessageAsync("Midday Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
         }
@@ -195,10 +188,9 @@ namespace CHFBot
         {
             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             await chnl.SendMessageAsync("I think it's 1:27.");
-            tDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-            tDailyTimer.Start();
+            //tDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+           // tDailyTimer.Start();
         }
-
 
 
         private async Task HandleVoiceStateUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
@@ -244,53 +236,13 @@ namespace CHFBot
 
         private async Task HandleCommandAsync(SocketMessage message)
         {
-            if (message.Channel.Name == "esper-bot-testing" || message.Channel.Name == "sre-score-tracking")
+
+            string content = message.Content.Trim();
+
+            if (message.Channel.Name == "sre-score-tracking")
             {
-                string content = message.Content.Trim();
-                
-                if (message.Embeds.Any())
-                {
-                    var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-
-                    //message.Channel.SendMessageAsync($"OK, triggering Embeds");
-                    Console.WriteLine("embed detected!");
-
-                    chnl.SendMessageAsync("I have detected an Embed.");
-                 var embed2 = message.Embeds.First();
-                    string title = embed2.Title;
-                    string desc = embed2.Description;
-                    chnl.SendMessageAsync($"Description: {embed2.Description}");    
-                    // Loop through each embed in the message
-                    foreach (var embed in message.Embeds)
-                    {
-                        // Check if the embed has a title
-                        if (!string.IsNullOrEmpty(embed.Title))
-                        {
-                            // Check if the title contains specific text
-                            if (embed.Title.Contains("Squadron gained"))
-                            {
-                                winCounter++;
-                                await message.Channel.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter);
-                                //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-                                //chnl.SendMessageAsync($"Description: {embed2.Description}");
-                                //chnl.SendMessageAsync("success - We won a game.);
-                            }
-                            else if (embed.Title.Contains("Squadron lost"))
-                            {
-                                lossCounter++;
-                                await message.Channel.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
-                                //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-                                //Console.WriteLine($"Loss Detected.");
-                                //chnl.SendMessageAsync("success - We lost a game. This makes us \" + winCounter + \"and \" + lossCounter");
-                                
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No matching embeds detected in sre-score-tracking.");
-                }
+                await HandleSreScoreTrackingMessage(message);
+                await HandleSreScoreTrackingMessage(message);
             }
 
             if (message.Author.IsBot)
@@ -298,8 +250,6 @@ namespace CHFBot
 
             if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general" || message.Channel.Name == "esper-bot-testing")
             {
-                string content = message.Content.Trim();
-
                 if (content.StartsWith("!hello"))
                 {
                     await message.Channel.SendMessageAsync("Well hi there.");
@@ -393,6 +343,53 @@ namespace CHFBot
                     Console.WriteLine("No matching command detected.");
                 }
 
+            }
+        }
+
+        private async Task HandleSreScoreTrackingMessage(SocketMessage message)
+        {
+            if (message.Embeds.Any())
+            {
+                var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+                //message.Channel.SendMessageAsync($"OK, triggering Embeds");
+                //Console.WriteLine("embed detected!");
+                //chnl.SendMessageAsync("I have detected an Embed.");
+
+                var embed2 = message.Embeds.First();
+                string title = embed2.Title;
+                string desc = embed2.Description;
+                await chnl.SendMessageAsync($"Description: {embed2.Description}");
+                // Loop through each embed in the message
+                foreach (var embed in message.Embeds)
+                {
+                    // Check if the embed has a title
+                    if (!string.IsNullOrEmpty(embed.Title))
+                    {
+                        // Check if the title contains specific text
+                        if (embed.Title.Contains("Squadron gained"))
+                        {
+                            winCounter++;
+                            await message.Channel.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter + ".");
+                            //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+                            //chnl.SendMessageAsync($"Description: {embed2.Description}");
+                            //chnl.SendMessageAsync("success - We won a game.);
+                        }
+                        else if (embed.Title.Contains("Squadron lost"))
+                        {
+                            lossCounter++;
+                            await message.Channel.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
+                            //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+                            //Console.WriteLine($"Loss Detected.");
+                            //chnl.SendMessageAsync("success - We lost a game. This makes us \" + winCounter + \"and \" + lossCounter");
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("No matching embeds detected in sre-score-tracking.");
             }
         }
 
@@ -517,7 +514,7 @@ namespace CHFBot
 
             if (input == "Cadet" || input == "BofSs" || input == "Academy")
             {
-                message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+                await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
                 Commands scrapeAllAndPopulate = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
@@ -637,7 +634,7 @@ namespace CHFBot
 
             if (new[] { "Cadet", "BofSs", "Academy", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "B0AR", "SOFUA" }.Contains(input))
             {
-                message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+                await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
                 Commands Command = new Commands();
                 SquadronObj squadronObject = new SquadronObj();
@@ -657,7 +654,7 @@ namespace CHFBot
                 // Sort players by score in descending order
                 List<Player> top20Players = squadronObject.Players.OrderByDescending(p => p.PersonalClanRating).Take(20).ToList();
 
-               Command.PrintTop20Players(chnl, squadronObject, top20Players);
+               await Command.PrintTop20Players(chnl, squadronObject, top20Players);
 
             }
             else
@@ -783,7 +780,7 @@ namespace CHFBot
         [CommandDescription("Who is online and how many points do they have? If it says player not found, give the player name and Discord ID to Esper.")]
         private async Task HandleQpointsCommand(SocketMessage message)
         {
-            message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
             Commands commands = new Commands();
             //Commands scrapeAllAndPopulate = new Commands();
@@ -812,7 +809,7 @@ namespace CHFBot
             string playerListString = string.Join("", itemsToJoin).ToString();
        
             await Task.Delay(1000);
-            commands.UpdatePlayerIDs(squadronObject);
+            await commands.UpdatePlayerIDs(squadronObject);
             await Task.Delay(1000);
 
             StringBuilder responseBuilder = new StringBuilder();
@@ -846,12 +843,12 @@ namespace CHFBot
             }
 
             // Send the response as a message
-            
+
             //await message.Channel.SendMessageAsync(responseBuilder.ToString());
 
-            commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString()); //Player Names and Points
+            await commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString()); //Player Names and Points
 
-            commands.SendLongContentAsEmbedAsync(message.Channel, playerListString); //IDs and Discord Names
+            await commands.SendLongContentAsEmbedAsync(message.Channel, playerListString); //IDs and Discord Names
 
 
             //await message.Channel.SendMessageAsync(response);
