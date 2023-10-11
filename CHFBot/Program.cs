@@ -28,8 +28,9 @@ namespace CHFBot
 
     class Program
     {
-        private DiscordSocketClient _client;
-        private readonly ulong EsperBotTestingChannel = 1133615880488628344;
+        private static DiscordSocketClient _client;
+        private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
+        IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
         private readonly ulong DefaultTextChannel = 1133615880488628344;
         private readonly ulong generalChannel = 342132137064923136;
         private readonly ulong CadetTestingChannel = 1125693277295886357;
