@@ -31,9 +31,9 @@ namespace CHFBot
         private static DiscordSocketClient _client;
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
         IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-        private readonly ulong DefaultTextChannel = 1133615880488628344;
-        private readonly ulong generalChannel = 342132137064923136;
-        private readonly ulong CadetTestingChannel = 1125693277295886357;
+        //private readonly ulong DefaultTextChannel = 1133615880488628344;
+        //private readonly ulong generalChannel = 342132137064923136;
+        //private readonly ulong CadetTestingChannel = 1125693277295886357;
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
         int winCounter = 0;
@@ -59,9 +59,8 @@ namespace CHFBot
             _client.Log += Log;
             _client.MessageReceived += HandleCommandAsync;
             _client.UserVoiceStateUpdated += HandleVoiceStateUpdated;
-
+            
             SetupTimer();
-            Console.WriteLine("Timer is starting!");
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
@@ -88,40 +87,49 @@ namespace CHFBot
             
             //hourlyTimer.Elapsed += OnHourlyEvent;
             hourlyTimer.AutoReset = false;
+            dailyTimer.AutoReset = false;
+            midDailyTimer.AutoReset = false;
 
-            //// Calculate the time until 4:30 AM tomorrow
-            //DateTime now = DateTime.Now;
-            //DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 4, 30, 0);
+            // Calculate the time until 4:30 AM tomorrow
+            DateTime now = DateTime.Now;
+            DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 4, 30, 0);
 
-            //if (now > targetTime)
-            //{
-            //    // If it's already past 4:30 AM, schedule for the next day
-            //    targetTime = targetTime.AddDays(1);
-            //}
-            //double interval = (targetTime - now).TotalMilliseconds;
-                        
-            //dailyTimer.Elapsed += OnDailyEvent;
-            //dailyTimer.AutoReset = false;
-
-
-            //// Calculate the time until 19:00 tomorrow
-            //DateTime midNow = DateTime.Now;
-            //DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
-
-            //if (midNow > midTargetTime)
-            //{
-            //    // If it's already past 19:00, schedule for the next day
-            //    midTargetTime = midTargetTime.AddDays(1);
-            //}
-
-            //double midInterval = (midTargetTime - midNow).TotalMilliseconds;
-
+            if (now > targetTime)
+            {
+                // If it's already past 4:30 AM, schedule for the next day
+                targetTime = targetTime.AddDays(1);
+            }
+            double interval = (targetTime - now).TotalMilliseconds;
+            dailyTimer.Interval = interval;
+            dailyTimer.Elapsed += OnDailyEvent;
             
-            //midDailyTimer.Elapsed += OnMidDailyEvent;
-            //midDailyTimer.AutoReset = false;
+            // Calculate the time until 19:00 tomorrow
+            DateTime midNow = DateTime.Now;
+            DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
 
+            if (midNow > midTargetTime)
+            {
+                // If it's already past 19:00, schedule for the next day
+                midTargetTime = midTargetTime.AddDays(1);
+            }
 
+            double midInterval = (midTargetTime - midNow).TotalMilliseconds;
+            midDailyTimer.Interval = midInterval;
+            midDailyTimer.Elapsed += OnMidDailyEvent;
 
+            // Calculate the time until next on-the-hour
+            DateTime hourlyNow = DateTime.Now;
+            DateTime nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day, hourlyNow.Hour + 1, 0, 0);
+
+            if (midNow > nextHourly)
+            {
+                // If it's already past 19:00, schedule for the next day
+                nextHourly = nextHourly.AddHours(1);
+            }
+
+            double hourlyInterval = (nextHourly - hourlyNow).TotalMilliseconds;
+            hourlyTimer.Interval = hourlyInterval;
+            hourlyTimer.Elapsed += OnHourlyEvent;
 
 
             // Calculate the time until 1:27 AM tomorrow
@@ -135,35 +143,33 @@ namespace CHFBot
             //}
 
             //double tInterval = (tTargetTime - tNow).TotalMilliseconds;
-            
+
             //tDailyTimer.Elapsed += tOnDailyEvent;
             //tDailyTimer.AutoReset = false;
 
 
 
-            dailyTimer.Start();
             hourlyTimer.Start();
+            dailyTimer.Start();
             midDailyTimer.Start();
             //tDailyTimer.Start();
         }
 
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
         {
-             Commands command = new Commands();
-             var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-
+            Commands command = new Commands();
+             
             if (quotes == true)
             {
                 string quote = command.getQuote();
                 await chnl.SendMessageAsync(quote);
             }
                         
-            hourlyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            hourlyTimer.Interval = 60 * 60 * 1000; // One hour in milliseconds
             hourlyTimer.Start();
         }
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
-            var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             await chnl.SendMessageAsync("Should be 4:15 AM!");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
@@ -174,13 +180,11 @@ namespace CHFBot
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
-            var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            
             await chnl.SendMessageAsync("Should be 19:00!");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
-            await chnl.SendMessageAsync("Midday Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
         }
