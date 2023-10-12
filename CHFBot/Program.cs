@@ -31,10 +31,6 @@ namespace CHFBot
         private static DiscordSocketClient _client;
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
 
-        
-
-        
-
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
         //private readonly ulong CadetTestingChannel = 1125693277295886357;
@@ -46,12 +42,11 @@ namespace CHFBot
         System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
-        
+
         static void Main(string[] args)
         {
             new Program().RunBotAsync().GetAwaiter().GetResult();
 
-            
 
         }
 
@@ -66,12 +61,18 @@ namespace CHFBot
             _client.Log += Log;
             _client.MessageReceived += HandleCommandAsync;
             _client.UserVoiceStateUpdated += HandleVoiceStateUpdated;
-            
+
             SetupTimer();
+
+            startupMessages();
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             await Task.Delay(-1);
+
+            
+
+
         }
 
         private Task Log(LogMessage arg)
@@ -89,9 +90,24 @@ namespace CHFBot
             }
         }
 
+        private async void startupMessages()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            Console.WriteLine("Bot started up.");
+            ITextChannel chnl = _client.GetChannel(EsperBotTestingChannel) as ITextChannel;
+            
+            await chnl.SendMessageAsync("EsperBot is now online.");
+            await chnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
+            await chnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
+            await chnl.SendMessageAsync("Remember to use !help for a command list.");
+        }
+
+
         private void SetupTimer()
         {
-            
+
+            Console.WriteLine("starting the timer.");
+
             //hourlyTimer.Elapsed += OnHourlyEvent;
             hourlyTimer.AutoReset = false;
             dailyTimer.AutoReset = false;
@@ -154,12 +170,11 @@ namespace CHFBot
             //tDailyTimer.Elapsed += tOnDailyEvent;
             //tDailyTimer.AutoReset = false;
 
-
-
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
             //tDailyTimer.Start();
+
         }
 
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
@@ -256,7 +271,6 @@ namespace CHFBot
 
             if (message.Channel.Name == "sre-score-tracking")
             {
-                await HandleSreScoreTrackingMessage(message);
                 await HandleSreScoreTrackingMessage(message);
             }
 
