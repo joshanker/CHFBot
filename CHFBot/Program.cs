@@ -30,7 +30,11 @@ namespace CHFBot
     {
         private static DiscordSocketClient _client;
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
-        IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+        
+
+        
+
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
         //private readonly ulong CadetTestingChannel = 1125693277295886357;
@@ -46,6 +50,9 @@ namespace CHFBot
         static void Main(string[] args)
         {
             new Program().RunBotAsync().GetAwaiter().GetResult();
+
+            
+
         }
 
         public async Task RunBotAsync()
@@ -162,6 +169,7 @@ namespace CHFBot
             if (quotes == true)
             {
                 string quote = command.getQuote();
+                IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
                 await chnl.SendMessageAsync(quote);
             }
                         
@@ -170,6 +178,7 @@ namespace CHFBot
         }
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
+            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             await chnl.SendMessageAsync("Should be 4:15 AM!");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
@@ -180,6 +189,7 @@ namespace CHFBot
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
+            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             await chnl.SendMessageAsync("Should be 19:00!");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
