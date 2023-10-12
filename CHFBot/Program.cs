@@ -92,7 +92,7 @@ namespace CHFBot
 
         private async void startupMessages()
         {
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(3));
             Console.WriteLine("Bot started up.");
             ITextChannel chnl = _client.GetChannel(EsperBotTestingChannel) as ITextChannel;
             
@@ -142,7 +142,21 @@ namespace CHFBot
 
             // Calculate the time until next on-the-hour
             DateTime hourlyNow = DateTime.Now;
-            DateTime nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day, hourlyNow.Hour + 1, 0, 0);
+            //DateTime nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day, hourlyNow.Hour + 1, 0, 0);
+
+            DateTime nextHourly;
+
+            if (hourlyNow.Hour == 23)
+            {
+                // If the current hour is 23 (11 PM), set the next hourly time to 00 (12 AM) of the next day
+                nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day + 1, 0, 0, 0);
+            }
+            else
+            {
+                // Otherwise, increment the current hour by 1
+                nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day, hourlyNow.Hour + 1, 0, 0);
+            }
+
 
             if (midNow > nextHourly)
             {
