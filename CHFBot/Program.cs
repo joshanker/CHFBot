@@ -30,6 +30,7 @@ namespace CHFBot
     {
         private static DiscordSocketClient _client;
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
+        private static readonly ulong sreScoreTrackingChannel= 742213810752061471;
 
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
@@ -95,7 +96,8 @@ namespace CHFBot
             await Task.Delay(TimeSpan.FromSeconds(3));
             Console.WriteLine("Bot started up.");
             ITextChannel chnl = _client.GetChannel(EsperBotTestingChannel) as ITextChannel;
-            
+            ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+
             await chnl.SendMessageAsync("EsperBot is now online.");
             await chnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
             await chnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
@@ -169,25 +171,10 @@ namespace CHFBot
             hourlyTimer.Elapsed += OnHourlyEvent;
 
 
-            // Calculate the time until 1:27 AM tomorrow
-            //DateTime tNow = DateTime.Now;
-            //DateTime tTargetTime = new DateTime(tNow.Year, tNow.Month, tNow.Day, 1, 31, 0);
-
-            //if (tNow > tTargetTime)
-            //{
-            //     If it's already past 1:27 AM, schedule for the next day
-            //    tTargetTime = tTargetTime.AddDays(1);
-            //}
-
-            //double tInterval = (tTargetTime - tNow).TotalMilliseconds;
-
-            //tDailyTimer.Elapsed += tOnDailyEvent;
-            //tDailyTimer.AutoReset = false;
-
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
-            //tDailyTimer.Start();
+            
 
         }
 
@@ -208,32 +195,32 @@ namespace CHFBot
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            await chnl.SendMessageAsync("Should be 4:15 AM!");
+            ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+            await chnl.SendMessageAsync("Resetting counters in between sessions...");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+            await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
+            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
             await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            await chnl.SendMessageAsync("Should be 19:00!");
+            ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+            await chnl.SendMessageAsync("Resetting counters in between sessions...");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+            await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
+            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
             await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
-        }
-
-        private async void tOnDailyEvent(object source, ElapsedEventArgs e)
-        {
-            var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            await chnl.SendMessageAsync("I think it's 1:27.");
-            //tDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-           // tDailyTimer.Start();
         }
 
 
@@ -402,7 +389,7 @@ namespace CHFBot
                 var embed2 = message.Embeds.First();
                 string title = embed2.Title;
                 string desc = embed2.Description;
-                await chnl.SendMessageAsync($"Description: {embed2.Description}");
+                //await chnl.SendMessageAsync($"Description: {embed2.Description}");
                 // Loop through each embed in the message
                 foreach (var embed in message.Embeds)
                 {
