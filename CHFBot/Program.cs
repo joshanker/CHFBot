@@ -101,6 +101,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("EsperBot is now online.");
             await chnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
             await chnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
+            await chnl.SendMessageAsync("SRE set to 0-0.");
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
         }
 
@@ -364,9 +365,9 @@ namespace CHFBot
                 {
                     await HandleTurnQuotesCommand(message);
                 }
-                else if (content.StartsWith("!winlosscount"))
+                else if (content.StartsWith("!record"))
                 {
-                    await HandleWinlossCountCommand(message);
+                    await HandleRecordCommand(message);
                 }
                 else
                 {
@@ -912,16 +913,15 @@ namespace CHFBot
         }
 
         [CommandDescription("Displays the win/loss counts for this SRE session.")]
-        private async Task HandleWinlossCountCommand(SocketMessage message)
+        private async Task HandleRecordCommand(SocketMessage message)
         {
-            if (message.Content == "!winlosscount")
+            if (message.Content == "!record")
             {
                await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             }
 
 
         }
-
 
         [CommandDescription("turns on and off hourly Quotes.")]
         private async Task HandleTurnQuotesCommand(SocketMessage message)
