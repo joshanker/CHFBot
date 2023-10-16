@@ -228,7 +228,7 @@ namespace CHFBot
             if (!File.Exists(fileName))
             {
                 // If the file does not exist, create it
-                File.Create(fileName);
+                using (File.Create(fileName)) { } ;
             }
 
             // Open the file for writing
@@ -1028,8 +1028,6 @@ namespace CHFBot
                 commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
 
         }
-
-
 
 
 
