@@ -94,7 +94,11 @@ namespace BotCommands
         {
             overUnder = overUnder.ToLower();
             StringBuilder sb = new StringBuilder();
-            foreach (Player player in sqdobj.Players)
+
+            // Sort the players by number of points, from most to least
+            var sortedPlayers = sqdobj.Players.OrderByDescending(player => player.PersonalClanRating);
+
+            foreach (Player player in sortedPlayers)
             {
 
 
@@ -102,14 +106,14 @@ namespace BotCommands
                 {
                     if (player.PersonalClanRating >= points)
                     {
-                        sb.AppendLine($"{player.Number}: {player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+                        sb.AppendLine($"{player.PlayerName,-20} Pts: {player.PersonalClanRating}");
                     }
                 }
                 if (overUnder == "under")
                 {
                     if (player.PersonalClanRating <= points)
                     {
-                        sb.AppendLine($"{player.Number}: {player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+                        sb.AppendLine($"{player.PlayerName,-20} Pts: {player.PersonalClanRating}");
                     }
                 }
 
