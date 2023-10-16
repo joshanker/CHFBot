@@ -10,7 +10,7 @@ using Discord;
 using Discord.WebSocket;
 using SquadronObjects;
 using System.Globalization;
-
+using Newtonsoft.Json;
 
 namespace BotCommands
 {
@@ -84,6 +84,35 @@ namespace BotCommands
             foreach (Player player in sqdobj.Players)
             {
                 sb.AppendLine($"{player.Number}: {player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+            }
+            sqdobj.allsqd = sb.ToString();
+            string longContent = sqdobj.allsqd;
+            await SendLongContentAsEmbedAsync(chnl, longContent);
+        }
+
+        public async void printPlayersOverUnder(IMessageChannel chnl, SquadronObj sqdobj, String overUnder, int points)
+        {
+            overUnder = overUnder.ToLower();
+            StringBuilder sb = new StringBuilder();
+            foreach (Player player in sqdobj.Players)
+            {
+
+
+                if (overUnder == "over")
+                {
+                    if (player.PersonalClanRating >= points)
+                    {
+                        sb.AppendLine($"{player.Number}: {player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+                    }
+                }
+                if (overUnder == "under")
+                {
+                    if (player.PersonalClanRating <= points)
+                    {
+                        sb.AppendLine($"{player.Number}: {player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+                    }
+                }
+
             }
             sqdobj.allsqd = sb.ToString();
             string longContent = sqdobj.allsqd;
@@ -239,7 +268,6 @@ namespace BotCommands
                 try
                 {
                     Console.WriteLine("Populating score...");
-
                     //string url = "https://warthunder.com/en/community/claninfo/Cadet";
                     //string url = objname.url;
                     Webscraper scraper = new Webscraper();

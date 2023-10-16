@@ -10,7 +10,8 @@ using System.Timers;
 using BotCommands;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 namespace CHFBot
 {
@@ -368,6 +369,10 @@ namespace CHFBot
                 else if (content.StartsWith("!record"))
                 {
                     await HandleRecordCommand(message);
+                }
+                else if (content.StartsWith("!listplayers"))
+                {
+                    await HandleListplayersCommand(message);
                 }
                 else
                 {
@@ -944,8 +949,64 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Listplayers <over> / <under> <points> - example: \"Listplayers under 1500\"")]
+        private async Task HandleListplayersCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
 
+            // Split the input string into words
+            string[] words = content.Split(' ');
+
+            // Check that the first word is "!listplayers"
+            if (words[0] != "!listplayers")
+            {
+                // If the first word is not "!listplayers", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the second word is either "over" or "under"
+            if (words[1] != "over" && words[1] != "under")
+            {
+                // If the second word is not "over" or "under", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the third word is a valid number
+            int points;
+            if (!int.TryParse(words[2], out points))
+            {
+                // If the third word is not a valid number, then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            string overUnder = words[1];
             
+                await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
+
+                Commands commands = new Commands();
+                SquadronObj squadronObject = new SquadronObj();
+
+                squadronObject = commands.validateSquadron("BofSs");
+
+                squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+                squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+                var chnl = message.Channel as IMessageChannel;
+
+            chnl.SendMessageAsync("Players with score "+ overUnder + " " + points + ":");
+
+
+                //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+                //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+                //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+
+                commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+
+        }
+
+
 
 
 
