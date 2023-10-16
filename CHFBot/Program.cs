@@ -198,6 +198,34 @@ namespace CHFBot
         {
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+            await chnl.SendMessageAsync("Writing totals to file.");
+            //Write totals to file.
+
+
+            // Get the current date and time
+            DateTime now = DateTime.Now;
+
+            // Create a date and time prefix
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-{now.Hour}:{now.Minute}:{now.Second}";
+
+            // Create a file name with the date and time prefix
+            string fileName = "SREWinLossRecords.txt";
+
+            // Check if the file exists
+            if (!File.Exists(fileName))
+            {
+                // If the file does not exist, create it
+                File.Create(fileName);
+            }
+
+            // Open the file for writing
+            using (StreamWriter writer = new StreamWriter(fileName, true))
+            {
+                // Write the win and loss counters to the file
+                writer.WriteLine($"{dateTimePrefix}: Wins: {winCounter}, Losses: {lossCounter}");
+            }
+
+
             await chnl.SendMessageAsync("Resetting counters in between sessions...");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
@@ -206,6 +234,10 @@ namespace CHFBot
             lossCounter = 0;
             await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+
+
+            
+
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
         }
@@ -213,6 +245,36 @@ namespace CHFBot
         {
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+            await chnl.SendMessageAsync("Writing totals to file.");
+            //Write totals to file.
+            // Get the current date and time
+            DateTime now = DateTime.Now;
+
+            // Create a date and time prefix
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-{now.Hour}:{now.Minute}:{now.Second}";
+
+            // Create a file name with the date and time prefix
+            string fileName = "SREWinLossRecords.txt";
+
+            // Check if the file exists
+            if (!File.Exists(fileName))
+            {
+                // If the file does not exist, create it
+                File.Create(fileName);
+            }
+
+            // Open the file for writing
+            using (StreamWriter writer = new StreamWriter(fileName, true))
+            {
+                // Write the win and loss counters to the file
+                writer.WriteLine($"{dateTimePrefix}: Wins: {winCounter}, Losses: {lossCounter}");
+            }
+
+
+
+
+
+
             await chnl.SendMessageAsync("Resetting counters in between sessions...");
             await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
