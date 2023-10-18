@@ -196,17 +196,25 @@ namespace CHFBot
         }
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
-            await executeTimer();
+            DateTime now = DateTime.Now;
+
+            // Create a date and time prefix
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session- {now.Hour}:{now.Minute}:{now.Second}";
+            await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
-            await executeTimer();
+            DateTime now = DateTime.Now;
+
+            // Create a date and time prefix
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session-{now.Hour}:{now.Minute}:{now.Second}";
+            await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
         }
-        private async Task executeTimer()
+        private async Task executeTimer(String prefix)
         {
 
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
@@ -214,10 +222,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("Writing totals to file.");
             //Write totals to file.
             // Get the current date and time
-            DateTime now = DateTime.Now;
 
-            // Create a date and time prefix
-            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-{now.Hour}:{now.Minute}:{now.Second}";
 
             // Create a file name with the date and time prefix
             string fileName = "SREWinLossRecords.txt";
@@ -233,13 +238,13 @@ namespace CHFBot
             using (StreamWriter writer = new StreamWriter(fileName, true))
             {
                 // Write the win and loss counters to the file
-                writer.WriteLine($"{dateTimePrefix}: Wins: {winCounter}, Losses: {lossCounter}");
+                writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}");
             }
 
             await chnl.SendMessageAsync("Resetting counters in between sessions...");
-            await chnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+            await chnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
             await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
-            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
             await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
