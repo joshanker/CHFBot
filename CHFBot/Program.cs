@@ -61,7 +61,7 @@ namespace CHFBot
 
             ClearMessageCache();
             _client.Log += Log;
-            _client.MessageReceived += HandleCommandAsync;
+            _client.MessageReceived += HandleCommandsAsync;
             _client.UserVoiceStateUpdated += HandleVoiceStateUpdated;
 
             SetupTimer();
@@ -71,8 +71,6 @@ namespace CHFBot
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             await Task.Delay(-1);
-
-            
 
 
         }
@@ -106,6 +104,9 @@ namespace CHFBot
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
         }
 
+        ////////////////////////////////////////////////////////
+        //Timers
+        ////////////////////////////////////////////////////////
 
         private void SetupTimer()
         {
@@ -179,7 +180,6 @@ namespace CHFBot
             
 
         }
-
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
         {
             Commands command = new Commands();
@@ -206,8 +206,6 @@ namespace CHFBot
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
         }
-
-
         private async Task executeTimer()
         {
 
@@ -248,7 +246,10 @@ namespace CHFBot
             await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
 
         }
-
+        
+        ////////////////////////////////////////////////////////
+        //Voice States
+        ////////////////////////////////////////////////////////
         private async Task HandleVoiceStateUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
             var guild = (user as SocketGuildUser)?.Guild; // Get the guild associated with the user
@@ -290,7 +291,10 @@ namespace CHFBot
             }
         }
 
-        private async Task HandleCommandAsync(SocketMessage message)
+        ////////////////////////////////////////////////////////
+        //Commands
+        ////////////////////////////////////////////////////////
+        private async Task HandleCommandsAsync(SocketMessage message)
         {
 
             string content = message.Content.Trim();
@@ -397,6 +401,10 @@ namespace CHFBot
                 {
                     await HandleListplayersCommand(message);
                 }
+                else if (content.StartsWith("!lastten"))
+                {
+                    await HandleLastTenCommand(message);
+                }
                 else
                 {
                     Console.WriteLine("No matching command detected.");
@@ -405,6 +413,9 @@ namespace CHFBot
             }
         }
 
+        ////////////////////////////////////////////////////////
+        //Handlers
+        ////////////////////////////////////////////////////////
         private async Task HandleSreScoreTrackingMessage(SocketMessage message)
         {
             if (message.Embeds.Any())
@@ -1029,8 +1040,44 @@ namespace CHFBot
 
         }
 
+        [CommandDescription("Displays the last ten SRE session counts.")]
+        private async Task HandleLastTenCommand(SocketMessage message)
+        {
+            string content = message.ToString().ToLower();
+            if (content == "!lastten")
+            {
+
+                string fileName = "SREWinLossRecords.txt";
+
+                // Check if the file exists
+                if (File.Exists(fileName))
+                {
+                    // Read all lines from the file
+                    string[] lines = File.ReadAllLines(fileName);
+
+                    // Calculate how many lines you want to retrieve (last ten or all if less than ten)
+                    int numberOfLinesToRetrieve = Math.Min(10, lines.Length);
+
+                    // Get the last ten (or fewer) lines
+                    //string[] lastEntries = lines.TakeLast(numberOfLinesToRetrieve).ToArray();
+                    string[] lastEntries = lines.Skip(Math.Max(0, lines.Length - numberOfLinesToRetrieve)).Take(numberOfLinesToRetrieve).ToArray();
+
+                    // Send the last entries to the channel
+                    foreach (string entry in lastEntries)
+                    {
+                        await message.Channel.SendMessageAsync((entry));
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("The file 'SREWinLossRecords.txt' does not exist.");
+                }
 
 
+            }
+
+
+        }
 
     }
 
