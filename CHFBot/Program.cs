@@ -446,6 +446,7 @@ namespace CHFBot
                         {
                             winCounter++;
                             await message.Channel.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter + ".");
+                            await chnl.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter + ".");
                             //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
                             //chnl.SendMessageAsync($"Description: {embed2.Description}");
                             //chnl.SendMessageAsync("success - We won a game.);
@@ -454,6 +455,7 @@ namespace CHFBot
                         {
                             lossCounter++;
                             await message.Channel.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
+                            await chnl.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
                             //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
                             //Console.WriteLine($"Loss Detected.");
                             //chnl.SendMessageAsync("success - We lost a game. This makes us \" + winCounter + \"and \" + lossCounter");
