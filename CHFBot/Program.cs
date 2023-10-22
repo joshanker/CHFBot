@@ -32,6 +32,7 @@ namespace CHFBot
         private static DiscordSocketClient _client;
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
         private static readonly ulong sreScoreTrackingChannel= 742213810752061471;
+        private static readonly ulong esperbotchannel = 1165452109513244673;
 
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
@@ -217,7 +218,7 @@ namespace CHFBot
         {
 
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+            ITextChannel srescoretrackingchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
             await chnl.SendMessageAsync("Writing totals to file.");
             //Write totals to file.
             // Get the current date and time
@@ -311,7 +312,7 @@ namespace CHFBot
             if (message.Author.IsBot)
                 return;
 
-            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general" || message.Channel.Name == "esper-bot-testing")
+            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general" || message.Channel.Name == "esper-bot-testing" || message.Channel.Name == "esperbot")
             {
                 if (content.StartsWith("!hello"))
                 {
@@ -906,7 +907,13 @@ namespace CHFBot
                     else
                     {
                         // Player not found in squadronObject, handle this case as needed
-                        responseBuilder.AppendLine($"{discordId,-20}: (Player not found)");
+                        ulong userId = discordId;
+                        var user = _client.GetUser(userId);
+
+                        if (user != null)
+                        {
+                            responseBuilder.AppendLine($"{discordId,-20}: (Player not found - {user.Username}");
+                        }
                     }
                 }
                 else
