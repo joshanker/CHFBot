@@ -199,7 +199,7 @@ namespace CHFBot
             DateTime now = DateTime.Now;
 
             // Create a date and time prefix
-            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session- {now.Hour}:{now.Minute}:{now.Second}";
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session- {now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
@@ -209,7 +209,7 @@ namespace CHFBot
             DateTime now = DateTime.Now;
 
             // Create a date and time prefix
-            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session-{now.Hour}:{now.Minute}:{now.Second}";
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session-{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
@@ -1067,11 +1067,9 @@ namespace CHFBot
                     //string[] lastEntries = lines.TakeLast(numberOfLinesToRetrieve).ToArray();
                     string[] lastEntries = lines.Skip(Math.Max(0, lines.Length - numberOfLinesToRetrieve)).Take(numberOfLinesToRetrieve).ToArray();
 
-                    // Send the last entries to the channel
-                    foreach (string entry in lastEntries)
-                    {
-                        await message.Channel.SendMessageAsync((entry));
-                    }
+                    string combinedEntries = string.Join("\n", lastEntries);
+
+                        await message.Channel.SendMessageAsync(("..." + combinedEntries));
                 }
                 else
                 {
