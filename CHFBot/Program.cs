@@ -49,7 +49,6 @@ namespace CHFBot
         {
             new Program().RunBotAsync().GetAwaiter().GetResult();
 
-
         }
 
         public async Task RunBotAsync()
@@ -196,10 +195,10 @@ namespace CHFBot
         }
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.Now.AddDays(-1);
 
             // Create a date and time prefix
-            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session- {now.Hour}:{now.Minute}:{now.Second}";
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
@@ -209,7 +208,7 @@ namespace CHFBot
             DateTime now = DateTime.Now;
 
             // Create a date and time prefix
-            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session-{now.Hour}:{now.Minute}:{now.Second}";
+            string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session:{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
