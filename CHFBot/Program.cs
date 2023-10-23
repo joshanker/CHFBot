@@ -314,6 +314,8 @@ namespace CHFBot
 
             if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general" || message.Channel.Name == "esper-bot-testing" || message.Channel.Name == "esperbot")
             {
+                content = content.ToLower();
+
                 if (content.StartsWith("!hello"))
                 {
                     await message.Channel.SendMessageAsync("Well hi there.");
@@ -425,7 +427,7 @@ namespace CHFBot
         {
             if (message.Embeds.Any())
             {
-                var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+                var chnl = _client.GetChannel(esperbotchannel) as IMessageChannel;
 
                 //message.Channel.SendMessageAsync($"OK, triggering Embeds");
                 //Console.WriteLine("embed detected!");
