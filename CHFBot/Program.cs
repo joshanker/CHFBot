@@ -880,6 +880,7 @@ namespace CHFBot
 
             // Create a list to store member usernames
             List<string> playerList = new List<string>();
+            var playerInfoList = new List<(string PlayerName, string Points)>();
 
             await Task.Delay(1000);
             playerList = await commands.GeneratePlayerList(_client, voiceChannel.Id, playerList);
@@ -895,41 +896,47 @@ namespace CHFBot
 
             foreach (var playerName in playerList)
             {
-                // Parse the Discord ID from the playerName
                 if (ulong.TryParse(playerName.Split(' ')[0], out ulong discordId))
                 {
-                    // Find the player in squadronObject by their Discord ID
                     Player player = squadronObject.Players.FirstOrDefault(p => p.DiscordID == discordId);
 
                     if (player != null)
                     {
-                        // Append the player's name and points to the response
-                        ///responseBuilder.AppendLine($"{player.PlayerName}: \t\t\t{player.PersonalClanRating} points");
-                        responseBuilder.AppendLine($"{player.PlayerName,-20}: {player.PersonalClanRating,-6} points");
-
+                        playerInfoList.Add((player.PlayerName, player.PersonalClanRating.ToString()));
                     }
                     else
                     {
-                        // Player not found in squadronObject, handle this case as needed
                         ulong userId = discordId;
                         var user = _client.GetUser(userId);
 
                         if (user != null)
                         {
-                            responseBuilder.AppendLine($"{discordId,-20}: (Player not found - {user.Username}");
+                            playerInfoList.Add((discordId.ToString(), $"Player not found - {user.Username}"));
                         }
                     }
                 }
                 else
                 {
-                    // Unable to parse the Discord ID, handle this case as needed
-                    responseBuilder.AppendLine($"{playerName} (Invalid format)");
+                    playerInfoList.Add((playerName, "Invalid format"));
                 }
             }
 
             // Send the response as a message
 
             //await message.Channel.SendMessageAsync(responseBuilder.ToString());
+            // Sort the list by points in descending order
+            playerInfoList = playerInfoList.OrderByDescending(p => int.Parse(p.Points)).ToList();
+
+            //var responseBuilder = new StringBuilder();
+
+            // Iterate through the sorted list and build your response
+            foreach (var playerInfo in playerInfoList)
+            {
+                responseBuilder.AppendLine($"{playerInfo.PlayerName,-20}: {playerInfo.Points,-6} points");
+            }
+
+
+
 
             await commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString()); //Player Names and Points
 
