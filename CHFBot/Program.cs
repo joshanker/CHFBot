@@ -447,7 +447,7 @@ namespace CHFBot
                         if (embed.Title.Contains("Squadron gained"))
                         {
                             winCounter++;
-                            await message.Channel.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter + ".");
+                            //await message.Channel.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter + ".");
                             await chnl.SendMessageAsync("I have detected a win. This makes us " + winCounter + " and " + lossCounter + ".");
                             //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
                             //chnl.SendMessageAsync($"Description: {embed2.Description}");
@@ -456,7 +456,7 @@ namespace CHFBot
                         else if (embed.Title.Contains("Squadron lost"))
                         {
                             lossCounter++;
-                            await message.Channel.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
+                            //await message.Channel.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
                             await chnl.SendMessageAsync("I have detected a loss. This makes us " + winCounter + " and " + lossCounter);
                             //var chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
                             //Console.WriteLine($"Loss Detected.");
