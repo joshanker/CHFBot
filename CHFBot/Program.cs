@@ -412,6 +412,10 @@ namespace CHFBot
                 {
                     await HandleLastTenCommand(message);
                 }
+                else if (content.StartsWith("!setwinloss"))
+                {
+                    await HandleSetWinLossCommand(message);
+                }
                 else
                 {
                     Console.WriteLine("No matching command detected.");
@@ -1097,6 +1101,50 @@ namespace CHFBot
             }
 
 
+        }
+
+        [CommandDescription("SetWinLoss <Num/Num> of current session.")]
+        private async Task HandleSetWinLossCommand(SocketMessage message)
+        {
+            string content = message.ToString().ToLower();
+            if (content.StartsWith("!setwinloss") && message.Author.Equals(308128406699245568))
+            {
+
+                string content = message.Content.Trim();
+                string[] parts = content.Split(' ');
+
+                if (parts.Length == 2)
+                {
+                    if (parts[0] == "!setwinloss")
+                    {
+                        string[] counters = parts[1].Split('/');
+
+                        if (counters.Length == 2)
+                        {
+                            if (int.TryParse(counters[0], out int newWins) && int.TryParse(counters[1], out int newLosses))
+                            {
+                                winCounter = newWins;
+                                lossCounter = newLosses;
+
+                                await message.Channel.SendMessageAsync($"Win and Loss counters updated. Wins: {winCounter}, Losses: {lossCounter}");
+                            }
+                            else
+                            {
+                                await message.Channel.SendMessageAsync("Invalid counter values. Please use the format '!setwinloss wins/losses'.");
+                            }
+                        }
+                        else
+                        {
+                            await message.Channel.SendMessageAsync("Invalid format. Please use the format '!setwinloss wins/losses'.");
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                message.Channel.SendMessageAsync("C'mon, now, only Esper has that power.");
+            }
         }
 
     }
