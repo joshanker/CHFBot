@@ -1107,13 +1107,13 @@ namespace CHFBot
         private async Task HandleSetWinLossCommand(SocketMessage message)
         {
             string content = message.ToString().ToLower();
-            if (content.StartsWith("!setwinloss") && message.Author.Equals(308128406699245568))
+            if (message.Author.Id == 308128406699245568)
             {
 
-                string content = message.Content.Trim();
+                content = message.Content.Trim();
                 string[] parts = content.Split(' ');
 
-                if (parts.Length == 2)
+                if (parts.Length == 2 && parts[0].Equals("!setwinloss", StringComparison.OrdinalIgnoreCase) )
                 {
                     if (parts[0] == "!setwinloss")
                     {
