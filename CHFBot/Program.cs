@@ -929,7 +929,18 @@ namespace CHFBot
 
             //await message.Channel.SendMessageAsync(responseBuilder.ToString());
             // Sort the list by points in descending order
-            playerInfoList = playerInfoList.OrderByDescending(p => int.Parse(p.Points)).ToList();
+            //playerInfoList = playerInfoList.OrderByDescending(p => int.Parse(p.Points)).ToList();
+            playerInfoList = playerInfoList.OrderByDescending(p =>
+            {
+                if (int.TryParse(p.Points, out int points))
+                {
+                    return points;
+                }
+                return 0; // Set a default value for invalid points
+            }).ToList();
+
+
+
 
             //var responseBuilder = new StringBuilder();
 
@@ -1051,11 +1062,15 @@ namespace CHFBot
 
                 squadronObject = commands.validateSquadron("BofSs");
 
-                squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
-                squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
-                var chnl = message.Channel as IMessageChannel;
 
-            chnl.SendMessageAsync("Players with score "+ overUnder + " " + points + ":");
+
+            var chnl = message.Channel as IMessageChannel;
+
+            chnl.SendMessageAsync("Players with score " + overUnder + " " + points + ":");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+                squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
 
 
                 //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
@@ -1139,7 +1154,6 @@ namespace CHFBot
                         }
                     }
                 }
-
             }
             else
             {
