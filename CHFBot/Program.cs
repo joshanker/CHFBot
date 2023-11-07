@@ -33,6 +33,7 @@ namespace CHFBot
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
         private static readonly ulong sreScoreTrackingChannel= 742213810752061471;
         private static readonly ulong esperbotchannel = 1165452109513244673;
+        private static readonly ulong senateChannel = 484153871510405123;
 
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
@@ -415,6 +416,10 @@ namespace CHFBot
                 else if (content.StartsWith("!setwinloss"))
                 {
                     await HandleSetWinLossCommand(message);
+                }
+                else if (content.StartsWith("!listalts"))
+                {
+                    await HandleListAltsCommand(message);
                 }
                 else
                 {
@@ -1160,6 +1165,74 @@ namespace CHFBot
                 message.Channel.SendMessageAsync("C'mon, now, only Esper has that power.");
             }
         }
+
+
+        [CommandDescription("listalts - Shows alts and points on each.")]
+        private async Task HandleListAltsCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments. Results will be sent to <#1165452109513244673>");
+
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron("BofSs");
+
+            var chnl = _client.GetChannel(esperbotchannel) as IMessageChannel;
+
+            chnl.SendMessageAsync("Alts:");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+            string altListFilePath = "AltList.txt"; // Replace with the correct file path
+
+            SquadronObj squadronObjectOfAlts = new SquadronObj();
+            squadronObjectOfAlts.Players = new List<Player>();
+
+            // Read the lines from the AltList.txt file
+            string[] altNames = File.ReadAllLines(altListFilePath);
+
+            // Replace 'squadronObject' with your SquadronObj instance
+            foreach (var altName in altNames)
+            {
+                // Find the player in squadronObject by their name
+                Player player = squadronObject.Players.FirstOrDefault(p => p.PlayerName.Equals(altName, StringComparison.OrdinalIgnoreCase));
+
+                if (player != null)
+                {
+                    // Append the alt name and points to the response
+                    //string response = $"{altName}: {player.PersonalClanRating} points";
+                    //await ReplyAsync(response);
+                    //player temp = new SquadronObject.Player();
+                    //squadronObjectOfAlts.Players.Add(player);
+
+                    Player copiedPlayer = new Player
+                    {
+                        PlayerName = player.PlayerName,
+                        PersonalClanRating = player.PersonalClanRating,
+                        // Copy other properties you need
+                    };
+
+                    // Add the copied player to the target squadron
+                    squadronObjectOfAlts.Players.Add(copiedPlayer);
+
+
+                }
+                else
+                {
+                    // Handle the case where the player is not found
+                    //await ReplyAsync($"{altName}: Player not found");
+                }
+            }
+
+            commands.printPlayersOverUnder(chnl, squadronObjectOfAlts, "under", 2100);
+
+        }
+
+
+
 
     }
 
