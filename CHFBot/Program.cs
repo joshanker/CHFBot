@@ -46,6 +46,7 @@ namespace CHFBot
         System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
+        int squadronTotalScore = 0;
 
         static void Main(string[] args)
         {
@@ -204,6 +205,8 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
+
+
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
@@ -214,6 +217,7 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
+
         }
         private async Task executeTimer(String prefix)
         {
@@ -239,17 +243,28 @@ namespace CHFBot
             using (StreamWriter writer = new StreamWriter(fileName, true))
             {
                 // Write the win and loss counters to the file
-                writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}");
+                writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
 
-            await chnl.SendMessageAsync("Resetting counters in between sessions...");
+            //await chnl.SendMessageAsync("Resetting counters in between sessions...");
             await chnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
-            await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
+            //await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
             await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
             await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+
+
+            Commands commands = new Commands();
+            SquadronObj sqdObj = new SquadronObj();
+            sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+            await commands.populateScore(sqdObj);
+            squadronTotalScore = sqdObj.Score;
+
+            await chnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
+            await srescoretrackingchnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
+
 
         }
         
@@ -420,6 +435,10 @@ namespace CHFBot
                 else if (content.StartsWith("!listalts"))
                 {
                     await HandleListAltsCommand(message);
+                }
+                else if (content.StartsWith("!squadrontotalscore"))
+                {
+                    await HandleSquadronTotalScoreCommand(message);
                 }
                 else
                 {
@@ -1172,7 +1191,7 @@ namespace CHFBot
         {
             string content = message.Content.Trim();
 
-            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments. Results will be sent to <#1165452109513244673>");
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments. Results will be sent to the <#1165452109513244673> channel");
 
             Commands commands = new Commands();
             SquadronObj squadronObject = new SquadronObj();
@@ -1231,7 +1250,21 @@ namespace CHFBot
 
         }
 
+        [CommandDescription("Temporary command - used for testing.")]
+        private async Task HandleSquadronTotalScoreCommand(SocketMessage message)
+        {
+            // Implementation for the !join command
+            await message.Channel.SendMessageAsync("OK, " + squadronTotalScore + " is the current value of SquadronTotalScore.  Also, I am executing the populate now.");
 
+            Commands commands = new Commands();
+            SquadronObj sqdObj = new SquadronObj();
+            sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+            await commands.populateScore(sqdObj);
+            squadronTotalScore = sqdObj.Score;
+
+            await message.Channel.SendMessageAsync("" + squadronTotalScore);
+
+        }
 
 
     }
