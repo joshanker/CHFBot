@@ -733,7 +733,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string input = content.Substring("!top20 ".Length);
 
-            if (new[] { "Cadet", "BofSs", "Academy", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "B0AR", "SOFUA" }.Contains(input))
+            if (new[] { "Cadet", "BofSs", "Academy", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "B0AR", "SOFUA" }.Contains(input))
             {
                 await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
