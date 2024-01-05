@@ -227,6 +227,7 @@ namespace BotCommands
             string LEDAC="https://warthunder.com/en/community/claninfo/La%20Legion%20d%20Acier";
             string B0AR="https://warthunder.com/en/community/claninfo/MAD%20BOARS";
             string SOFUA= "https://warthunder.com/en/community/claninfo/Welcome%20to%20Ukraine";
+            string WeBak = "https://warthunder.com/en/community/claninfo/NIKE%20x%20UzBeK";
 
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
@@ -245,7 +246,8 @@ namespace BotCommands
                     { "NEURO",  NEURO},
                     { "LEDAC",  LEDAC},
                     { "B0AR",  B0AR},
-                    { "SOFUA", SOFUA }
+                    { "SOFUA", SOFUA },
+                    { "WeBak", WeBak }
                 };
 
             if (urlMap.ContainsKey(input))

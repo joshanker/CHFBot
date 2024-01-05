@@ -221,13 +221,15 @@ namespace CHFBot
         }
         private async Task executeTimer(String prefix)
         {
+            Commands commands = new Commands();
+            SquadronObj sqdObj = new SquadronObj();
+            sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+            await commands.populateScore(sqdObj);
+            squadronTotalScore = sqdObj.Score;
 
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel srescoretrackingchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
             await chnl.SendMessageAsync("Writing totals to file.");
-            //Write totals to file.
-            // Get the current date and time
-
 
             // Create a file name with the date and time prefix
             string fileName = "SREWinLossRecords.txt";
@@ -246,21 +248,13 @@ namespace CHFBot
                 writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
 
-            //await chnl.SendMessageAsync("Resetting counters in between sessions...");
             await chnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
-            //await srescoretrackingchnl.SendMessageAsync("Resetting counters in between sessions...");
             await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
             winCounter = 0;
             lossCounter = 0;
             await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
             await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
 
-
-            Commands commands = new Commands();
-            SquadronObj sqdObj = new SquadronObj();
-            sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
-            await commands.populateScore(sqdObj);
-            squadronTotalScore = sqdObj.Score;
 
             await chnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
             await srescoretrackingchnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
