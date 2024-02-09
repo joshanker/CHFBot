@@ -46,6 +46,7 @@ namespace CHFBot
         System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
+        System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
         int squadronTotalScore = 0;
 
         static void Main(string[] args)
@@ -175,11 +176,18 @@ namespace CHFBot
             hourlyTimer.Interval = hourlyInterval;
             hourlyTimer.Elapsed += OnHourlyEvent;
 
+            fiveMinuteTimer.Elapsed += OnFiveMinuteEvent;
+            fiveMinuteTimer.AutoReset = true; // Ensure it automatically resets
+
+
 
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
+            fiveMinuteTimer.Start();
+
             
+
 
         }
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
@@ -205,8 +213,6 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
-
-
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
@@ -217,6 +223,12 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
+        }
+        private async void OnFiveMinuteEvent(object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine("5 minutes elapsed!");
+            fiveMinuteTimer.Start();
+
 
         }
         private async Task executeTimer(String prefix)
@@ -248,15 +260,23 @@ namespace CHFBot
                 writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
 
-            await chnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
-            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + winCounter + "-" + lossCounter + ".");
+            var lastWinCounter = winCounter;
+            var lastLossCounter = lossCounter;
+
             winCounter = 0;
             lossCounter = 0;
-            await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+
+            await chnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + "." + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
+            
+            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + ".");
+            
+            //await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".\");
+            
             await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
 
 
-            await chnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
+            //await chnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
+            
             await srescoretrackingchnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
 
 
