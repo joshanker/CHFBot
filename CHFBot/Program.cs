@@ -184,7 +184,7 @@ namespace CHFBot
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
-            fiveMinuteTimer.Start();
+            //fiveMinuteTimer.Start();
 
             
 
@@ -227,7 +227,18 @@ namespace CHFBot
         private async void OnFiveMinuteEvent(object source, ElapsedEventArgs e)
         {
             Console.WriteLine("5 minutes elapsed!");
-            fiveMinuteTimer.Start();
+            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+            //await chnl.SendMessageAsync("5 minutes is up.");
+
+            await Handle5MinuteWriteTimer("BofSs");
+
+            //scrape it.
+            //compare it.
+                //look for playerlist differences.
+                //look for total score difference.
+                //look for player differences.
+                //look for pts differences.
+            //output to channels.
 
 
         }
@@ -266,7 +277,7 @@ namespace CHFBot
             winCounter = 0;
             lossCounter = 0;
 
-            await chnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + "." + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
+            await chnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
             
             await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + ".");
             
@@ -706,6 +717,60 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
             }
         }
+
+        private async Task Handle5MinuteWriteTimer(String message)
+        {
+            // Implementation for the !writesqd command
+            //string input = message.Substring("!writesqd ".Length);
+            string input = message;
+
+            ITextChannel chnl = _client.GetChannel(EsperBotTestingChannel) as ITextChannel;
+
+            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            {
+                
+                //var chnl = message.Channel as IMessageChannel;
+                await chnl.SendMessageAsync("Scraping and writing - please hold...");
+                Commands command = new Commands();
+                SquadronObj squadronObject = new SquadronObj();
+
+                squadronObject = command.validateSquadron(input);
+                squadronObject = await command.populateScore(squadronObject).ConfigureAwait(true);
+                squadronObject = await command.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+
+                string dateTimeString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                string fileName = $"{input}_{dateTimeString}.txt";
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+
+                //string fileName = $"C:\\Users\\josh1\\Documents\\{input}.txt"; // Customize the file path and name as needed
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine("Squadron: " + squadronObject.SquadronName);
+                    writer.WriteLine("Player Count: " + squadronObject.Players.Count);
+                    writer.WriteLine("Score: " + squadronObject.Score.ToString());
+
+                    foreach (Player player in squadronObject.Players)
+                    {
+                        writer.WriteLine($"Name: {player.PlayerName}");
+                        writer.WriteLine($"Number: {player.Number}");
+                        writer.WriteLine($"Personal Clan Rating: {player.PersonalClanRating}");
+                        writer.WriteLine($"Activity: {player.Activity}");
+                        writer.WriteLine($"Role: {player.Rank}");
+                        writer.WriteLine($"Date of Entry: {player.DateOfEntry}");
+                        writer.WriteLine("-------------------------");
+                    }
+
+                    await chnl.SendMessageAsync("complete!");
+                }
+            }
+            else
+            {
+                await chnl.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+            }
+        }
+
+
 
         [CommandDescription("Reads the most recently saved squadron file and then prints all players & points. !readsqd BofSs")]
         private async Task HandleReadSqdCommand(SocketMessage message)
@@ -1281,7 +1346,12 @@ namespace CHFBot
         }
 
 
+
+
     }
+
+
+
 
 
 }
