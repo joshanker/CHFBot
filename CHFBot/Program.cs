@@ -184,7 +184,7 @@ namespace CHFBot
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
-            //fiveMinuteTimer.Start();
+            fiveMinuteTimer.Start();
 
             
 
@@ -230,14 +230,34 @@ namespace CHFBot
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             //await chnl.SendMessageAsync("5 minutes is up.");
 
-            await Handle5MinuteWriteTimer("BofSs");
 
-            //scrape it.
+            //read the most recent file
+            //create a new sqd object.
+            //write the recent file to something temporary.
+            Commands commands = new Commands();
+            SquadronObj oldSqd =await commands.LoadSqd("BofSs");
+
+            //create a new sqd object.
+            //write the newly recent file to something temporary.
+
+
+            //Write the current squad info.
+            await Handle5MinuteWriteTimer("BofSs");
+                        
+            SquadronObj newSqd = await commands.LoadSqd("BofSs");
+
+            List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
+
+            foreach (var change in ratingChanges)
+            {
+                await chnl.SendMessageAsync($"Player: {change.PlayerName}, Old Rating: {change.OldRating}, New Rating: {change.NewRating}");
+            }
+            await chnl.SendMessageAsync("Done with ratings summary.");
             //compare it.
-                //look for playerlist differences.
-                //look for total score difference.
-                //look for player differences.
-                //look for pts differences.
+            //look for playerlist differences.
+            //look for total score difference.
+            //look for player differences.
+            //look for pts differences.
             //output to channels.
 
 
@@ -738,7 +758,6 @@ namespace CHFBot
                 squadronObject = await command.populateScore(squadronObject).ConfigureAwait(true);
                 squadronObject = await command.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
 
-
                 string dateTimeString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 string fileName = $"{input}_{dateTimeString}.txt";
                 string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
@@ -760,8 +779,7 @@ namespace CHFBot
                         writer.WriteLine($"Date of Entry: {player.DateOfEntry}");
                         writer.WriteLine("-------------------------");
                     }
-
-                    await chnl.SendMessageAsync("complete!");
+                    await chnl.SendMessageAsync("completed the write.");
                 }
             }
             else

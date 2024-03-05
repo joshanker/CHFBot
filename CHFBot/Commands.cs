@@ -42,14 +42,14 @@ namespace BotCommands
 
         public async Task sendQuote(DiscordSocketClient _client) // 1
         {
-            
+
             ulong id = 1125693277295886357; // 3
             var chnl = _client.GetChannel(id) as IMessageChannel; // 4
-            
+
             Console.WriteLine("!quote called for by automated timer");
             Commands getQuote = new Commands();
             string quote = getQuote.getQuote();
-            
+
             await chnl.SendMessageAsync(quote);
         }
 
@@ -59,11 +59,11 @@ namespace BotCommands
             try
             {
                 Console.WriteLine("!scraping all and populating...");
-                              
+
                 Webscraper scraper = new Webscraper();
                 objname = await scraper.ScrapeWebsiteAllAndPopulateAsync(objname);
                 //Console.WriteLine("Website all and populate.");
-                
+
 
                 return objname;
             }
@@ -132,7 +132,7 @@ namespace BotCommands
                 Player player = top20Players[i];
                 sb.AppendLine($"{i + 1}. {player.PlayerName,-20} (Score: {player.PersonalClanRating})");
                 totalScore = totalScore + player.PersonalClanRating;
-             }
+            }
             sb.AppendLine();
             sb.AppendLine("Total score of Top20: " + totalScore.ToString() + " / " + sqdobj.Score);
             string longContent = sb.ToString();
@@ -219,14 +219,14 @@ namespace BotCommands
             string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
             string EarlyUrl = "https://warthunder.com/en/community/claninfo/EARLY";
             string RO6Url = "https://warthunder.com/en/community/claninfo/Revenge%20of%20Six";
-            string AVR="https://warthunder.com/en/community/claninfo/AVANGARD";
-            string ILWI="https://warthunder.com/en/community/claninfo/LIGHTWAY";
-            string iNut="https://warthunder.com/en/community/claninfo/Team%20iNut";
-            string SKAL="https://warthunder.com/en/community/claninfo/SKAL%20-%20Pirates%20of%20the%s0North"; 
-            string NEURO="https://warthunder.com/en/community/claninfo/NEURO";
-            string LEDAC="https://warthunder.com/en/community/claninfo/La%20Legion%20d%20Acier";
-            string B0AR="https://warthunder.com/en/community/claninfo/MAD%20BOARS";
-            string SOFUA= "https://warthunder.com/en/community/claninfo/Welcome%20to%20Ukraine";
+            string AVR = "https://warthunder.com/en/community/claninfo/AVANGARD";
+            string ILWI = "https://warthunder.com/en/community/claninfo/LIGHTWAY";
+            string iNut = "https://warthunder.com/en/community/claninfo/Team%20iNut";
+            string SKAL = "https://warthunder.com/en/community/claninfo/SKAL%20-%20Pirates%20of%20the%s0North";
+            string NEURO = "https://warthunder.com/en/community/claninfo/NEURO";
+            string LEDAC = "https://warthunder.com/en/community/claninfo/La%20Legion%20d%20Acier";
+            string B0AR = "https://warthunder.com/en/community/claninfo/MAD%20BOARS";
+            string SOFUA = "https://warthunder.com/en/community/claninfo/Welcome%20to%20Ukraine";
             string WeBak = "https://warthunder.com/en/community/claninfo/NIKE%20x%20UzBeK";
 
             string url = "not yet set...";
@@ -254,7 +254,7 @@ namespace BotCommands
             {
                 url = urlMap[input];
             }
-                        
+
             if (url == "not yet set...")
             {
                 squadronObject.isValidSquadron = false;
@@ -271,25 +271,25 @@ namespace BotCommands
 
         public async Task<SquadronObj> populateScore(SquadronObj sqdobj)
         {
-                try
-                {
-                    Console.WriteLine("Populating score...");
-                    //string url = "https://warthunder.com/en/community/claninfo/Cadet";
-                    //string url = objname.url;
-                    Webscraper scraper = new Webscraper();
-                    sqdobj = await scraper.scrapeWebsiteAndPopulateScoreAsync(sqdobj);
-                    //Console.WriteLine("Website all and populate.");
+            try
+            {
+                Console.WriteLine("Populating score...");
+                //string url = "https://warthunder.com/en/community/claninfo/Cadet";
+                //string url = objname.url;
+                Webscraper scraper = new Webscraper();
+                sqdobj = await scraper.scrapeWebsiteAndPopulateScoreAsync(sqdobj);
+                //Console.WriteLine("Website all and populate.");
 
-                    return sqdobj;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Exception: " + e.Message);
+                return sqdobj;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
                 return null;
-                }
-                
+            }
+
         }
-       
+
         public SquadronObj PopulateSquadronFromTextFile(string filePath)
         {
             SquadronObj squadronObj = new SquadronObj();
@@ -447,7 +447,7 @@ namespace BotCommands
             {
                 await chnl.SendMessageAsync("No changes.");
             }
-            
+
         }
 
         public async Task<List<String>> GeneratePlayerList(DiscordSocketClient _client, ulong channelId, List<string> playerList)
@@ -540,6 +540,85 @@ namespace BotCommands
             }
         }
 
+        public async Task<SquadronObj> LoadSqd(string input)
+        {
+            // Implementation for the !readsqd command
+            //string input = message.Content.Substring("!readsqd ".Length);
+
+            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            {
+                //var chnl = message.Channel as IMessageChannel;
+                string directoryPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                // Search for files in the directory with the specified squadron name in the filename
+                string[] files = Directory.GetFiles(directoryPath, $"{input}_*.txt");
+
+                if (files.Length > 0)
+                {
+                    // Get the most recent file based on creation time
+                    string mostRecentFile = files.OrderByDescending(f => File.GetCreationTime(f)).First();
+
+                    //await chnl.SendMessageAsync("Reading the most recent file for " + input + ": " + mostRecentFile);
+                    Console.WriteLine("reading the most recent file");
+
+
+                    // Populate the SquadronObj from the most recent file
+                    Commands commands = new Commands();
+                    SquadronObj squadronObject = commands.PopulateSquadronFromTextFile(mostRecentFile);
+
+                    // Use the squadronObject as needed
+                    //scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
+
+                    return squadronObject;
+
+                }
+                else
+                {
+                    Console.WriteLine("No files found for " + input + ".");
+                    //chnl.SendMessageAsync("No files found for " + input + ".");
+                    return null;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Squadron needs to be Cadet, BofSs, or Academy.");
+                //message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                return null;
+            }
+
+        }
+
+        public List<PlayerRatingChange> CompareSquadrons(SquadronObj oldSqd, SquadronObj newSqd)
+        {
+            List<PlayerRatingChange> ratingChanges = new List<PlayerRatingChange>();
+
+            // Assuming players are uniquely identified by their names
+            foreach (var oldPlayer in oldSqd.Players)
+            {
+                var newPlayer = newSqd.Players.FirstOrDefault(p => p.PlayerName == oldPlayer.PlayerName);
+
+                if (newPlayer != null && oldPlayer.PersonalClanRating != newPlayer.PersonalClanRating)
+                {
+                    // Player's rating has changed
+                    ratingChanges.Add(new PlayerRatingChange
+                    {
+                        PlayerName = newPlayer.PlayerName,
+                        OldRating = oldPlayer.PersonalClanRating,
+                        NewRating = newPlayer.PersonalClanRating
+                    });
+                }
+            }
+
+            return ratingChanges;
+        }
+
+        public class PlayerRatingChange
+        {
+            public string PlayerName { get; set; }
+            public int OldRating { get; set; }
+            public int NewRating { get; set; }
+        }
 
     }
-}
+
+    }
