@@ -250,17 +250,26 @@ namespace CHFBot
 
             foreach (var change in ratingChanges)
             {
-                await chnl.SendMessageAsync($"Player: {change.PlayerName}, Old Rating: {change.OldRating}, New Rating: {change.NewRating}");
+
+                if (change.NewRating - change.OldRating > 0)
+                {
+                    await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                }
+                else if (change.NewRating - change.OldRating < 0)
+
+                { 
+                    await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}"); 
+                }
+                else
+                        {
+                    await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.OldRating - change.NewRating}");
+                }
+
+
+
             }
             await chnl.SendMessageAsync("Done with ratings summary.");
-            //compare it.
-            //look for playerlist differences.
-            //look for total score difference.
-            //look for player differences.
-            //look for pts differences.
-            //output to channels.
-
-
+ 
         }
         private async Task executeTimer(String prefix)
         {
