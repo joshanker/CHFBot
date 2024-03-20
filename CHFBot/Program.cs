@@ -109,6 +109,14 @@ namespace CHFBot
             await chnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
             await chnl.SendMessageAsync("SRE set to 0-0.");
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
+
+            await srescoretrackingchnl.SendMessageAsync("EsperBot is now online.");
+            await srescoretrackingchnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
+            await srescoretrackingchnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
+            await srescoretrackingchnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
+            await srescoretrackingchnl.SendMessageAsync("SRE set to 0-0.");
+            await srescoretrackingchnl.SendMessageAsync("Remember to use !help for a command list.");
+
         }
 
         ////////////////////////////////////////////////////////
