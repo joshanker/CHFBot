@@ -102,6 +102,7 @@ namespace CHFBot
             Console.WriteLine("Bot started up.");
             ITextChannel chnl = _client.GetChannel(EsperBotTestingChannel) as ITextChannel;
             ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
+            ITextChannel esperbotchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
 
             await chnl.SendMessageAsync("EsperBot is now online.");
             await chnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
@@ -110,12 +111,12 @@ namespace CHFBot
             await chnl.SendMessageAsync("SRE set to 0-0.");
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
 
-            await srescoretrackingchnl.SendMessageAsync("EsperBot is now online.");
-            await srescoretrackingchnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
-            await srescoretrackingchnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
-            await srescoretrackingchnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
-            await srescoretrackingchnl.SendMessageAsync("SRE set to 0-0.");
-            await srescoretrackingchnl.SendMessageAsync("Remember to use !help for a command list.");
+            await esperbotchnl.SendMessageAsync("EsperBot is now online.");
+            await esperbotchnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
+            await esperbotchnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
+            await esperbotchnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
+            await esperbotchnl.SendMessageAsync("SRE set to 0-0.");
+            await esperbotchnl.SendMessageAsync("Remember to use !help for a command list.");
 
         }
 
