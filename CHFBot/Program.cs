@@ -34,6 +34,7 @@ namespace CHFBot
         private static readonly ulong sreScoreTrackingChannel= 742213810752061471;
         private static readonly ulong esperbotchannel = 1165452109513244673;
         private static readonly ulong senateChannel = 484153871510405123;
+        private static readonly ulong bufssScoreTrackingChannel = 886756342210117663;
 
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
@@ -51,6 +52,7 @@ namespace CHFBot
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
         int squadronTotalScore = 0;
+        int squadronTotalScoreBufSs = 0;
 
         static void Main(string[] args)
         {
@@ -286,12 +288,21 @@ namespace CHFBot
             await commands.populateScore(sqdObj);
             squadronTotalScore = sqdObj.Score;
 
+            SquadronObj sqdObjBufSs = new SquadronObj();
+            sqdObj.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
+            await commands.populateScore(sqdObjBufSs);
+            squadronTotalScoreBufSs = sqdObjBufSs.Score;
+
+
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel srescoretrackingchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
+            ITextChannel bufsssrescoretrackingchl = _client.GetChannel(esperbotchannel) as ITextChannel;
+            
             await chnl.SendMessageAsync("Writing totals to file.");
 
             // Create a file name with the date and time prefix
             string fileName = "SREWinLossRecords.txt";
+            string fileNameBufSs = "SREWinLossRecordsBufSs.txt";
 
             // Check if the file exists
             if (!File.Exists(fileName))
@@ -299,12 +310,24 @@ namespace CHFBot
                 // If the file does not exist, create it
                 using (File.Create(fileName)) { } ;
             }
+            // Check if the file exists
+            if (!File.Exists(fileNameBufSs))
+            {
+                // If the file does not exist, create it
+                using (File.Create(fileNameBufSs)) { };
+            }
+
 
             // Open the file for writing
             using (StreamWriter writer = new StreamWriter(fileName, true))
             {
                 // Write the win and loss counters to the file
                 writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
+            }
+            using (StreamWriter writerBufSs = new StreamWriter(fileNameBufSs, true))
+            {
+                // Write the win and loss counters to the file
+                writerBufSs.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
 
             var lastWinCounter = winCounter;
