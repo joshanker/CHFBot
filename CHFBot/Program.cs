@@ -484,6 +484,10 @@ namespace CHFBot
                 {
                     await HandleTurnQuotesCommand(message);
                 }
+                else if (content.StartsWith("!turn5mTimer"))
+                {
+                    await HandleTurn5mTimerCommand(message);
+                }
                 else if (content.StartsWith("!record"))
                 {
                     await HandleRecordCommand(message);
@@ -1234,7 +1238,6 @@ namespace CHFBot
 
             }
         }
-
 
         [CommandDescription("Listplayers <over> / <under> <points> - example: \"Listplayers under 1500\"")]
         private async Task HandleListplayersCommand(SocketMessage message)
