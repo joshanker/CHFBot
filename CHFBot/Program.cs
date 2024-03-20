@@ -387,7 +387,7 @@ namespace CHFBot
                 await HandleSreScoreTrackingMessage(message);
             }
 
-            if (message.Channel.Name == "sre-score-tracking")
+            if (message.Channel.Name == "bufss-score-tracking")
             {
                 await HandleBufSsSreScoreTrackingMessage(message);
             }
