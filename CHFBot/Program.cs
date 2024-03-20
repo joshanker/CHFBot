@@ -40,6 +40,7 @@ namespace CHFBot
         //private readonly ulong CadetTestingChannel = 1125693277295886357;
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
+        public bool minuteTimerFive = false;
         int winCounter = 0;
         int lossCounter = 0;
         int bufSsWinCounter = 0;
@@ -105,6 +106,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("EsperBot is now online.");
             await chnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
             await chnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
+            await chnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
             await chnl.SendMessageAsync("SRE set to 0-0.");
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
         }
@@ -186,7 +188,7 @@ namespace CHFBot
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
-            //fiveMinuteTimer.Start();
+            fiveMinuteTimer.Start();
 
             
 
@@ -228,39 +230,43 @@ namespace CHFBot
         }
         private async void OnFiveMinuteEvent(object source, ElapsedEventArgs e)
         {
-            Console.WriteLine("5 minutes elapsed!");
-            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            //await chnl.SendMessageAsync("5 minutes is up.");
+            if(minuteTimerFive == true)
+            { 
+            
+                Console.WriteLine("5 minutes elapsed!");
+                IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+                //await chnl.SendMessageAsync("5 minutes is up.");
 
-            Commands commands = new Commands();
-            SquadronObj oldSqd =await commands.LoadSqd("BofSs");
-            await Handle5MinuteWriteTimer("BofSs");
-            SquadronObj newSqd = await commands.LoadSqd("BofSs");
+                Commands commands = new Commands();
+                SquadronObj oldSqd =await commands.LoadSqd("BofSs");
+                await Handle5MinuteWriteTimer("BofSs");
+                SquadronObj newSqd = await commands.LoadSqd("BofSs");
 
-            List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
+                List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
 
 
-            if (oldSqd.Score != newSqd.Score)
-            {
-                foreach (var change in ratingChanges)
-                {
-
-                    if (change.NewRating - change.OldRating > 0)
+                    if (oldSqd.Score != newSqd.Score)
                     {
-                        await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                    }
-                    else if (change.NewRating - change.OldRating < 0)
+                        foreach (var change in ratingChanges)
+                        {
 
-                    {
-                        await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                    }
-                    else
-                    {
-                        await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.OldRating - change.NewRating}");
-                    }
+                            if (change.NewRating - change.OldRating > 0)
+                            {
+                                await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                            }
+                            else if (change.NewRating - change.OldRating < 0)
 
-                }
-                await chnl.SendMessageAsync("---------- Done ----------");
+                            {
+                                await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                            }
+                            else
+                            {
+                                await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.OldRating - change.NewRating}");
+                            }
+
+                        }
+                        await chnl.SendMessageAsync("---------- Done ----------");
+                    }
             }
         }
         private async Task executeTimer(String prefix)
@@ -1207,6 +1213,28 @@ namespace CHFBot
 
             }
         }
+
+        [CommandDescription("turns on and off the 5 minute timer.")]
+        private async Task HandleTurn5mTimerCommand(SocketMessage message)
+        {
+            if (message.Content == "!turn5mTimer on")
+            {
+                minuteTimerFive = true;
+                await message.Channel.SendMessageAsync("OK, turning on the 5 minute timer");
+            }
+
+            else if (message.Content == "!turn5mTimer off")
+            {
+                minuteTimerFive = false;
+                await message.Channel.SendMessageAsync("OK, turning off the 5 minute timer");
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of the 5 minute timer is: " + minuteTimerFive.ToString());
+
+            }
+        }
+
 
         [CommandDescription("Listplayers <over> / <under> <points> - example: \"Listplayers under 1500\"")]
         private async Task HandleListplayersCommand(SocketMessage message)
