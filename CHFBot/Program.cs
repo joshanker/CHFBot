@@ -289,10 +289,9 @@ namespace CHFBot
             squadronTotalScore = sqdObj.Score;
 
             SquadronObj sqdObjBufSs = new SquadronObj();
-            sqdObj.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
+            sqdObjBufSs.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
             await commands.populateScore(sqdObjBufSs);
             squadronTotalScoreBufSs = sqdObjBufSs.Score;
-
 
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel srescoretrackingchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
@@ -345,20 +344,24 @@ namespace CHFBot
 
             await chnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + "<nag esper to implent this>" + ".");
 
+            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
-            await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + ".");
-            await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: " + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ".");
+            await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + "<nag esper to implent this>" + ".");
+
+
+            //await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + ".");
+            //await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: " + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ".");
 
             //await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".\");
 
-            await srescoretrackingchnl.SendMessageAsync("BufSs: Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + ").");
-            await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
+            //await srescoretrackingchnl.SendMessageAsync("BufSs: Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + ").");
+           // await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
 
 
             //await chnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
             
-            await srescoretrackingchnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
-            await srescoretrackingchnl.SendMessageAsync("BufSs: Total squadron score is now: " + "<nag esper to implent this>" + ".");
+          //  await srescoretrackingchnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScoreBufSs + ".");
+          //  await srescoretrackingchnl.SendMessageAsync("BufSs: Total squadron score is now: " + "<nag esper to implent this>" + ".");
 
         }
         
@@ -419,7 +422,7 @@ namespace CHFBot
                 await HandleSreScoreTrackingMessage(message);
             }
 
-            if (message.Channel.Name == "bufss-score-tracking")
+            if (message.Channel.Name == "🔍bufss-score-tracking")
             {
                 await HandleBufSsSreScoreTrackingMessage(message);
             }
@@ -516,7 +519,7 @@ namespace CHFBot
                 {
                     await HandleTurnQuotesCommand(message);
                 }
-                else if (content.StartsWith("!turn5mTimer"))
+                else if (content.StartsWith("!turn5mtimer"))
                 {
                     await HandleTurn5mTimerCommand(message);
                 }
@@ -611,7 +614,7 @@ namespace CHFBot
                 var chnl = _client.GetChannel(esperbotchannel) as IMessageChannel;
 
                 //message.Channel.SendMessageAsync($"OK, triggering Embeds");
-                //Console.WriteLine("embed detected!");
+                Console.WriteLine("embed detected!");
                 //chnl.SendMessageAsync("I have detected an Embed.");
 
                 var embed2 = message.Embeds.First();
@@ -649,7 +652,7 @@ namespace CHFBot
             }
             else
             {
-                Console.WriteLine("No matching embeds detected in sre-score-tracking.");
+                Console.WriteLine("No matching embeds detected in bufss-score-tracking.");
             }
         }
 
@@ -1253,13 +1256,13 @@ namespace CHFBot
         [CommandDescription("turns on and off the 5 minute timer.")]
         private async Task HandleTurn5mTimerCommand(SocketMessage message)
         {
-            if (message.Content == "!turn5mTimer on")
+            if (message.Content == "!turn5mtimer on")
             {
                 minuteTimerFive = true;
                 await message.Channel.SendMessageAsync("OK, turning on the 5 minute timer");
             }
 
-            else if (message.Content == "!turn5mTimer off")
+            else if (message.Content == "!turn5mtimer off")
             {
                 minuteTimerFive = false;
                 await message.Channel.SendMessageAsync("OK, turning off the 5 minute timer");

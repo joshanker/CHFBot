@@ -58,7 +58,7 @@ namespace BotCommands
             //string all = "all in scrapeAllAndPopulate was not populated.";
             try
             {
-                Console.WriteLine("!scraping all and populating...");
+                Console.WriteLine("!scraping all and populating..." + DateTime.Now);
 
                 Webscraper scraper = new Webscraper();
                 objname = await scraper.ScrapeWebsiteAllAndPopulateAsync(objname);
@@ -273,7 +273,7 @@ namespace BotCommands
         {
             try
             {
-                Console.WriteLine("Populating score...");
+                Console.WriteLine("Populating score..." + DateTime.Now);
                 //string url = "https://warthunder.com/en/community/claninfo/Cadet";
                 //string url = objname.url;
                 Webscraper scraper = new Webscraper();
