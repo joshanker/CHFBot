@@ -113,12 +113,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("SRE set to 0-0.");
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
 
-            await esperbotchnl.SendMessageAsync("EsperBot is now online.");
-            await esperbotchnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
-            await esperbotchnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
-            await esperbotchnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
-            await esperbotchnl.SendMessageAsync("SRE set to 0-0.");
-            await esperbotchnl.SendMessageAsync("Remember to use !help for a command list.");
+            await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + "." + "Voice channel tracking: " + trackVoiceUpdates + "." + "5 minutes timer: " + minuteTimerFive + "." + "SRE score set to 0-0.  Remember to use !help for a command list.");
 
         }
 
