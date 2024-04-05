@@ -97,23 +97,22 @@ namespace BotCommands
 
             // Sort the players by number of points, from most to least
             var sortedPlayers = sqdobj.Players.OrderByDescending(player => player.PersonalClanRating);
-
+            sb.AppendLine($"{" ",-50}");
             foreach (Player player in sortedPlayers)
             {
-
-
+                
                 if (overUnder == "over")
                 {
                     if (player.PersonalClanRating >= points)
                     {
-                        sb.AppendLine($"{player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+                    sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName} ");
                     }
                 }
                 if (overUnder == "under")
                 {
                     if (player.PersonalClanRating <= points)
                     {
-                        sb.AppendLine($"{player.PlayerName,-20} Pts: {player.PersonalClanRating}");
+                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName,-18}");
                     }
                 }
 

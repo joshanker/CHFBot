@@ -113,7 +113,7 @@ namespace CHFBot
             await chnl.SendMessageAsync("SRE set to 0-0.");
             await chnl.SendMessageAsync("Remember to use !help for a command list.");
 
-            await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + "." + "Voice channel tracking: " + trackVoiceUpdates + "." + "5 minutes timer: " + minuteTimerFive + "." + "SRE score set to 0-0.  Remember to use !help for a command list.");
+            await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "SRE score set to 0-0.  Remember to use !help for a command list.");
 
         }
 
@@ -1269,7 +1269,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Listplayers <over> / <under> <points> - example: \"Listplayers under 1500\"")]
+        [CommandDescription("Listplayers <over> / <under> <points> - example: \"!listplayers under 1500\"")]
         private async Task HandleListplayersCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1319,7 +1319,6 @@ namespace CHFBot
 
             squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
                 squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
-
 
 
                 //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
