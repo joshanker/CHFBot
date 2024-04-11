@@ -106,12 +106,7 @@ namespace CHFBot
             ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
             ITextChannel esperbotchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
 
-            await chnl.SendMessageAsync("EsperBot is now online.");
-            await chnl.SendMessageAsync("Status of Hourly Quotes: " + quotes + ".");
-            await chnl.SendMessageAsync("Status of Voice Channel tracking: " + trackVoiceUpdates + ".");
-            await chnl.SendMessageAsync("Status of 5 Minute timer: " + minuteTimerFive + ".");
-            await chnl.SendMessageAsync("SRE set to 0-0.");
-            await chnl.SendMessageAsync("Remember to use !help for a command list.");
+            await chnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "SRE score set to 0-0.  Remember to use !help for a command list.");
 
             await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "SRE score set to 0-0.  Remember to use !help for a command list.");
 
@@ -337,11 +332,11 @@ namespace CHFBot
 
             await chnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
-            await chnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + "<nag esper to implent this>" + ".");
+            await chnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
 
             await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
-            await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + "<nag esper to implent this>" + ".");
+            await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
 
 
             //await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + ".");
