@@ -213,23 +213,32 @@ namespace Scraper
         }
 
 
-        public static async Task TestScrape()
+        public static async Task<String> TestScrape()
         {
             string url = "https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/1/sort/dr_era5";
             string rawData = await DownloadPageAsync(url);
             string[] chunks = SplitDataIntoChunks(rawData);
+            
 
-            int numSquadronsToScrape = Math.Min(10, chunks.Length); // Limit to first 10 squadrons
-
-            for (int i = 0; i < numSquadronsToScrape; i++)
+            int numSquadronsToScrape = Math.Min(20, chunks.Length); // Limit to first 10 squadrons
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < numSquadronsToScrape; i++)
             {
                 string chunk = chunks[i];
-                string squadronName = ExtractFieldValue(chunk, "tag");
+                string squadronName = ExtractFieldValue(chunk, "tagl").PadRight(5,' ');
                 string battlesPlayed = ExtractFieldValue(chunk, "battles_hist");
                 string wins = ExtractFieldValue(chunk, "wins_hist");
 
                 Console.WriteLine($"{squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}");
+                
+
+                sb.Append($"{squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}\n");
+                    
             }
+            return sb.ToString();
+            
+
+
         }
 
 
@@ -247,8 +256,6 @@ namespace Scraper
             string[] separators = { "{\"pos\"" };
             return rawData.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
-
-
 
         private static string ExtractFieldValue(string chunk, string fieldName)
         {

@@ -1503,8 +1503,24 @@ namespace CHFBot
         private async Task HandleTestScrapeCommand(SocketMessage message)
         {
 
-            await Webscraper.TestScrape(); // Call the TestScrape method
+            string content = await Webscraper.TestScrape(); // Call the TestScrape method
 
+
+
+            const int maxEmbedLength = 4096;
+            const int maxChunkLength = 2000;
+
+            if (content.Length <= maxEmbedLength)
+            {
+                // If the content fits within the limit, send it as a single embedded message
+                await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
+            }
+            else
+            {
+                Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
+            }
+
+          
 
         }
 
