@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using Scraper;
 
 namespace CHFBot
 {
@@ -541,6 +542,10 @@ namespace CHFBot
                 else if (content.StartsWith("!listalts"))
                 {
                     await HandleListAltsCommand(message);
+                }
+                else if (content.StartsWith("!testscrape"))
+                {
+                    await HandleTestScrapeCommand(message);
                 }
                 else if (content.StartsWith("!squadrontotalscore"))
                 {
@@ -1493,6 +1498,17 @@ namespace CHFBot
             await message.Channel.SendMessageAsync("" + squadronTotalScore);
 
         }
+
+        [CommandDescription("Temporary command - used for testing.")]
+        private async Task HandleTestScrapeCommand(SocketMessage message)
+        {
+
+            await Webscraper.TestScrape(); // Call the TestScrape method
+
+
+        }
+
+
 
 
 

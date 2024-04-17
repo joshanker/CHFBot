@@ -618,6 +618,8 @@ namespace BotCommands
             public int NewRating { get; set; }
         }
 
+
+
     }
 
     }

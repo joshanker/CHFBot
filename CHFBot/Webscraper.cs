@@ -164,7 +164,7 @@ namespace Scraper
                     node = doc.DocumentNode.SelectSingleNode(DoEXpath);
                     //*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[12]
                     string test = node.InnerText.Trim();
-                    DateTime DoE = DateTime.ParseExact(node.InnerText.Trim(),"dd.MM.yyyy", CultureInfo.InvariantCulture);
+                    DateTime DoE = DateTime.ParseExact(node.InnerText.Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture);
                     newp = objname.setDoE(newp, DoE);
 
                     objname.AddPlayerTolist(newp);
@@ -182,36 +182,94 @@ namespace Scraper
 
             }
         }
-        
+
         public async Task<SquadronObj> scrapeWebsiteAndPopulateScoreAsync(SquadronObj sqdobj)
+        {
+            using (HttpClient client = new HttpClient())
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    string htmlContent = await client.GetStringAsync(sqdobj.url);
+                string htmlContent = await client.GetStringAsync(sqdobj.url);
 
-                    HtmlDocument doc = new HtmlDocument();
-                    doc.LoadHtml(htmlContent);
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(htmlContent);
 
-                    string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
+                string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
 
-                    HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
-                    string value = score.InnerText;
+                HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
+                string value = score.InnerText;
 
-                    sqdobj.Score = Int32.Parse(value);
+                sqdobj.Score = Int32.Parse(value);
 
-                    string digitsOnly = Regex.Replace(value, @"\D", "");
-                    char[] charsToTrim = { '"' };
+                string digitsOnly = Regex.Replace(value, @"\D", "");
+                char[] charsToTrim = { '"' };
 
-                    int number = Int32.Parse(digitsOnly);
-                   
-                    return sqdobj;
+                int number = Int32.Parse(digitsOnly);
 
-                }
-
-
+                return sqdobj;
 
             }
 
 
+
         }
-    } 
+
+
+        public static async Task TestScrape()
+        {
+            string url = "https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/1/sort/dr_era5";
+            string rawData = await DownloadPageAsync(url);
+            string[] chunks = SplitDataIntoChunks(rawData);
+
+            int numSquadronsToScrape = Math.Min(10, chunks.Length); // Limit to first 10 squadrons
+
+            for (int i = 0; i < numSquadronsToScrape; i++)
+            {
+                string chunk = chunks[i];
+                string squadronName = ExtractFieldValue(chunk, "tag");
+                string battlesPlayed = ExtractFieldValue(chunk, "battles_hist");
+                string wins = ExtractFieldValue(chunk, "wins_hist");
+
+                Console.WriteLine($"{squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}");
+            }
+        }
+
+
+        private static async Task<string> DownloadPageAsync(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                return await client.GetStringAsync(url);
+            }
+        }
+
+        private static string[] SplitDataIntoChunks(string rawData)
+        {
+            // Split the rawData into chunks based on the start of each squadron's data
+            string[] separators = { "{\"pos\"" };
+            return rawData.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+
+
+        private static string ExtractFieldValue(string chunk, string fieldName)
+        {
+            string pattern = $"\"{fieldName}\":(.*?),";
+            Match match = Regex.Match(chunk, pattern);
+            if (match.Success)
+            {
+                return match.Groups[1].Value.Trim('\"', '{', '}');
+            }
+            return "N/A";
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+}
+ 
