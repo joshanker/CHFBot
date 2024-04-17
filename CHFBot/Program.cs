@@ -35,10 +35,10 @@ namespace CHFBot
         private static readonly ulong esperbotchannel = 1165452109513244673;
         private static readonly ulong senateChannel = 484153871510405123;
         private static readonly ulong bufssScoreTrackingChannel = 886756342210117663;
-
         //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
         //private readonly ulong CadetTestingChannel = 1125693277295886357;
+
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
         public bool minuteTimerFive = false;
@@ -53,6 +53,11 @@ namespace CHFBot
         System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
         int squadronTotalScore = 0;
         int squadronTotalScoreBufSs = 0;
+        ulong officerRoleId = 410251113955196928;
+
+        int endOfSessionScore= 0;
+        int endOfSessionScoreBufSs = 0;
+        
 
         static void Main(string[] args)
         {
@@ -321,10 +326,8 @@ namespace CHFBot
 
             var lastWinCounter = winCounter;
             var lastLossCounter = lossCounter;
-
             var lastBufSsWinCounter = bufSsWinCounter;
             var lastBufSsLossCounter = bufSsLossCounter;
-
             winCounter = 0;
             lossCounter = 0;
             bufSsWinCounter = 0;
@@ -333,6 +336,12 @@ namespace CHFBot
             await chnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
             await chnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
+
+            await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObjBufSs.Score);
+            await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObj.Score);
+
+            endOfSessionScore = sqdObj.Score;
+            endOfSessionScoreBufSs = sqdObjBufSs.Score;
 
             await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
@@ -1365,7 +1374,7 @@ namespace CHFBot
         private async Task HandleSetWinLossCommand(SocketMessage message)
         {
             string content = message.ToString().ToLower();
-            if (message.Author.Id == 308128406699245568)
+            if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
             {
 
                 content = message.Content.Trim();
@@ -1400,7 +1409,7 @@ namespace CHFBot
             }
             else
             {
-                message.Channel.SendMessageAsync("C'mon, now, only Esper has that power.");
+                message.Channel.SendMessageAsync("C'mon, now, only Esper or an officer has that power.");
             }
         }
 
