@@ -338,8 +338,11 @@ namespace CHFBot
 
             await chnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
 
-            await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObjBufSs.Score);
-            await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObj.Score);
+            await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
+            await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
+
+            await srescoretrackingchnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
+            await bufsssrescoretrackingchl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
 
             endOfSessionScore = sqdObj.Score;
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
@@ -347,21 +350,6 @@ namespace CHFBot
             await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
             await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
-
-
-            //await srescoretrackingchnl.SendMessageAsync("Win/Loss count for this session was: " + lastWinCounter + "-" + lastLossCounter + ".");
-            //await srescoretrackingchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: " + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ".");
-
-            //await chnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".\");
-
-            //await srescoretrackingchnl.SendMessageAsync("BufSs: Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + ").");
-           // await srescoretrackingchnl.SendMessageAsync("Win and Loss counters reset. (" + winCounter + "-" + lossCounter + ").");
-
-
-            //await chnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScore + ".");
-            
-          //  await srescoretrackingchnl.SendMessageAsync("Total squadron score is now: " + squadronTotalScoreBufSs + ".");
-          //  await srescoretrackingchnl.SendMessageAsync("BufSs: Total squadron score is now: " + "<nag esper to implent this>" + ".");
 
         }
         
@@ -543,7 +531,7 @@ namespace CHFBot
                 {
                     await HandleListAltsCommand(message);
                 }
-                else if (content.StartsWith("!testscrape"))
+                else if (content.StartsWith("!2testscrape"))
                 {
                     await HandleTestScrapeCommand(message);
                 }
@@ -1504,8 +1492,6 @@ namespace CHFBot
         {
 
             string content = await Webscraper.TestScrape(); // Call the TestScrape method
-
-
 
             const int maxEmbedLength = 4096;
             const int maxChunkLength = 2000;

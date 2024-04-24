@@ -219,20 +219,32 @@ namespace Scraper
             string rawData = await DownloadPageAsync(url);
             string[] chunks = SplitDataIntoChunks(rawData);
             
-
-            int numSquadronsToScrape = Math.Min(20, chunks.Length); // Limit to first 10 squadrons
+            int numSquadronsToScrape = Math.Min(20, chunks.Length); // Limit to first XX squadrons
             StringBuilder sb = new StringBuilder();
+            sb.Append("#   Name   Wins   Loss Played\n\n");
+
             for (int i = 1; i < numSquadronsToScrape; i++)
             {
                 string chunk = chunks[i];
-                string squadronName = ExtractFieldValue(chunk, "tagl").PadRight(5,' ');
-                string battlesPlayed = ExtractFieldValue(chunk, "battles_hist");
-                string wins = ExtractFieldValue(chunk, "wins_hist");
+                
+                string squadronName = ExtractFieldValue(chunk, "tag");
+                if (squadronName.Length > 2)
+                {
+                    // Trim the first and last characters
+                    squadronName = squadronName.Substring(1, squadronName.Length - 2);
+                }
+                squadronName = squadronName.PadRight(5, ' ');
+                string battlesPlayed = ExtractFieldValue(chunk, "battles_hist").PadRight(4, ' ');
+                string wins = ExtractFieldValue(chunk, "wins_hist").PadLeft(4, ' ');
+                string score = ExtractFieldValue(chunk, "dr_era5_hist").PadRight(4, ' ');
+                string pos = i.ToString().PadRight(3, ' ');
+                int losses = int.Parse(battlesPlayed) - int.Parse(wins);
+                string lossesPad = losses.ToString().PadLeft(4, ' ');
 
-                Console.WriteLine($"{squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}");
+                Console.WriteLine($"{i} {squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}, Score: {score}");
                 
 
-                sb.Append($"{squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}\n");
+                sb.Append($"{pos} {squadronName}: {wins} & {lossesPad} ({battlesPlayed}), Score: {score}\n");
                     
             }
             return sb.ToString();
