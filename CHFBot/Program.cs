@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using Scraper;
+using System.Globalization;
 
 namespace CHFBot
 {
@@ -52,9 +53,16 @@ namespace CHFBot
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
+        
+        
         int squadronTotalScore = 0;
         int squadronTotalScoreBufSs = 0;
-        ulong officerRoleId = 410251113955196928;
+
+
+
+
+
+    ulong officerRoleId = 410251113955196928;
 
         int endOfSessionScore= 0;
         int endOfSessionScoreBufSs = 0;
@@ -64,6 +72,7 @@ namespace CHFBot
         {
             new Program().RunBotAsync().GetAwaiter().GetResult();
 
+            
         }
 
         public async Task RunBotAsync()
@@ -312,7 +321,6 @@ namespace CHFBot
                 using (File.Create(fileNameBufSs)) { };
             }
 
-
             // Open the file for writing
             using (StreamWriter writer = new StreamWriter(fileName, true))
             {
@@ -324,6 +332,43 @@ namespace CHFBot
                 // Write the win and loss counters to the file
                 writerBufSs.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
+
+
+            ////////////////////////////////
+            ///let's do that again for TopSquadTotals.txt
+            ////////////////////////////////
+
+
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string topSquadFileName = $"TopSquadTotals_{currentDate}.txt";
+
+            // Check if the file exists
+            if (!File.Exists(topSquadFileName))
+            {
+                // If the file does not exist, create it
+                using (File.Create(topSquadFileName)) { };
+            }
+
+            string content = await Webscraper.TestScrape(); // Call the TestScrape method
+            const int maxEmbedLength = 4096;
+            const int maxChunkLength = 2000;
+            if (content.Length <= maxEmbedLength)
+            {
+                // If the content fits within the limit, send it as a single embedded message
+                //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
+                // Open the file for writing
+                using (StreamWriter topSquadWriter = new StreamWriter(topSquadFileName, true))
+                {
+                    // Write the top squadron totals to the file
+                    topSquadWriter.WriteLine($"{prefix}: {content}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
+            }
+
+
 
             var lastWinCounter = winCounter;
             var lastLossCounter = lossCounter;
@@ -531,7 +576,7 @@ namespace CHFBot
                 {
                     await HandleListAltsCommand(message);
                 }
-                else if (content.StartsWith("!2testscrape"))
+                else if (content.StartsWith("!testscrape"))
                 {
                     await HandleTestScrapeCommand(message);
                 }
@@ -1504,6 +1549,7 @@ namespace CHFBot
             else
             {
                 Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
+                await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
             }
 
           

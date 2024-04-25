@@ -219,7 +219,7 @@ namespace Scraper
             string rawData = await DownloadPageAsync(url);
             string[] chunks = SplitDataIntoChunks(rawData);
             
-            int numSquadronsToScrape = Math.Min(20, chunks.Length); // Limit to first XX squadrons
+            int numSquadronsToScrape = Math.Min(21, chunks.Length); // Limit to first XX squadrons
             StringBuilder sb = new StringBuilder();
             sb.Append("#   Name   Wins   Loss Played\n\n");
 
