@@ -100,12 +100,12 @@ namespace BotCommands
             sb.AppendLine($"{" ",-50}");
             foreach (Player player in sortedPlayers)
             {
-                
+
                 if (overUnder == "over")
                 {
                     if (player.PersonalClanRating >= points)
                     {
-                    sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName} ");
+                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName} ");
                     }
                 }
                 if (overUnder == "under")
@@ -618,7 +618,7 @@ namespace BotCommands
             public int NewRating { get; set; }
         }
 
-
+        
 
     }
 

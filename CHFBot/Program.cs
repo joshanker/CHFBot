@@ -53,13 +53,54 @@ namespace CHFBot
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
-        
-        
-        int squadronTotalScore = 0;
+
+        ////////////// On startup, let's see if we can pull the score.....
+        ////////////////
+        ////////////////
+        ////////////////
+        ////////////////
+
+        public class ScoreExtractor
+        {
+            public int ExtractScoreOfBofSs()
+            {
+                string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(), "TopSquadTotals_*.txt");
+                if (files.Length == 0)
+                {
+                    Console.WriteLine("No recent files found for extraction.");
+                    int squadronTotalScore = 0;
+                    return -1; // Or throw an exception
+                }
+
+                Array.Sort(files);
+                string mostRecentFile = files[files.Length - 1];
+
+                string[] lines = File.ReadAllLines(mostRecentFile);
+                string lineWithBofSs = lines.FirstOrDefault(line => line.Contains("BofSs"));
+
+                if (lineWithBofSs == null)
+                {
+                    Console.WriteLine("No data found for squadron BofSs.");
+                    int squadronTotalScore = 0;
+                    return -1; // Or throw an exception
+                }
+
+                int index = lineWithBofSs.IndexOf("Score:");
+                if (index == -1)
+                {
+                    Console.WriteLine("Score not found for squadron BofSs.");
+                    int squadronTotalScore = 0;
+                    return -1; // Or throw an exception
+                }
+
+                string scorePart = lineWithBofSs.Substring(index + 7); // 7 is the length of "Score: "
+                int score = int.Parse(scorePart.Trim());
+                return score;
+            }
+        }
+
+
         int squadronTotalScoreBufSs = 0;
-
-
-
 
 
     ulong officerRoleId = 410251113955196928;
@@ -121,9 +162,14 @@ namespace CHFBot
             ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
             ITextChannel esperbotchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
 
-            await chnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "SRE score set to 0-0.  Remember to use !help for a command list.");
+            ScoreExtractor extractor = new ScoreExtractor();
+            int scoreOfBofSs = extractor.ExtractScoreOfBofSs();
+            Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
 
-            await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "SRE score set to 0-0.  Remember to use !help for a command list.");
+            await chnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Remember to use !help for a command list.");
+
+            await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Remember to use !help for a command list.");
+
 
         }
 
@@ -340,7 +386,8 @@ namespace CHFBot
 
 
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-            string topSquadFileName = $"TopSquadTotals_{prefix}.txt";
+            string topSquadFileName = prefix.Replace(":", "_").TrimEnd();
+            topSquadFileName = $"TopSquadTotals_{topSquadFileName}.txt";
 
             // Check if the file exists
             if (!File.Exists(topSquadFileName))
@@ -579,6 +626,10 @@ namespace CHFBot
                 else if (content.StartsWith("!testscrape"))
                 {
                     await HandleTestScrapeCommand(message);
+                }
+                else if (content.StartsWith("!comparescrape"))
+                {
+                    await HandleCompareScrapeCommand(message);
                 }
                 else if (content.StartsWith("!squadrontotalscore"))
                 {
@@ -1551,11 +1602,63 @@ namespace CHFBot
                 Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
                 await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
             }
-
-          
+                   
 
         }
 
+
+        [CommandDescription("Temporary command - used for testing.")]
+        private async Task HandleCompareScrapeCommand(SocketMessage message)
+        {
+
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string yesterdayDate = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+            string twoDaysAgoDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
+
+            string[] possibleFilenames = { $"TopSquadTotals_{currentDate}.txt", $"TopSquadTotals_{yesterdayDate}.txt", $"TopSquadTotals_{twoDaysAgoDate}.txt" };
+
+            string mostRecentFilename = null;
+
+            foreach (var filename in possibleFilenames)
+            {
+                if (File.Exists(filename))
+                {
+                    mostRecentFilename = filename;
+                    break;
+                }
+            }
+            string currentContent =null;
+            if (mostRecentFilename != null)
+            {
+                // File exists, read its content and perform comparison
+                currentContent = File.ReadAllText(mostRecentFilename);
+                // Perform comparison with the currentContent
+            }
+            else
+            {
+                string errorMessage = "No recent files found for comparison.";
+                Console.WriteLine(errorMessage);
+                await message.Channel.SendMessageAsync(errorMessage);
+                return;
+
+            }
+
+            // Perform a new scrape
+            string newContent = await Webscraper.TestScrape();
+
+            // Compare the totals (You'll need to implement this logic) content and newContent
+            // For example:
+            // ComparisonResult comparisonResult = CompareTotals(currentContent, newContent);
+
+            // Send the comparison result
+            // await message.Channel.SendMessageAsync($"Comparison Result: {comparisonResult}");
+
+            // For now, let's just send the current and new content for testing
+            await message.Channel.SendMessageAsync($"Current Content (from {currentDate:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
+
+
+
+        }
 
 
 
