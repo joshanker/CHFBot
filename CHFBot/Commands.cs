@@ -645,16 +645,7 @@ namespace BotCommands
                 string newLine = newLines[i];
                 Console.WriteLine($"NLine: {newLine}");
 
-                //// Parse the data from the current and new lines
-                //string[] currentData = currentLine.Split(new[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries);
-
-                //string[] currentComponents = Regex.Split(currentLine, @"\s+");
-//                string[] currentComponents = currentLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 List<string> tempList = new List<string>();
-                //
-                //string[] currentData = tempList.ToArray();
-
-                //string[] newData = newLine.Split(new[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries);
 
                 string[] delimiters = new string[] { " ", ":", "  " };
                 
@@ -676,12 +667,18 @@ namespace BotCommands
                 if (currentData[2] != newData[2])
                 {
                     hasChanges = true;
-                    formattedLine += " (Wins)";
+                    int currentWins = int.Parse(currentData[2]);
+                    int newWins = int.Parse(newData[2]);
+                    int winsDifference = newWins - currentWins;
+                    formattedLine += $" (Wins: {winsDifference})";
                 }
                 if (currentData[4] != newData[4])
                 {
                     hasChanges = true;
-                    formattedLine += " (Losses)";
+                    int currentLosses = int.Parse(currentData[4]);
+                    int newLosses = int.Parse(newData[4]);
+                    int lossesDifference = newLosses - currentLosses;
+                    formattedLine += $" (Losses: {lossesDifference})";
                 }
                 if (currentData[6] != newData[6])
                 {
@@ -691,29 +688,18 @@ namespace BotCommands
                 if (currentData[7] != newData[7])
                 {
                     hasChanges = true;
-                    formattedLine += " (Score)";
-                }
+                    int currentScore = int.Parse(currentData[7]);
+                    int newScore = int.Parse(newData[7]);
+                    int scoreDifference = newScore - currentScore;
+                    formattedLine += $" ({scoreDifference} pts)";
+                 }
 
                 // Add the formatted line with change note (if any)
-                output.AppendLine(hasChanges ? $"{formattedLine} (Changed)" : formattedLine);
+                output.AppendLine(hasChanges ? $"{formattedLine}" : formattedLine);
             }
 
             return output.ToString();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
