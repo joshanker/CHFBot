@@ -53,6 +53,8 @@ namespace CHFBot
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
+        int squadronTotalScore = 0;
+        int squadronTotalScoreBufSs = 0;
 
         ////////////// On startup, let's see if we can pull the score.....
         ////////////////
@@ -100,10 +102,9 @@ namespace CHFBot
         }
 
 
-        int squadronTotalScoreBufSs = 0;
 
 
-    ulong officerRoleId = 410251113955196928;
+        ulong officerRoleId = 410251113955196928;
 
         int endOfSessionScore= 0;
         int endOfSessionScoreBufSs = 0;
@@ -165,10 +166,11 @@ namespace CHFBot
             ScoreExtractor extractor = new ScoreExtractor();
             int scoreOfBofSs = extractor.ExtractScoreOfBofSs();
             Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
+            int squadronTotalScore = scoreOfBofSs;
 
-            await chnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Remember to use !help for a command list.");
+            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Use !help for a command list.");
 
-            await esperbotchnl.SendMessageAsync("EsperBot is now online. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5 minutes timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Remember to use !help for a command list.");
+            await esperbotchnl.SendMessageAsync("EsperBot online! Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
 
 
         }
@@ -1611,19 +1613,34 @@ namespace CHFBot
         private async Task HandleCompareScrapeCommand(SocketMessage message)
         {
 
-            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-            string yesterdayDate = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
-            string twoDaysAgoDate = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
+            // Dates with leading zeros
+            string currentDateLeadingZeros = DateTime.Now.ToString("yyyy-MM-dd");
+            string yesterdayDateLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+            string twoDaysAgoDateLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
 
-            string[] possibleFilenames = { $"TopSquadTotals_{currentDate}.txt", $"TopSquadTotals_{yesterdayDate}.txt", $"TopSquadTotals_{twoDaysAgoDate}.txt" };
+            // Dates without leading zeros
+            string currentDateNoLeadingZeros = DateTime.Now.ToString("yyyy-M-d");
+            string yesterdayDateNoLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-M-d");
+            string twoDaysAgoDateNoLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-M-d");
+
+            string[] possibleFilenames = 
+                {
+                $"TopSquadTotals_{currentDateLeadingZeros}*.txt", 
+                $"TopSquadTotals_{yesterdayDateLeadingZeros}*.txt", 
+                $"TopSquadTotals_{twoDaysAgoDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{currentDateNoLeadingZeros}*.txt", 
+                $"TopSquadTotals_{yesterdayDateNoLeadingZeros}*.txt", 
+                $"TopSquadTotals_{twoDaysAgoDateNoLeadingZeros}*.txt"
+                };
 
             string mostRecentFilename = null;
 
-            foreach (var filename in possibleFilenames)
+            foreach (var filenamePattern in possibleFilenames)
             {
-                if (File.Exists(filename))
+                string[] matchingFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), filenamePattern);
+                if (matchingFiles.Length > 0)
                 {
-                    mostRecentFilename = filename;
+                    mostRecentFilename = matchingFiles[matchingFiles.Length - 1]; // Get the most recent file
                     break;
                 }
             }
@@ -1639,6 +1656,7 @@ namespace CHFBot
                 string errorMessage = "No recent files found for comparison.";
                 Console.WriteLine(errorMessage);
                 await message.Channel.SendMessageAsync(errorMessage);
+                
                 return;
 
             }
@@ -1654,7 +1672,7 @@ namespace CHFBot
             // await message.Channel.SendMessageAsync($"Comparison Result: {comparisonResult}");
 
             // For now, let's just send the current and new content for testing
-            await message.Channel.SendMessageAsync($"Current Content (from {currentDate:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
+            await message.Channel.SendMessageAsync($"Current Content (from {currentDateLeadingZeros:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
 
 
 
