@@ -1672,7 +1672,7 @@ namespace CHFBot
             // await message.Channel.SendMessageAsync($"Comparison Result: {comparisonResult}");
 
             // For now, let's just send the current and new content for testing
-            await message.Channel.SendMessageAsync($"Current Content (from {currentDateLeadingZeros:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
+            //await message.Channel.SendMessageAsync($"Current Content (from {currentDateLeadingZeros:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
 
 
             // Compare the contents
@@ -1680,7 +1680,7 @@ namespace CHFBot
 
             string comparisonResult = commands.CompareContents(currentContent, newContent);
 
-            await message.Channel.SendMessageAsync($"Comparison Result:\n{comparisonResult}");
+            await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
 
 
 

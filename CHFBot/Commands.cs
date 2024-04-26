@@ -11,6 +11,7 @@ using Discord.WebSocket;
 using SquadronObjects;
 using System.Globalization;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace BotCommands
 {
@@ -618,106 +619,97 @@ namespace BotCommands
             public int NewRating { get; set; }
         }
 
-
         public string CompareContents(string currentContent, string newContent)
         {
-            // Split the content into lines
-            string[] currentLines = currentContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            string[] newLines = newContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            // Split the content strings into lines
+            string[] currentLines = currentContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] newLines = newContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Initialize a StringBuilder to store the comparison result
-            StringBuilder comparisonResult = new StringBuilder();
-
-            // Start from the index where squadron data begins (skip header and blank lines)
-            int startIndex = 2; // Assuming header and a blank line
-
-            // Ensure both files have enough lines to start processing
-            if (currentLines.Length < startIndex || newLines.Length < startIndex)
+            // Check if the number of lines is the same
+            if (currentLines.Length != newLines.Length)
             {
-                return "Insufficient data for comparison.";
+                return "Error: Different number of lines in current and new content.";
             }
 
-            // Iterate through each line and compare the squadron statistics
-            for (int i = startIndex; i < currentLines.Length && i < newLines.Length; i++)
-            {
-                // Extract the squadron data from current and new lines
-                string currentSquadron = currentLines[i].Trim();
-                string newSquadron = newLines[i].Trim();
+            // Build the output string
+            StringBuilder output = new StringBuilder();
 
-                // Compare squadron data
-                if (currentSquadron != newSquadron)
+            // Add the header
+            output.AppendLine("# Name   Wins   Loss Played   Score  (Change)");
+
+            // Loop through each line (assuming they have the same number of lines)
+            for (int i = 1; i < currentLines.Length; i++) // Skip the header line
+            {
+                string currentLine = currentLines[i];
+                Console.WriteLine($"CLine: {currentLine}");
+                string newLine = newLines[i];
+                Console.WriteLine($"NLine: {newLine}");
+
+                //// Parse the data from the current and new lines
+                //string[] currentData = currentLine.Split(new[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //string[] currentComponents = Regex.Split(currentLine, @"\s+");
+//                string[] currentComponents = currentLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                List<string> tempList = new List<string>();
+                //
+                //string[] currentData = tempList.ToArray();
+
+                //string[] newData = newLine.Split(new[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries);
+
+                string[] delimiters = new string[] { " ", ":", "  " };
+                
+                string[] currentData = currentLine.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+                string[] newData = newLine.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+
+                // Check if the data points are present and in the expected format
+                if (currentData.Length != 8 || newData.Length != 8)
                 {
-                    // Squadron data has changed, append the difference to the comparison result
-                    comparisonResult.AppendLine($"Changes detected in squadron data at line {i - startIndex + 1}:");
-                    comparisonResult.AppendLine($"Old data: {currentSquadron}");
-                    comparisonResult.AppendLine($"New data: {newSquadron}");
-                    comparisonResult.AppendLine(); // Add an empty line for clarity
+
+                    return "Error: Invalid format in one or more lines.";
                 }
+
+                // Build the formatted output line
+                string formattedLine = $"{currentData[1]}  {newData[2]}  {newData[3]}  {newData[5]} {newData[7]}";
+
+                // Check for changes in each data point
+                bool hasChanges = false;
+                if (currentData[2] != newData[2])
+                {
+                    hasChanges = true;
+                    formattedLine += " (Wins)";
+                }
+                if (currentData[4] != newData[4])
+                {
+                    hasChanges = true;
+                    formattedLine += " (Losses)";
+                }
+                if (currentData[6] != newData[6])
+                {
+                    hasChanges = true;
+                    formattedLine += " (Games Played)";
+                }
+                if (currentData[7] != newData[7])
+                {
+                    hasChanges = true;
+                    formattedLine += " (Score)";
+                }
+
+                // Add the formatted line with change note (if any)
+                output.AppendLine(hasChanges ? $"{formattedLine} (Changed)" : formattedLine);
             }
 
-            // Check if any changes were detected
-            if (comparisonResult.Length == 0)
-            {
-                comparisonResult.AppendLine("No changes detected in squadron data.");
-            }
-
-            // Return the comparison result as a string
-            return comparisonResult.ToString();
+            return output.ToString();
         }
 
 
 
 
-        private string GetChangeNote(int currentPlayed, int currentWins, int currentLosses, int currentScore, int newPlayed, int newWins, int newLosses, int newScore)
-        {
-            // Initialize a StringBuilder to store the change note
-            StringBuilder changeNote = new StringBuilder();
 
-            // Check for changes in each stat
-            if (newPlayed > currentPlayed)
-            {
-                changeNote.Append($"Played increased by {newPlayed - currentPlayed}");
-            }
-            else if (newPlayed < currentPlayed)
-            {
-                changeNote.Append($"Played decreased by {currentPlayed - newPlayed}");
-            }
 
-            if (newWins > currentWins)
-            {
-                if (changeNote.Length > 0) changeNote.Append(", ");
-                changeNote.Append($"Wins increased by {newWins - currentWins}");
-            }
-            else if (newWins < currentWins)
-            {
-                if (changeNote.Length > 0) changeNote.Append(", ");
-                changeNote.Append($"Wins decreased by {currentWins - newWins}");
-            }
 
-            if (newLosses > currentLosses)
-            {
-                if (changeNote.Length > 0) changeNote.Append(", ");
-                changeNote.Append($"Losses increased by {newLosses - currentLosses}");
-            }
-            else if (newLosses < currentLosses)
-            {
-                if (changeNote.Length > 0) changeNote.Append(", ");
-                changeNote.Append($"Losses decreased by {currentLosses - newLosses}");
-            }
 
-            if (newScore > currentScore)
-            {
-                if (changeNote.Length > 0) changeNote.Append(", ");
-                changeNote.Append($"Score increased by {newScore - currentScore}");
-            }
-            else if (newScore < currentScore)
-            {
-                if (changeNote.Length > 0) changeNote.Append(", ");
-                changeNote.Append($"Score decreased by {currentScore - newScore}");
-            }
 
-            return changeNote.ToString();
-        }
+
 
 
 
