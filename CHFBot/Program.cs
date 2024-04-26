@@ -340,7 +340,7 @@ namespace CHFBot
 
 
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-            string topSquadFileName = $"TopSquadTotals_{currentDate}.txt";
+            string topSquadFileName = $"TopSquadTotals_{prefix}.txt";
 
             // Check if the file exists
             if (!File.Exists(topSquadFileName))
@@ -360,7 +360,7 @@ namespace CHFBot
                 using (StreamWriter topSquadWriter = new StreamWriter(topSquadFileName, true))
                 {
                     // Write the top squadron totals to the file
-                    topSquadWriter.WriteLine($"{prefix}: {content}");
+                    topSquadWriter.WriteLine($"{prefix}\n: {content}");
                 }
             }
             else
