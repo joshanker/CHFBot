@@ -629,7 +629,7 @@ namespace CHFBot
                 {
                     await HandleTestScrapeCommand(message);
                 }
-                else if (content.StartsWith("!comparescrape"))
+                else if (content.StartsWith("!2comparescrape"))
                 {
                     await HandleCompareScrapeCommand(message);
                 }
@@ -1673,6 +1673,14 @@ namespace CHFBot
 
             // For now, let's just send the current and new content for testing
             await message.Channel.SendMessageAsync($"Current Content (from {currentDateLeadingZeros:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
+
+
+            // Compare the contents
+            Commands commands = new Commands();
+
+            string comparisonResult = commands.CompareContents(currentContent, newContent);
+
+            await message.Channel.SendMessageAsync($"Comparison Result:\n{comparisonResult}");
 
 
 

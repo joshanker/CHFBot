@@ -618,8 +618,112 @@ namespace BotCommands
             public int NewRating { get; set; }
         }
 
-        
+
+        public string CompareContents(string currentContent, string newContent)
+        {
+            // Split the content into lines
+            string[] currentLines = currentContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] newLines = newContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Initialize a StringBuilder to store the comparison result
+            StringBuilder comparisonResult = new StringBuilder();
+
+            // Start from the index where squadron data begins (skip header and blank lines)
+            int startIndex = 2; // Assuming header and a blank line
+
+            // Ensure both files have enough lines to start processing
+            if (currentLines.Length < startIndex || newLines.Length < startIndex)
+            {
+                return "Insufficient data for comparison.";
+            }
+
+            // Iterate through each line and compare the squadron statistics
+            for (int i = startIndex; i < currentLines.Length && i < newLines.Length; i++)
+            {
+                // Extract the squadron data from current and new lines
+                string currentSquadron = currentLines[i].Trim();
+                string newSquadron = newLines[i].Trim();
+
+                // Compare squadron data
+                if (currentSquadron != newSquadron)
+                {
+                    // Squadron data has changed, append the difference to the comparison result
+                    comparisonResult.AppendLine($"Changes detected in squadron data at line {i - startIndex + 1}:");
+                    comparisonResult.AppendLine($"Old data: {currentSquadron}");
+                    comparisonResult.AppendLine($"New data: {newSquadron}");
+                    comparisonResult.AppendLine(); // Add an empty line for clarity
+                }
+            }
+
+            // Check if any changes were detected
+            if (comparisonResult.Length == 0)
+            {
+                comparisonResult.AppendLine("No changes detected in squadron data.");
+            }
+
+            // Return the comparison result as a string
+            return comparisonResult.ToString();
+        }
+
+
+
+
+        private string GetChangeNote(int currentPlayed, int currentWins, int currentLosses, int currentScore, int newPlayed, int newWins, int newLosses, int newScore)
+        {
+            // Initialize a StringBuilder to store the change note
+            StringBuilder changeNote = new StringBuilder();
+
+            // Check for changes in each stat
+            if (newPlayed > currentPlayed)
+            {
+                changeNote.Append($"Played increased by {newPlayed - currentPlayed}");
+            }
+            else if (newPlayed < currentPlayed)
+            {
+                changeNote.Append($"Played decreased by {currentPlayed - newPlayed}");
+            }
+
+            if (newWins > currentWins)
+            {
+                if (changeNote.Length > 0) changeNote.Append(", ");
+                changeNote.Append($"Wins increased by {newWins - currentWins}");
+            }
+            else if (newWins < currentWins)
+            {
+                if (changeNote.Length > 0) changeNote.Append(", ");
+                changeNote.Append($"Wins decreased by {currentWins - newWins}");
+            }
+
+            if (newLosses > currentLosses)
+            {
+                if (changeNote.Length > 0) changeNote.Append(", ");
+                changeNote.Append($"Losses increased by {newLosses - currentLosses}");
+            }
+            else if (newLosses < currentLosses)
+            {
+                if (changeNote.Length > 0) changeNote.Append(", ");
+                changeNote.Append($"Losses decreased by {currentLosses - newLosses}");
+            }
+
+            if (newScore > currentScore)
+            {
+                if (changeNote.Length > 0) changeNote.Append(", ");
+                changeNote.Append($"Score increased by {newScore - currentScore}");
+            }
+            else if (newScore < currentScore)
+            {
+                if (changeNote.Length > 0) changeNote.Append(", ");
+                changeNote.Append($"Score decreased by {currentScore - newScore}");
+            }
+
+            return changeNote.ToString();
+        }
+
+
+
+
+
 
     }
 
-    }
+}
