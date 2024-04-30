@@ -170,7 +170,7 @@ namespace CHFBot
 
             await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Use !help for a command list.");
 
-            await esperbotchnl.SendMessageAsync("EsperBot online! Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
+            //await esperbotchnl.SendMessageAsync("EsperBot online! Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
 
 
         }
@@ -1410,8 +1410,6 @@ namespace CHFBot
 
                 squadronObject = commands.validateSquadron("BofSs");
 
-
-
             var chnl = message.Channel as IMessageChannel;
 
             chnl.SendMessageAsync("Players with score " + overUnder + " " + points + ":");
@@ -1427,7 +1425,6 @@ namespace CHFBot
                 commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
 
         }
-
 
         private async Task HandleListplayersCommand2(SocketMessage message)
         {

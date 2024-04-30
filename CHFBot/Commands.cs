@@ -623,6 +623,10 @@ namespace BotCommands
 
         public string CompareContents(string currentContent, string newContent)
         {
+
+            currentContent = currentContent.Replace("\n\n", "\n");
+            newContent = newContent.Replace("\n\n", "\n");
+
             // Split the content strings into lines
             string[] currentLines = currentContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             string[] newLines = newContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -630,6 +634,7 @@ namespace BotCommands
             // Check if the number of lines is the same
             if (currentLines.Length != newLines.Length)
             {
+                //Console.WriteLine(" output:" + currentLines.Length + " " + newLines.Length);
                 return "Error: Different number of lines in current and new content.";
             }
 
@@ -639,9 +644,6 @@ namespace BotCommands
             // Add the header
             output.AppendLine("#   Name   Wins  Loss  Played  Score  (Change)");
             
-
-
-
             // Loop through each line (assuming they have the same number of lines)
             for (int i = 1; i < currentLines.Length; i++) // Skip the header line
             {
@@ -649,7 +651,6 @@ namespace BotCommands
                 
                 string newLine = newLines[i];
                
-
                 List<string> tempList = new List<string>();
 
                 string[] delimiters = new string[] { " ", ":", "  " };
@@ -660,7 +661,7 @@ namespace BotCommands
                 // Check if the data points are present and in the expected format
                 if (currentData.Length != 8 || newData.Length != 8)
                 {
-
+                    Console.WriteLine(" output:" + currentData.Length + " " + newData.Length);
                     return "Error: Invalid format in one or more lines.";
                 }
 
@@ -734,6 +735,7 @@ namespace BotCommands
 
             return output.ToString();
         }
+
 
 
     }
