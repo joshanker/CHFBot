@@ -613,6 +613,10 @@ namespace CHFBot
                 {
                     await HandleListplayersCommand(message);
                 }
+                else if (content.StartsWith("!2listplayers"))
+                {
+                    await HandleListplayersCommand2(message);
+                }
                 else if (content.StartsWith("!lastten"))
                 {
                     await HandleLastTenCommand(message);
@@ -629,7 +633,7 @@ namespace CHFBot
                 {
                     await HandleTestScrapeCommand(message);
                 }
-                else if (content.StartsWith("!2comparescrape"))
+                else if (content.StartsWith("!comparescrape"))
                 {
                     await HandleCompareScrapeCommand(message);
                 }
@@ -1424,6 +1428,66 @@ namespace CHFBot
 
         }
 
+
+        private async Task HandleListplayersCommand2(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+
+            // Split the input string into words
+            string[] words = content.Split(' ');
+
+            // Check that the first word is "!listplayers"
+            if (words[0] != "!2listplayers")
+            {
+                // If the first word is not "!listplayers", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the second word is either "over" or "under"
+            if (words[1] != "over" && words[1] != "under")
+            {
+                // If the second word is not "over" or "under", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the third word is a valid number
+            int points;
+            if (!int.TryParse(words[2], out points))
+            {
+                // If the third word is not a valid number, then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            string overUnder = words[1];
+
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
+
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron("BufSs");
+
+
+
+            var chnl = message.Channel as IMessageChannel;
+
+            chnl.SendMessageAsync("Players with score " + overUnder + " " + points + ":");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+
+            //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+            //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+            //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+
+            commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+
+        }
+
         [CommandDescription("Displays the last ten SRE session counts.")]
         private async Task HandleLastTenCommand(SocketMessage message)
         {
@@ -1585,7 +1649,7 @@ namespace CHFBot
 
         }
 
-        [CommandDescription("Temporary command - used for testing.")]
+        [CommandDescription("Dislpays live TopSquadrons stats. Useful for manual, real-time tracking.")]
         private async Task HandleTestScrapeCommand(SocketMessage message)
         {
 
@@ -1609,7 +1673,7 @@ namespace CHFBot
         }
 
 
-        [CommandDescription("Temporary command - used for testing.")]
+        [CommandDescription("Compares the end-of-session totals to what's live right now. Shows the changes since.")]
         private async Task HandleCompareScrapeCommand(SocketMessage message)
         {
 

@@ -216,6 +216,7 @@ namespace BotCommands
         {
             string cadetUrl = "https://warthunder.com/en/community/claninfo/Cadet";
             string BofSsUrl = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+            string BufSsUrl = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs?69";
             string AcademyUrl = "https://warthunder.com/en/community/claninfo/The%20Academy";
             string EarlyUrl = "https://warthunder.com/en/community/claninfo/EARLY";
             string RO6Url = "https://warthunder.com/en/community/claninfo/Revenge%20of%20Six";
@@ -236,6 +237,7 @@ namespace BotCommands
                 {
                     { "Cadet", cadetUrl },
                     { "BofSs", BofSsUrl },
+                    { "BufSs", BufSsUrl },
                     { "Academy", AcademyUrl },
                     { "Early", EarlyUrl },
                     { "RO6", RO6Url },
@@ -635,15 +637,18 @@ namespace BotCommands
             StringBuilder output = new StringBuilder();
 
             // Add the header
-            output.AppendLine("# Name   Wins   Loss Played   Score  (Change)");
+            output.AppendLine("#   Name   Wins  Loss  Played  Score  (Change)");
+            
+
+
 
             // Loop through each line (assuming they have the same number of lines)
             for (int i = 1; i < currentLines.Length; i++) // Skip the header line
             {
                 string currentLine = currentLines[i];
-                Console.WriteLine($"CLine: {currentLine}");
+                
                 string newLine = newLines[i];
-                Console.WriteLine($"NLine: {newLine}");
+               
 
                 List<string> tempList = new List<string>();
 
@@ -660,10 +665,29 @@ namespace BotCommands
                 }
 
                 // Build the formatted output line
-                string formattedLine = $"{currentData[1]}  {newData[2]}  {newData[3]}  {newData[5]} {newData[7]}";
+                //string formattedLine = $"{currentData[1]}  {newData[2]}  {newData[3]}  {newData[5]} {newData[7]}";
+                string formattedLine = $"{currentData[0].PadRight(3, ' ')} {currentData[1].PadRight(5, ' ')}  {newData[2].PadLeft(4, ' ')}  {newData[4].PadLeft(4, ' ')}  {newData[5].PadRight(4, ' ')} {newData[7].PadRight(4, ' ')}";
 
+                //0 is place, 1 is name, 2 is wins, 3 is an & 4 is losses, 5 is played, 6 is the word score, 7 is the score.
+                //So I need 0, 1, 2, 4, 5, 7.
                 // Check for changes in each data point
                 bool hasChanges = false;
+                if (currentData[0] != newData[0])
+                {
+                    hasChanges = true;
+                    int currentPos = int.Parse(currentData[0]);
+                    int newPos = int.Parse(newData[0]);
+                    int posDifference = newPos - currentPos;
+                    formattedLine += $" (Pos: {posDifference})";
+                }
+                if (currentData[1] != newData[1])
+                {
+                    hasChanges = true;
+                    String currentName = currentData[1];
+                    String newName = newData[1];
+                    String nameDifference = "changed name";
+                    formattedLine += $" (Name: {nameDifference})";
+                }
                 if (currentData[2] != newData[2])
                 {
                     hasChanges = true;
@@ -672,19 +696,29 @@ namespace BotCommands
                     int winsDifference = newWins - currentWins;
                     formattedLine += $" (Wins: {winsDifference})";
                 }
+
                 if (currentData[4] != newData[4])
                 {
                     hasChanges = true;
                     int currentLosses = int.Parse(currentData[4]);
                     int newLosses = int.Parse(newData[4]);
                     int lossesDifference = newLosses - currentLosses;
-                    formattedLine += $" (Losses: {lossesDifference})";
+                    formattedLine += $" (Loss: {lossesDifference})";
                 }
-                if (currentData[6] != newData[6])
+
+                if (currentData[5] != newData[5])
                 {
                     hasChanges = true;
-                    formattedLine += " (Games Played)";
+                    //String currentPlayed = currentPlayed.Replace("(", "");
+                    // String newPlayed = newPlayed.Replace("(", "");
+
+                    int currentPlayed = int.Parse(currentData[5].Replace("(", "").Replace("),", ""));
+                    int newPlayed = int.Parse(newData[5].Replace("(", "").Replace("),", ""));
+                    int playedDifference = newPlayed - currentPlayed;
+                    formattedLine += $" ({playedDifference} played)";
                 }
+
+
                 if (currentData[7] != newData[7])
                 {
                     hasChanges = true;

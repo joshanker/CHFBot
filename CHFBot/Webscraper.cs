@@ -241,7 +241,7 @@ namespace Scraper
                 int losses = int.Parse(battlesPlayed) - int.Parse(wins);
                 string lossesPad = losses.ToString().PadLeft(4, ' ');
 
-                Console.WriteLine($"{i} {squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}, Score: {score}");
+                //Console.WriteLine($"{i} {squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}, Score: {score}");
                 
 
                 sb.Append($"{pos} {squadronName}: {wins} & {lossesPad} ({battlesPlayed}), Score: {score}\n");
