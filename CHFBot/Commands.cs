@@ -642,7 +642,7 @@ namespace BotCommands
             StringBuilder output = new StringBuilder();
 
             // Add the header
-            output.AppendLine("#   Name   Wins  Loss  Played  Score  (Change)");
+            output.AppendLine("#   Name   Wins  Loss  Played  Score (Change)");
             
             // Loop through each line (assuming they have the same number of lines)
             for (int i = 1; i < currentLines.Length; i++) // Skip the header line
@@ -661,7 +661,7 @@ namespace BotCommands
                 // Check if the data points are present and in the expected format
                 if (currentData.Length != 8 || newData.Length != 8)
                 {
-                    Console.WriteLine(" output:" + currentData.Length + " " + newData.Length);
+                    //Console.WriteLine(" output:" + currentData.Length + " " + newData.Length);
                     return "Error: Invalid format in one or more lines.";
                 }
 

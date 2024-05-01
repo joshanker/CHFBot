@@ -224,13 +224,22 @@ namespace CHFBot
 
             if (hourlyNow.Hour == 23)
             {
-                // If the current hour is 23 (11 PM), set the next hourly time to 00 (12 AM) of the next day
-                nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day + 1, 0, 0, 0);
+                // If the current hour is 23 (11 PM), check if it's the last day of the month
+                if (hourlyNow.Day == DateTime.DaysInMonth(hourlyNow.Year, hourlyNow.Month))
+                {
+                    // If it's the last day of the month, set the next hourly time to 00 (12 AM) of the first day of the next month
+                    nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month + 1, 1, 0, 0, 0);
+                }
+                else
+                {
+                    // Otherwise, set the next hourly time to 00 (12 AM) of the next day
+                    nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day + 1, 0, 0, 0);
+                }
             }
             else
             {
                 // Otherwise, increment the current hour by 1
-                nextHourly = new DateTime(hourlyNow.Year, hourlyNow.Month, hourlyNow.Day, hourlyNow.Hour + 1, 0, 0);
+                nextHourly = hourlyNow.AddHours(1);
             }
 
 
