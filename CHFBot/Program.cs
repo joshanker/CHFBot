@@ -44,6 +44,7 @@ namespace CHFBot
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
         public bool minuteTimerFive = false;
+        public bool bundsBotScoreTracking = true;
         int winCounter = 0;
         int lossCounter = 0;
         int bufSsWinCounter = 0;
@@ -168,7 +169,7 @@ namespace CHFBot
             Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
             int squadronTotalScore = scoreOfBofSs;
 
-            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Use !help for a command list.");
+            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Use !help for a command list.");
 
             //await esperbotchnl.SendMessageAsync("EsperBot online! Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
 
@@ -418,7 +419,7 @@ namespace CHFBot
                 using (StreamWriter topSquadWriter = new StreamWriter(topSquadFileName, true))
                 {
                     // Write the top squadron totals to the file
-                    topSquadWriter.WriteLine($"{prefix}\n: {content}");
+                    topSquadWriter.WriteLine($"{prefix}: {content}");
                 }
             }
             else
@@ -508,12 +509,12 @@ namespace CHFBot
 
             string content = message.Content.Trim();
 
-            if (message.Channel.Name == "sre-score-tracking")
+            if (message.Channel.Name == "sre-score-tracking" && bundsBotScoreTracking)
             {
                 await HandleSreScoreTrackingMessage(message);
             }
 
-            if (message.Channel.Name == "🔍bufss-score-tracking")
+            if (message.Channel.Name == "🔍bufss-score-tracking" && bundsBotScoreTracking)
             {
                 await HandleBufSsSreScoreTrackingMessage(message);
             }
@@ -613,6 +614,10 @@ namespace CHFBot
                 else if (content.StartsWith("!turn5mtimer"))
                 {
                     await HandleTurn5mTimerCommand(message);
+                }
+                else if (content.StartsWith("!turnbundsbotscoretracking"))
+                {
+                    await HandleTurnBundsBotScoreTrackingCommand(message);
                 }
                 else if (content.StartsWith("!record"))
                 {
@@ -1373,6 +1378,27 @@ namespace CHFBot
             else
             {
                 await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of the 5 minute timer is: " + minuteTimerFive.ToString());
+
+            }
+        }
+
+        [CommandDescription("turns on and off BundsBot Score reporting")]
+        private async Task HandleTurnBundsBotScoreTrackingCommand(SocketMessage message)
+        {
+            if (message.Content == "!turnbundsbotscoretracking on")
+            {
+                bundsBotScoreTracking = true;
+                await message.Channel.SendMessageAsync("OK, turning on BundsBot score tracking");
+            }
+
+            else if (message.Content == "!turnbundsbotscoretracking off")
+            {
+                bundsBotScoreTracking = false;
+                await message.Channel.SendMessageAsync("OK, turning off BundsBot score tracking");
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of BundsBot score tracking: " + bundsBotScoreTracking.ToString());
 
             }
         }

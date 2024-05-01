@@ -632,9 +632,9 @@ namespace BotCommands
             string[] newLines = newContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Check if the number of lines is the same
-            if (currentLines.Length != newLines.Length)
+            if (currentLines.Length != newLines.Length + 1)
             {
-                //Console.WriteLine(" output:" + currentLines.Length + " " + newLines.Length);
+                Console.WriteLine(" output:" + currentLines.Length + " " + newLines.Length);
                 return "Error: Different number of lines in current and new content.";
             }
 
@@ -659,9 +659,9 @@ namespace BotCommands
                 string[] newData = newLine.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
                 // Check if the data points are present and in the expected format
-                if (currentData.Length != 8 || newData.Length != 8)
+                if (currentData.Length != 9 || newData.Length != 9)
                 {
-                    //Console.WriteLine(" output:" + currentData.Length + " " + newData.Length);
+                    Console.WriteLine(" output:" + currentData.Length + " " + newData.Length);
                     return "Error: Invalid format in one or more lines.";
                 }
 
