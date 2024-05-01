@@ -624,15 +624,32 @@ namespace BotCommands
         public string CompareContents(string currentContent, string newContent)
         {
 
-            currentContent = currentContent.Replace("\n\n", "\n");
-            newContent = newContent.Replace("\n\n", "\n");
+            
+            if (currentContent.Contains("\n\n"))
+            {
+                currentContent = currentContent.Replace("\n\n", "\n");
+            }
+            if (currentContent.Contains("\n\r\n"))
+            {
+                currentContent = currentContent.Replace("\n\r\n", "\n");
+            }
+
+            if (newContent.Contains("\n\n"))
+            {
+                newContent = newContent.Replace("\n\n", "\n");
+            }
+            if (newContent.Contains("\n\r\n"))
+            {
+                newContent = newContent.Replace("\n\r\n", "\n");
+            }
+
 
             // Split the content strings into lines
             string[] currentLines = currentContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             string[] newLines = newContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Check if the number of lines is the same
-            if (currentLines.Length != newLines.Length + 1)
+            if (currentLines.Length != newLines.Length)
             {
                 Console.WriteLine(" output:" + currentLines.Length + " " + newLines.Length);
                 return "Error: Different number of lines in current and new content.";

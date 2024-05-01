@@ -37,25 +37,26 @@ namespace CHFBot
         private static readonly ulong esperbotchannel = 1165452109513244673;
         private static readonly ulong senateChannel = 484153871510405123;
         private static readonly ulong bufssScoreTrackingChannel = 886756342210117663;
-        //private readonly ulong DefaultTextChannel = 1133615880488628344;
         //private readonly ulong generalChannel = 342132137064923136;
-        //private readonly ulong CadetTestingChannel = 1125693277295886357;
-
+        private readonly ulong CadetTestingChannel = 1125693277295886357;
+        ulong officerRoleId = 410251113955196928;
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
         public bool minuteTimerFive = false;
         public bool bundsBotScoreTracking = true;
+        public bool quotes = false;
         int winCounter = 0;
         int lossCounter = 0;
         int bufSsWinCounter = 0;
         int bufSsLossCounter = 0;
-        public bool quotes = false;
         System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer fiveMinuteTimer = new System.Timers.Timer(1000 * 60 * 5);
         int squadronTotalScore = 0;
         int squadronTotalScoreBufSs = 0;
+        int endOfSessionScore = 0;
+        int endOfSessionScoreBufSs = 0;
 
         ////////////// On startup, let's see if we can pull the score.....
         ////////////////
@@ -102,14 +103,6 @@ namespace CHFBot
             }
         }
 
-
-
-
-        ulong officerRoleId = 410251113955196928;
-
-        int endOfSessionScore= 0;
-        int endOfSessionScoreBufSs = 0;
-        
 
         static void Main(string[] args)
         {
