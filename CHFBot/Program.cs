@@ -640,7 +640,7 @@ namespace CHFBot
                 {
                     await HandleTestScrapeCommand(message);
                 }
-                else if (content.StartsWith("!3testscrape"))
+                else if (content.StartsWith("!2testscrape"))
                 {
                     await Handle2TestScrapeCommand(message);
                 }
@@ -1812,10 +1812,11 @@ namespace CHFBot
 
             StringBuilder messageBuilder = new StringBuilder();
 
-            messageBuilder.AppendLine("   Name  Wins Losses Total  Pts");
+            messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
 
             foreach (var squadronObj in content)
             {
+                string paddedPos = squadronObj.Pos.ToString().PadRight(2,' ');
                 string paddedName;
                 string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
                 string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
@@ -1823,14 +1824,14 @@ namespace CHFBot
                 if (squadronObj.Pos < 10)
                 {
                  
-                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
                 }
                 else
                 {
                     paddedName = squadronObj.SquadronName.PadRight(5, ' ');
                 }
 
-                messageBuilder.AppendLine($"{squadronObj.Pos}: {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
+                messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
             }
 
             //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
