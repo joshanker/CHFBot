@@ -12,6 +12,7 @@ using SquadronObjects;
 using System.Globalization;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BotCommands
 {
@@ -684,7 +685,7 @@ namespace BotCommands
 
                 // Build the formatted output line
                 //string formattedLine = $"{currentData[1]}  {newData[2]}  {newData[3]}  {newData[5]} {newData[7]}";
-                string formattedLine = $"{currentData[0].PadRight(3, ' ')} {currentData[1].PadRight(5, ' ')}  {newData[2].PadLeft(4, ' ')}  {newData[4].PadLeft(4, ' ')}  {newData[5].PadRight(4, ' ')} {newData[7].PadRight(4, ' ')}";
+                string formattedLine = $"{newData[0].PadRight(3, ' ')} {newData[1].PadRight(5, ' ')}  {newData[2].PadLeft(4, ' ')}  {newData[4].PadLeft(4, ' ')}  {newData[5].PadRight(4, ' ')}";
 
                 //0 is place, 1 is name, 2 is wins, 3 is an & 4 is losses, 5 is played, 6 is the word score, 7 is the score.
                 //So I need 0, 1, 2, 4, 5, 7.
@@ -703,8 +704,33 @@ namespace BotCommands
                     hasChanges = true;
                     String currentName = currentData[1];
                     String newName = newData[1];
-                    String nameDifference = "changed name";
-                    formattedLine += $" (Name: {nameDifference})";
+                    
+                    String nameDifference = "xx";
+                    //find out what place the squad was in....
+                    //
+                    //
+                    for (int j = 0; j < newLines.Length; j++)
+                        {
+                            // Split the line by spaces
+                            string[] parts = newLines[j].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            // Check if the line contains TERVE
+                            if (parts.Length > 1 && parts[1].Trim(':') == currentName)
+                            {
+                                // Extract the position (pos) from the first part
+                                string pos = parts[0];
+
+                                // Use pos as needed
+                                Console.WriteLine($"{currentName} is at {pos} in new content.");
+                            nameDifference = $"{pos}";
+
+                                // Break out of the loop since TERVE is found
+                                break;
+                            }
+                        }
+
+                    
+                    formattedLine += $"(from {nameDifference} to {currentData[0]}" ;
                 }
                 if (currentData[2] != newData[2])
                 {
@@ -737,11 +763,11 @@ namespace BotCommands
                 }
 
 
-                if (currentData[7] != newData[7])
+                if (currentData[8] != newData[8])
                 {
                     hasChanges = true;
-                    int currentScore = int.Parse(currentData[7]);
-                    int newScore = int.Parse(newData[7]);
+                    int currentScore = int.Parse(currentData[8]);
+                    int newScore = int.Parse(newData[8]);
                     int scoreDifference = newScore - currentScore;
                     formattedLine += $" ({scoreDifference} pts)";
                  }

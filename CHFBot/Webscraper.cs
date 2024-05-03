@@ -242,17 +242,66 @@ namespace Scraper
                 string lossesPad = losses.ToString().PadLeft(4, ' ');
 
                 //Console.WriteLine($"{i} {squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}, Score: {score}");
-                
-
+            
                 sb.Append($"{pos} {squadronName}: {wins} & {lossesPad} ({battlesPlayed}), Score: {score}\n");
-                    
             }
             return sb.ToString();
             
-
-
         }
 
+        public static async Task<SquadronObj[]> TestScrape2()
+        {
+            string url = "https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/1/sort/dr_era5";
+            string rawData = await DownloadPageAsync(url);
+            string[] chunks = SplitDataIntoChunks(rawData);
+
+            int numSquadronsToScrape = Math.Min(21, chunks.Length); // Limit to first XX squadrons
+            
+            List<SquadronObj> squadrons = new List<SquadronObj>();
+            
+
+            for (int i = 1; i < numSquadronsToScrape; i++)
+            {
+                string chunk = chunks[i];
+
+                string squadronName = ExtractFieldValue(chunk, "tag");
+                if (squadronName.Length > 2)
+                {
+                    // Trim the first and last characters
+                    squadronName = squadronName.Substring(1, squadronName.Length - 2);
+                }
+
+
+
+                string battlesPlayedStr = ExtractFieldValue(chunk, "battles_hist");
+                string winsStr = ExtractFieldValue(chunk, "wins_hist");
+                string scoreStr = ExtractFieldValue(chunk, "dr_era5_hist");
+
+                int battlesPlayed = int.Parse(battlesPlayedStr);
+                int wins = int.Parse(winsStr);
+                int losses = battlesPlayed - wins;
+                int score = int.Parse(scoreStr);
+
+                int pos = i;
+
+                SquadronObj squadron = new SquadronObj
+                {
+                    SquadronName = squadronName,
+                    Wins = wins,
+                    Losses = losses,
+                    BattlesPlayed = battlesPlayed,
+                    Score = score,
+                    Pos = pos
+                };
+
+                //Console.WriteLine($"{i} {squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}, Score: {score}");
+                squadrons.Add(squadron);
+                //sb.Append($"{pos} {squadronName}: {wins} & {lossesPad} ({battlesPlayed}), Score: {score}\n");
+            }
+            //return sb.ToString();
+            return squadrons.ToArray();
+
+        }
 
         private static async Task<string> DownloadPageAsync(string url)
         {

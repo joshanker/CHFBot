@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace SquadronObjects
 {
-        public class Player
+    public class Player
     {
         //public string Name { get; set; }
         public int Number { get; set; }
@@ -32,9 +32,7 @@ namespace SquadronObjects
             DateOfEntry = dateOfEntry;
         }
 
-
     }
-
 
     public class SquadronObj
     {
@@ -45,8 +43,12 @@ namespace SquadronObjects
         public int totalRating { get; set; }
         public Boolean isValidSquadron { get; set; }
         public string url { get; set; }
-        public int Score { get; set; }   
-
+        public int Score { get; set; }
+        public string Name { get; set; }
+        public int Wins { get; set; }
+        public int Losses { get; set; }
+        public int BattlesPlayed { get; set; }
+        public int Pos { get; set; }
 
         public SquadronObj()
         {

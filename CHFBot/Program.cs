@@ -534,10 +534,10 @@ namespace CHFBot
                 {
                     await message.Channel.SendMessageAsync("Pong!");
                 }
-                else if (content.StartsWith("!join"))
-                {
-                    await HandleJoinCommand(message);
-                }
+                //else if (content.StartsWith("!join"))
+                //{
+                //    await HandleJoinCommand(message);
+                //}
                 // else if (content.StartsWith("!scrapesquadron "))
                 //{
                 //    await HandleScrapeSquadronCommand(message);
@@ -640,6 +640,10 @@ namespace CHFBot
                 {
                     await HandleTestScrapeCommand(message);
                 }
+                else if (content.StartsWith("!2testscrape"))
+                {
+                    await Handle2TestScrapeCommand(message);
+                }
                 else if (content.StartsWith("!comparescrape"))
                 {
                     await HandleCompareScrapeCommand(message);
@@ -650,7 +654,7 @@ namespace CHFBot
                 }
                 else
                 {
-                    Console.WriteLine("No matching command detected.");
+                    Console.WriteLine($"No matching command detected: {message}") ;
                 }
 
             }
@@ -758,31 +762,31 @@ namespace CHFBot
         }
 
 
-        [CommandDescription("Currently unused")]
-        private async Task HandleJoinCommand(SocketMessage message)
-        {
-            // Implementation for the !join command
-            await message.Channel.SendMessageAsync("OK, " + message.Author + ", I've got you listed on my roster!");
+        //[CommandDescription("Currently unused")]
+        //private async Task HandleJoinCommand(SocketMessage message)
+        //{
+        //    // Implementation for the !join command
+        //    await message.Channel.SendMessageAsync("OK, " + message.Author + ", I've got you listed on my roster!");
 
-            try
-            {
-                //Pass the filepath and filename to the StreamWriter Constructor
-                StreamWriter sw = new StreamWriter("C:\\Roster.txt", true);
+        //    try
+        //    {
+        //        //Pass the filepath and filename to the StreamWriter Constructor
+        //        StreamWriter sw = new StreamWriter("C:\\Roster.txt", true);
 
-                //Write a line of text
-                sw.WriteLine(message.Author + " has joined at " + DateTime.Now);
-                //Close the file
-                sw.Close();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception: " + e.Message);
-            }
-            finally
-            {
-                Console.WriteLine("Executing finally block.");
-            }
-        }
+        //        //Write a line of text
+        //        sw.WriteLine(message.Author + " has joined at " + DateTime.Now);
+        //        //Close the file
+        //        sw.Close();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine("Exception: " + e.Message);
+        //    }
+        //    finally
+        //    {
+        //        Console.WriteLine("Executing finally block.");
+        //    }
+        //}
 
         //private async Task HandleAcadCommand(SocketMessage message)
         //{
@@ -1769,12 +1773,56 @@ namespace CHFBot
 
             string comparisonResult = commands.CompareContents(currentContent, newContent);
 
-            await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
+            //await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
+            
 
-
+            if (comparisonResult.Length > 1900)
+            {
+                // Truncate the message content to fit within the limit
+                comparisonResult = comparisonResult.Substring(0, 1900);
+                Console.WriteLine("Message content was truncated to fit within the 1900-character limit.");
+                //commands.SendLongContentAsEmbedAsync(message.Channel, comparisonResult);
+                await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
+            }
+            else { await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```"); }
 
         }
 
+
+        [CommandDescription("Dislpays live TopSquadrons stats. Useful for manual, real-time tracking.")]
+        private async Task Handle2TestScrapeCommand(SocketMessage message)
+        {
+
+            //SquadronObj[] sqbObjList = new SquadronObj();
+            SquadronObj[] content = await Webscraper.TestScrape2(); // Call the TestScrape method
+
+            const int maxEmbedLength = 4096;
+            const int maxChunkLength = 2000;
+
+            //if (content.Length <= maxEmbedLength)
+            //{
+            //    // If the content fits within the limit, send it as a single embedded message
+            //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
+            //}
+            //else
+            //{
+            //    Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
+            //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
+            //}
+
+            StringBuilder messageBuilder = new StringBuilder();
+
+            foreach (var squadronObj in content)
+            {
+                // Append the position and squadron name to the message
+                messageBuilder.AppendLine($"{squadronObj.Pos}: {squadronObj.SquadronName} {squadronObj.Wins} & {squadronObj.Losses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
+            }
+
+            // Send the message
+            await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
+
+
+        }
 
 
 
