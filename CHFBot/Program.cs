@@ -640,7 +640,7 @@ namespace CHFBot
                 {
                     await HandleTestScrapeCommand(message);
                 }
-                else if (content.StartsWith("!2testscrape"))
+                else if (content.StartsWith("!3testscrape"))
                 {
                     await Handle2TestScrapeCommand(message);
                 }
@@ -1812,15 +1812,30 @@ namespace CHFBot
 
             StringBuilder messageBuilder = new StringBuilder();
 
+            messageBuilder.AppendLine("   Name  Wins Losses Total  Pts");
+
             foreach (var squadronObj in content)
             {
-                // Append the position and squadron name to the message
-                messageBuilder.AppendLine($"{squadronObj.Pos}: {squadronObj.SquadronName} {squadronObj.Wins} & {squadronObj.Losses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
+                string paddedName;
+                string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+
+                if (squadronObj.Pos < 10)
+                {
+                 
+                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                }
+                else
+                {
+                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                }
+
+                messageBuilder.AppendLine($"{squadronObj.Pos}: {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
             }
 
-            // Send the message
-            await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
+            //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
 
+            await message.Channel.SendMessageAsync($"```{ messageBuilder.ToString()}```");
 
         }
 
