@@ -802,20 +802,23 @@ namespace BotCommands
                         string[] parts = line.Split(new[] { ' ',':'}, StringSplitOptions.RemoveEmptyEntries);
                         if (parts.Length >= 9)
                         {
+                            int currentPos = int.Parse(parts[0]);
                             int currentWins = int.Parse(parts[2]);
                             int currentLosses = int.Parse(parts[4]);
-                            
                             int currentPlayed = int.Parse(parts[5].Trim('('));
                             int currentScore = int.Parse(parts[8]);
 
                             // Check for changes
-                            if (squadron.Wins != currentWins ||
+                            if (squadron.Pos != currentPos ||
+                                squadron.Wins != currentWins ||
                                 squadron.Losses != currentLosses ||
                                 squadron.BattlesPlayed != currentPlayed ||
                                 squadron.Score != currentScore)
                             {
                                 // Annotate the changes
                                 // For demonstration, let's assume you have appropriate properties in SquadronObj to track changes
+                                squadron.Pos = squadron.Pos;
+                                squadron.PosChange = int.Parse(parts[0]) - squadron.Pos; 
                                 squadron.WinsChange = squadron.Wins - currentWins;
                                 squadron.LossesChange = squadron.Losses - currentLosses;
                                 squadron.BattlesPlayedChange = squadron.BattlesPlayed - currentPlayed;

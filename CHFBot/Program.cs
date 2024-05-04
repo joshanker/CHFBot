@@ -648,9 +648,9 @@ namespace CHFBot
                 {
                     await HandleCompareScrapeCommand(message);
                 }
-                else if (content.StartsWith("!3comparescrape"))
+                else if (content.StartsWith("!2comparescrape"))
                 {
-                    await Handle3CompareScrapeCommand(message);
+                    await Handle2CompareScrapeCommand(message);
                 }
                 else if (content.StartsWith("!squadrontotalscore"))
                 {
@@ -1846,7 +1846,7 @@ namespace CHFBot
 
 
         [CommandDescription("Compares the end-of-session totals to what's live right now. Shows the changes since.")]
-        private async Task Handle3CompareScrapeCommand(SocketMessage message)
+        private async Task Handle2CompareScrapeCommand(SocketMessage message)
         {
 
             // Dates with leading zeros
@@ -1920,11 +1920,13 @@ namespace CHFBot
 
             StringBuilder messageBuilder = new StringBuilder();
 
-            messageBuilder.AppendLine("   Name   Wins     Losses      Total        Pts");
+            messageBuilder.AppendLine("       Name     Wins    Losses    Played      Pts");
 
             foreach (var squadronObj in newContent)
             {
                 string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2,' ')})" : "    ";
+
                 string paddedName;
                 //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
                 string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
@@ -1952,14 +1954,17 @@ namespace CHFBot
                 if (squadronObj.Pos < 10)
                 {
 
-                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
                 }
                 else
                 {
-                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
                 }
 
-                messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+                messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+
+
+                //!3comparescrapemessageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
 
 
                 //messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}({WinsChange}) & {paddedLosses}({LossesChange}). ({squadronObj.BattlesPlayed})({BattlesPlayedChanged}). {squadronObj.Score}({ScoreChange}) ");
