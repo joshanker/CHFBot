@@ -516,7 +516,7 @@ namespace CHFBot
             if (message.Author.IsBot)
                 return;
 
-            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "general" || message.Channel.Name == "esper-bot-testing" || message.Channel.Name == "esperbot")
+            if (message.Channel.Name == "chf-bot-testing" || message.Channel.Name == "esper-bot-testing" || message.Channel.Name == "esperbot")
             {
                 content = content.ToLower();
 
@@ -647,6 +647,10 @@ namespace CHFBot
                 else if (content.StartsWith("!comparescrape"))
                 {
                     await HandleCompareScrapeCommand(message);
+                }
+                else if (content.StartsWith("!3comparescrape"))
+                {
+                    await Handle3CompareScrapeCommand(message);
                 }
                 else if (content.StartsWith("!squadrontotalscore"))
                 {
@@ -1838,6 +1842,132 @@ namespace CHFBot
 
             await message.Channel.SendMessageAsync($"```{ messageBuilder.ToString()}```");
 
+        }
+
+
+        [CommandDescription("Compares the end-of-session totals to what's live right now. Shows the changes since.")]
+        private async Task Handle3CompareScrapeCommand(SocketMessage message)
+        {
+
+            // Dates with leading zeros
+            string currentDateLeadingZeros = DateTime.Now.ToString("yyyy-MM-dd");
+            string yesterdayDateLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+            string twoDaysAgoDateLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
+
+            // Dates without leading zeros
+            string currentDateNoLeadingZeros = DateTime.Now.ToString("yyyy-M-d");
+            string yesterdayDateNoLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-M-d");
+            string twoDaysAgoDateNoLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-M-d");
+
+            string[] possibleFilenames =
+                {
+                $"TopSquadTotals_{currentDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{yesterdayDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{twoDaysAgoDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{currentDateNoLeadingZeros}*.txt",
+                $"TopSquadTotals_{yesterdayDateNoLeadingZeros}*.txt",
+                $"TopSquadTotals_{twoDaysAgoDateNoLeadingZeros}*.txt"
+                };
+
+            string mostRecentFilename = null;
+
+            foreach (var filenamePattern in possibleFilenames)
+            {
+                string[] matchingFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), filenamePattern);
+                if (matchingFiles.Length > 0)
+                {
+                    mostRecentFilename = matchingFiles[matchingFiles.Length - 1]; // Get the most recent file
+                    break;
+                }
+            }
+            string currentContent = null;
+            if (mostRecentFilename != null)
+            {
+                // File exists, read its content and perform comparison
+                currentContent = File.ReadAllText(mostRecentFilename);
+                // Perform comparison with the currentContent
+            }
+            else
+            {
+                string errorMessage = "No recent files found for comparison.";
+                Console.WriteLine(errorMessage);
+                await message.Channel.SendMessageAsync(errorMessage);
+                return;
+            }
+
+            // Perform a new scrape
+            SquadronObj[] newContent = await Webscraper.TestScrape2();
+
+            // Compare the contents
+            Commands commands = new Commands();
+
+            SquadronObj[] comparisonResult = commands.CompareContents2(currentContent, newContent);
+
+            //await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
+
+
+            //if (comparisonResult.Length > 1900)
+            {
+                // Truncate the message content to fit within the limit
+              //  comparisonResult = comparisonResult.Substring(0, 1900);
+              //  Console.WriteLine("Message content was truncated to fit within the 1900-character limit.");
+                //commands.SendLongContentAsEmbedAsync(message.Channel, comparisonResult);
+                //await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
+            }
+            //else { await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```"); }
+
+
+
+            StringBuilder messageBuilder = new StringBuilder();
+
+            messageBuilder.AppendLine("   Name   Wins     Losses      Total        Pts");
+
+            foreach (var squadronObj in newContent)
+            {
+                string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                string paddedName;
+                //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
+                //string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+                string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
+
+                //string WinsChange = squadronObj.WinsChange.ToString().PadLeft(2,' ');
+                //string LossesChange = squadronObj.LossesChange.ToString().PadLeft(2, ' ');
+                //string BattlesPlayedChanged = squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ');
+                //int ScoreChange = squadronObj.ScoreChange;
+
+                string WinsChange = squadronObj.WinsChange != 0 ? squadronObj.WinsChange.ToString().PadLeft(2, ' ') : " ";
+                string LossesChange = squadronObj.LossesChange != 0 ? squadronObj.LossesChange.ToString().PadLeft(2, ' ') : " ";
+                string BattlesPlayedChanged = squadronObj.BattlesPlayedChange != 0 ? squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ') : " ";
+
+                string ScoreChange = squadronObj.ScoreChange != 0 ? squadronObj.ScoreChange.ToString() : " ";
+
+                // Include parentheses only when the corresponding value is non-zero
+                string winsChangeStr = squadronObj.WinsChange != 0 ? $"({WinsChange})" : "";
+                string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
+                string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
+                string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
+
+
+                if (squadronObj.Pos < 10)
+                {
+
+                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                }
+                else
+                {
+                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                }
+
+                messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+
+
+                //messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}({WinsChange}) & {paddedLosses}({LossesChange}). ({squadronObj.BattlesPlayed})({BattlesPlayedChanged}). {squadronObj.Score}({ScoreChange}) ");
+            }
+
+            //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
+
+            await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
         }
 
 

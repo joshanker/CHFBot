@@ -779,6 +779,58 @@ namespace BotCommands
             return output.ToString();
         }
 
+        public SquadronObj[] CompareContents2(string currentContent, SquadronObj[] newContent)
+        {
+            if (currentContent.Contains("\n\n"))
+            {
+                currentContent = currentContent.Replace("\n\n", "\n");
+            }
+            if (currentContent.Contains("\n\r\n"))
+            {
+                currentContent = currentContent.Replace("\n\r\n", "\n");
+            }
+
+            // Split the content strings into lines
+            string[] currentLines = currentContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var squadron in newContent)
+            {
+                foreach (var line in currentLines)
+                {
+                    if (line.Contains(squadron.SquadronName))
+                    {
+                        string[] parts = line.Split(new[] { ' ',':'}, StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length >= 9)
+                        {
+                            int currentWins = int.Parse(parts[2]);
+                            int currentLosses = int.Parse(parts[4]);
+                            
+                            int currentPlayed = int.Parse(parts[5].Trim('('));
+                            int currentScore = int.Parse(parts[8]);
+
+                            // Check for changes
+                            if (squadron.Wins != currentWins ||
+                                squadron.Losses != currentLosses ||
+                                squadron.BattlesPlayed != currentPlayed ||
+                                squadron.Score != currentScore)
+                            {
+                                // Annotate the changes
+                                // For demonstration, let's assume you have appropriate properties in SquadronObj to track changes
+                                squadron.WinsChange = squadron.Wins - currentWins;
+                                squadron.LossesChange = squadron.Losses - currentLosses;
+                                squadron.BattlesPlayedChange = squadron.BattlesPlayed - currentPlayed;
+                                squadron.ScoreChange = squadron.Score - currentScore;
+                            }
+                        }
+                        break; // Exit the inner loop once the squadron is found
+                    }
+                }
+            }
+
+            return newContent;
+        }
+
+
 
 
     }

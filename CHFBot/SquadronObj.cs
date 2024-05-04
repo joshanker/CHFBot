@@ -49,6 +49,12 @@ namespace SquadronObjects
         public int Losses { get; set; }
         public int BattlesPlayed { get; set; }
         public int Pos { get; set; }
+        public int BattlesPlayedChange { get; set; }
+        public int WinsChange { get; set; }
+        public int LossesChange { get; set; }
+        public int PosChange { get; set; }
+        public int ScoreChange { get; set; }
+
 
         public SquadronObj()
         {
