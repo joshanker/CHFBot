@@ -656,9 +656,9 @@ namespace CHFBot
                 {
                     await HandleSquadronTotalScoreCommand(message);
                 }
-                else if (content.StartsWith("!checkbufss"))
+                else if (content.StartsWith("!check"))
                 {
-                    await HandleCheckBufssCommand(message);
+                    await HandleCheckCommand(message);
                 }
                 else
                 {
@@ -1979,64 +1979,65 @@ namespace CHFBot
             await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
         }
 
-
-
-
         
-        [CommandDescription("Prints current stats for BufSs.")]
-        private async Task HandleCheckBufssCommand(SocketMessage message)
+        [CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
+        private async Task HandleCheckCommand(SocketMessage message)
         {
-
-            //SquadronObj[] sqbObjList = new SquadronObj();
-            SquadronObj content = await Webscraper.ScrapeBufSs(); // Call the TestScrape method
-
-            const int maxEmbedLength = 4096;
-            const int maxChunkLength = 2000;
-
-            //if (content.Length <= maxEmbedLength)
-            //{
-            //    // If the content fits within the limit, send it as a single embedded message
-            //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
-            //}
-            //else
-            //{
-            //    Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
-            //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
-            //}
-
-            StringBuilder messageBuilder = new StringBuilder();
-
-            messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
-
-            SquadronObj[] squadronArray = new SquadronObj[1];
-            squadronArray[0] = content;
-
-            foreach (var squadronObj in squadronArray)
+            if (message.Content == "!check bofss" || message.Content == "!check bufss")
             {
-                string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
-                string paddedName;
-                string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
-                string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+                //SquadronObj[] sqbObjList = new SquadronObj();
+                SquadronObj content = await Webscraper.ScrapeCheck(message.Content); // Call the TestScrape method
 
-                if (squadronObj.Pos < 10)
+                const int maxEmbedLength = 4096;
+                const int maxChunkLength = 2000;
+
+                //if (content.Length <= maxEmbedLength)
+                //{
+                //    // If the content fits within the limit, send it as a single embedded message
+                //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
+                //}
+                //else
+                //{
+                //    Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
+                //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
+                //}
+
+                StringBuilder messageBuilder = new StringBuilder();
+
+                messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
+
+                SquadronObj[] squadronArray = new SquadronObj[1];
+                squadronArray[0] = content;
+
+                foreach (var squadronObj in squadronArray)
                 {
+                    string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                    string paddedName;
+                    string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                    string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
 
-                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
-                }
-                else
-                {
-                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                    if (squadronObj.Pos < 10)
+                    {
+
+                        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                    }
+                    else
+                    {
+                        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                    }
+
+                    messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
                 }
 
-                messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
+                //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
+
+                await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
             }
-
-            //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
-
-            await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
-
+            else
+            {
+                await message.Channel.SendMessageAsync("Sorry, I only accept bofss and bufss at this time.");
+            }
         }
-
 
     }
 

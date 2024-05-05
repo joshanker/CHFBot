@@ -327,8 +327,10 @@ namespace Scraper
             return "N/A";
         }
 
-        public static async Task<SquadronObj> ScrapeBufSs()
+        public static async Task<SquadronObj> ScrapeCheck(string message)
         {
+            string sqdToGet = message.Substring(7).Trim();
+
             for (int page = 1; page <= 6; page++) // Iterate over 6 pages
             {
                 string url = $"https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/{page}/sort/dr_era5";
@@ -344,7 +346,17 @@ namespace Scraper
                         squadronName = squadronName.Substring(1, squadronName.Length - 2);
                     }
 
-                    if (squadronName == "BufSs")
+                    if (sqdToGet == "bofss")
+                    {
+                        sqdToGet = "BofSs";
+                    }
+                    if (sqdToGet == "bufss")
+                    {
+                        sqdToGet = "BufSs";
+                    }
+
+
+                    if (squadronName == sqdToGet)
                     {
                         string battlesPlayedStr = ExtractFieldValue(chunk, "battles_hist");
                         string winsStr = ExtractFieldValue(chunk, "wins_hist");
