@@ -656,6 +656,10 @@ namespace CHFBot
                 {
                     await HandleSquadronTotalScoreCommand(message);
                 }
+                else if (content.StartsWith("!checkbufss"))
+                {
+                    await HandleCheckBufssCommand(message);
+                }
                 else
                 {
                     Console.WriteLine($"No matching command detected: {message}") ;
@@ -1666,7 +1670,7 @@ namespace CHFBot
 
         }
 
-        [CommandDescription("Temporary command - used for testing.")]
+        [CommandDescription("Temporary command")]
         private async Task HandleSquadronTotalScoreCommand(SocketMessage message)
         {
             // Implementation for the !join command
@@ -1682,7 +1686,7 @@ namespace CHFBot
 
         }
 
-        [CommandDescription("Dislpays live TopSquadrons stats. Useful for manual, real-time tracking.")]
+        [CommandDescription("old")]
         private async Task HandleTestScrapeCommand(SocketMessage message)
         {
 
@@ -1706,7 +1710,7 @@ namespace CHFBot
         }
 
 
-        [CommandDescription("Compares the end-of-session totals to what's live right now. Shows the changes since.")]
+        [CommandDescription("old.")]
         private async Task HandleCompareScrapeCommand(SocketMessage message)
         {
 
@@ -1976,6 +1980,62 @@ namespace CHFBot
         }
 
 
+
+
+        
+        [CommandDescription("Prints current stats for BufSs.")]
+        private async Task HandleCheckBufssCommand(SocketMessage message)
+        {
+
+            //SquadronObj[] sqbObjList = new SquadronObj();
+            SquadronObj content = await Webscraper.ScrapeBufSs(); // Call the TestScrape method
+
+            const int maxEmbedLength = 4096;
+            const int maxChunkLength = 2000;
+
+            //if (content.Length <= maxEmbedLength)
+            //{
+            //    // If the content fits within the limit, send it as a single embedded message
+            //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
+            //}
+            //else
+            //{
+            //    Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
+            //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
+            //}
+
+            StringBuilder messageBuilder = new StringBuilder();
+
+            messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
+
+            SquadronObj[] squadronArray = new SquadronObj[1];
+            squadronArray[0] = content;
+
+            foreach (var squadronObj in squadronArray)
+            {
+                string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                string paddedName;
+                string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+
+                if (squadronObj.Pos < 10)
+                {
+
+                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                }
+                else
+                {
+                    paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                }
+
+                messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
+            }
+
+            //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
+
+            await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
+
+        }
 
 
     }

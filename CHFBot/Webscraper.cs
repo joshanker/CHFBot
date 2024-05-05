@@ -271,8 +271,6 @@ namespace Scraper
                     squadronName = squadronName.Substring(1, squadronName.Length - 2);
                 }
 
-
-
                 string battlesPlayedStr = ExtractFieldValue(chunk, "battles_hist");
                 string winsStr = ExtractFieldValue(chunk, "wins_hist");
                 string scoreStr = ExtractFieldValue(chunk, "dr_era5_hist");
@@ -328,6 +326,76 @@ namespace Scraper
             }
             return "N/A";
         }
+
+        public static async Task<SquadronObj> ScrapeBufSs()
+        {
+            for (int page = 1; page <= 6; page++) // Iterate over 6 pages
+            {
+                string url = $"https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/{page}/sort/dr_era5";
+                string rawData = await DownloadPageAsync(url);
+                string[] chunks = SplitDataIntoChunks(rawData);
+
+                foreach (string chunk in chunks)
+                {
+                    string squadronName = ExtractFieldValue(chunk, "tag");
+                    if (squadronName.Length > 2)
+                    {
+                        // Trim the first and last characters
+                        squadronName = squadronName.Substring(1, squadronName.Length - 2);
+                    }
+
+                    if (squadronName == "BufSs")
+                    {
+                        string battlesPlayedStr = ExtractFieldValue(chunk, "battles_hist");
+                        string winsStr = ExtractFieldValue(chunk, "wins_hist");
+                        string scoreStr = ExtractFieldValue(chunk, "dr_era5_hist");
+
+                        int battlesPlayed = int.Parse(battlesPlayedStr);
+                        int wins = int.Parse(winsStr);
+                        int losses = battlesPlayed - wins;
+                        int score = int.Parse(scoreStr);
+
+                        int pos = int.Parse(ExtractPlaceValue(chunk));
+
+                        SquadronObj squadron = new SquadronObj
+                        {
+                            SquadronName = squadronName,
+                            Wins = wins,
+                            Losses = losses,
+                            BattlesPlayed = battlesPlayed,
+                            Score = score,
+                            Pos = pos
+                        };
+
+                        return squadron; // Return the squadron info
+                    }
+                }
+            }
+
+            return null; // If BufSs is not found, return null
+        }
+
+        private static string ExtractPlaceValue(string chunk)
+        {
+            // Find the index of the colon and comma in the chunk
+            int colonIndex = chunk.IndexOf(':');
+            int commaIndex = chunk.IndexOf(',');
+
+            // If both the colon and comma are found
+            if (colonIndex != -1 && commaIndex != -1)
+            {
+                // Extract the substring between the colon and comma
+                string placeSubstring = chunk.Substring(colonIndex + 1, commaIndex - colonIndex - 1).Trim();
+
+                // Return the extracted value
+                return placeSubstring;
+            }
+
+            // Return null if the colon or comma is not found
+            return null;
+        }
+
+
     }
 
 
