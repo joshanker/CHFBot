@@ -1986,7 +1986,7 @@ namespace CHFBot
         [CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
         private async Task HandleCheckCommand(SocketMessage message)
         {
-            if (message.Content == "!check bofss" || message.Content == "!check bufss")
+            if (message.Content.ToLower() == "!check bofss" || message.Content.ToLower() == "!check bufss")
             {
                 //SquadronObj[] sqbObjList = new SquadronObj();
                 SquadronObj content = await Webscraper.ScrapeCheck(message.Content); // Call the TestScrape method
