@@ -161,7 +161,7 @@ namespace CHFBot
             ScoreExtractor extractor = new ScoreExtractor();
             int scoreOfBofSs = extractor.ExtractScoreOfBofSs();
             Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
-            int squadronTotalScore = scoreOfBofSs;
+            endOfSessionScore = scoreOfBofSs;
 
             await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Use !help for a command list.");
 
@@ -433,9 +433,9 @@ namespace CHFBot
             bufSsLossCounter = 0;
 
             
-            await chnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (" + (endOfSessionScore - squadronTotalScore).ToString() + ").");
+            await chnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
-            await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +"("+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +" ("+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
             await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
             await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
