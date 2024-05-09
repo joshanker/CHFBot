@@ -437,19 +437,23 @@ namespace CHFBot
 
             await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +" ("+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
-            await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
-            await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
+            //await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
+            //await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
+
+            await esperbotchnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
+
+            await esperbotchnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
 
-            await esperbotchnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
-            await esperbotchnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
+            //await esperbotchnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
+            //await esperbotchnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
 
             endOfSessionScore = sqdObj.Score;
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
 
-            await esperbotchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
+            //await esperbotchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
-            await esperbotchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
+            //await esperbotchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
 
         }
         
