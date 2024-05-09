@@ -386,6 +386,7 @@ namespace CHFBot
                 writerBufSs.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
 
+            await Handle3CompareScrapeCommand(chnl);
 
             ////////////////////////////////
             ///let's do that again for TopSquadTotals.txt
@@ -456,7 +457,7 @@ namespace CHFBot
 
             //await esperbotchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
 
-            await Handle3CompareScrapeCommand(chnl);
+            
 
         }
         
@@ -1404,13 +1405,13 @@ namespace CHFBot
         [CommandDescription("turns on and off BundsBot Score reporting")]
         private async Task HandleTurnBundsBotScoreTrackingCommand(SocketMessage message)
         {
-            if (message.Content == "!turnbundsbotscoretracking on")
+            if (message.Content.ToLower() == "!turnbundsbotscoretracking on")
             {
                 bundsBotScoreTracking = true;
                 await message.Channel.SendMessageAsync("OK, turning on BundsBot score tracking");
             }
 
-            else if (message.Content == "!turnbundsbotscoretracking off")
+            else if (message.Content.ToLower() == "!turnbundsbotscoretracking off")
             {
                 bundsBotScoreTracking = false;
                 await message.Channel.SendMessageAsync("OK, turning off BundsBot score tracking");
