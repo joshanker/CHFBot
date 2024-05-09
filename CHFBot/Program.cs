@@ -335,6 +335,7 @@ namespace CHFBot
                         }
                         await chnl.SendMessageAsync("---------- Done ----------");
                     }
+
             }
         }
         private async Task executeTimer(String prefix)
@@ -433,16 +434,16 @@ namespace CHFBot
             bufSsLossCounter = 0;
 
             
-            await chnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
+            await chnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
-            await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +" ("+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +" (+"+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
             //await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
             //await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
 
-            await esperbotchnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
-            await esperbotchnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
 
             //await esperbotchnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
@@ -454,6 +455,8 @@ namespace CHFBot
             //await esperbotchnl.SendMessageAsync("Win/Loss count for this session was: (" + lastWinCounter + "-" + lastLossCounter + "). " + "Win and Loss counters reset. (" + winCounter + "-" + lossCounter + "). Total squadron score is now: " + squadronTotalScore + ".");
 
             //await esperbotchnl.SendMessageAsync("BufSs: Win/Loss count for this session was: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). " + "Win and Loss counters reset. (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score is now: " + squadronTotalScoreBufSs + ".");
+
+            await Handle3CompareScrapeCommand(chnl);
 
         }
         
@@ -658,6 +661,10 @@ namespace CHFBot
                 else if (content.StartsWith("!2comparescrape"))
                 {
                     await Handle2CompareScrapeCommand(message);
+                }
+                else if (content.StartsWith("!3comparescrape"))
+                {
+                    await Handle3CompareScrapeCommand(message.Channel);
                 }
                 else if (content.StartsWith("!squadrontotalscore"))
                 {
@@ -1986,7 +1993,27 @@ namespace CHFBot
             await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
         }
 
-        
+        [CommandDescription("Temp Holder for code refactoring.")]
+        private async Task Handle3CompareScrapeCommand(IMessageChannel message)
+        {
+            Commands commands = new Commands();
+            string currentContent = null;
+
+            //loads the most recent TopSquads file into currentContent.
+            currentContent = await commands.LoadStringWithMostRecentTopSquad(message);            
+            
+            // Perform a new scrape
+            SquadronObj[] newContent = await Webscraper.TestScrape2();
+            
+            SquadronObj[] comparisonResult = commands.CompareContents2(currentContent, newContent);
+
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder = await commands.FormatAndSendComparisonResults(newContent);
+
+            await message.SendMessageAsync($"```{messageBuilder.ToString()}```");
+        }
+
+
         [CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
         private async Task HandleCheckCommand(SocketMessage message)
         {

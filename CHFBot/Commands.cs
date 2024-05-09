@@ -13,6 +13,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections.Specialized;
 
 namespace BotCommands
 {
@@ -833,8 +834,113 @@ namespace BotCommands
             return newContent;
         }
 
+        public async Task<String> LoadStringWithMostRecentTopSquad(IMessageChannel channel)
+        {
+            // Dates with leading zeros
+            string currentDateLeadingZeros = DateTime.Now.ToString("yyyy-MM-dd");
+            string yesterdayDateLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+            string twoDaysAgoDateLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
+
+            // Dates without leading zeros
+            string currentDateNoLeadingZeros = DateTime.Now.ToString("yyyy-M-d");
+            string yesterdayDateNoLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-M-d");
+            string twoDaysAgoDateNoLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-M-d");
+
+            string[] possibleFilenames =
+                {
+                $"TopSquadTotals_{currentDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{yesterdayDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{twoDaysAgoDateLeadingZeros}*.txt",
+                $"TopSquadTotals_{currentDateNoLeadingZeros}*.txt",
+                $"TopSquadTotals_{yesterdayDateNoLeadingZeros}*.txt",
+                $"TopSquadTotals_{twoDaysAgoDateNoLeadingZeros}*.txt"
+                };
+
+            string mostRecentFilename = null;
+
+            foreach (var filenamePattern in possibleFilenames)
+            {
+                string[] matchingFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), filenamePattern);
+                if (matchingFiles.Length > 0)
+                {
+                    mostRecentFilename = matchingFiles[matchingFiles.Length - 1]; // Get the most recent file
+                    break;
+                }
+            }
+            
+            if (mostRecentFilename != null)
+            {
+                // File exists, read its content and perform comparison
+                string currentContent = File.ReadAllText(mostRecentFilename);
+                // Perform comparison with the currentContent
+                return currentContent;
+            }
+            else
+            {
+                string errorMessage = "No recent files found for comparison.";
+                Console.WriteLine(errorMessage);
+                await channel.SendMessageAsync(errorMessage);
+                return errorMessage;
+            }
+        }
+
+        public async Task<StringBuilder> FormatAndSendComparisonResults(SquadronObj[] newContent)
+        {
 
 
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine("       Name     Wins    Losses    Played      Pts");
+
+            foreach (var squadronObj in newContent)
+            {
+                string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2, ' ')})" : "    ";
+
+                string paddedName;
+                //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
+                //string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+                string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
+
+                //string WinsChange = squadronObj.WinsChange.ToString().PadLeft(2,' ');
+                //string LossesChange = squadronObj.LossesChange.ToString().PadLeft(2, ' ');
+                //string BattlesPlayedChanged = squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ');
+                //int ScoreChange = squadronObj.ScoreChange;
+
+                string WinsChange = squadronObj.WinsChange != 0 ? squadronObj.WinsChange.ToString().PadLeft(2, ' ') : " ";
+                string LossesChange = squadronObj.LossesChange != 0 ? squadronObj.LossesChange.ToString().PadLeft(2, ' ') : " ";
+                string BattlesPlayedChanged = squadronObj.BattlesPlayedChange != 0 ? squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ') : " ";
+
+                string ScoreChange = squadronObj.ScoreChange != 0 ? squadronObj.ScoreChange.ToString() : " ";
+
+                // Include parentheses only when the corresponding value is non-zero
+                string winsChangeStr = squadronObj.WinsChange != 0 ? $"({WinsChange})" : "";
+                string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
+                string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
+                string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
+
+
+                if (squadronObj.Pos < 10)
+                {
+
+                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                }
+                else
+                {
+                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                }
+
+                messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+
+                
+
+                //!3comparescrapemessageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+
+
+                //messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}({WinsChange}) & {paddedLosses}({LossesChange}). ({squadronObj.BattlesPlayed})({BattlesPlayedChanged}). {squadronObj.Score}({ScoreChange}) ");
+            }
+            return messageBuilder;
+        }
 
     }
 
