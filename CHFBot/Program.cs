@@ -44,7 +44,7 @@ namespace CHFBot
         private readonly string token = File.ReadAllText(@"token.txt");
         public bool trackVoiceUpdates = false;
         public bool minuteTimerFive = false;
-        public bool bundsBotScoreTracking = true;
+        public bool bundsBotScoreTracking = false;
         public bool quotes = false;
         int winCounter = 0;
         int lossCounter = 0;
@@ -356,6 +356,7 @@ namespace CHFBot
             IMessageChannel bufsssrescoretrackingchl = _client.GetChannel(esperbotchannel) as IMessageChannel;
             
             await chnl.SendMessageAsync("Writing totals to file.");
+            await esperbotchnl.SendMessageAsync("Writing totals to file.");
 
             // Create a file name with the date and time prefix
             string fileName = "SREWinLossRecords.txt";
@@ -386,6 +387,7 @@ namespace CHFBot
                 writerBufSs.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
             }
 
+            await Handle3CompareScrapeCommand(esperbotchnl);
             await Handle3CompareScrapeCommand(chnl);
 
             ////////////////////////////////
@@ -442,9 +444,9 @@ namespace CHFBot
             //await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
             //await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
 
-            await esperbotchnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
-            await esperbotchnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
 
             //await esperbotchnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
