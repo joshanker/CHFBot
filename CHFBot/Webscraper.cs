@@ -221,7 +221,7 @@ namespace Scraper
             
             int numSquadronsToScrape = Math.Min(21, chunks.Length); // Limit to first XX squadrons
             StringBuilder sb = new StringBuilder();
-            sb.Append("#   Name   Wins   Loss Played\n\n");
+            sb.Append("#   Name   Wins     Loss  Played\n\n");
 
             for (int i = 1; i < numSquadronsToScrape; i++)
             {
@@ -234,12 +234,12 @@ namespace Scraper
                     squadronName = squadronName.Substring(1, squadronName.Length - 2);
                 }
                 squadronName = squadronName.PadRight(5, ' ');
-                string battlesPlayed = ExtractFieldValue(chunk, "battles_hist").PadRight(4, ' ');
-                string wins = ExtractFieldValue(chunk, "wins_hist").PadLeft(4, ' ');
-                string score = ExtractFieldValue(chunk, "dr_era5_hist").PadRight(4, ' ');
+                string battlesPlayed = ExtractFieldValue(chunk, "battles_hist").PadRight(5, ' ');
+                string wins = ExtractFieldValue(chunk, "wins_hist").PadLeft(5, ' ');
+                string score = ExtractFieldValue(chunk, "dr_era5_hist").PadRight(6, ' ');
                 string pos = i.ToString().PadRight(3, ' ');
                 int losses = int.Parse(battlesPlayed) - int.Parse(wins);
-                string lossesPad = losses.ToString().PadLeft(4, ' ');
+                string lossesPad = losses.ToString().PadLeft(6, ' ');
 
                 //Console.WriteLine($"{i} {squadronName}: Battles Played - {battlesPlayed}, Wins - {wins}, Score: {score}");
             

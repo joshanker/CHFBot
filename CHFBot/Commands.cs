@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace BotCommands
 {
@@ -798,9 +799,20 @@ namespace BotCommands
             {
                 foreach (var line in currentLines)
                 {
+                    
+
                     if (line.Contains(squadron.SquadronName))
                     {
+
+                        if(squadron.SquadronName == "TFedz")
+                        {
+                            Console.WriteLine("stop!");
+                        }
+
+                        Console.WriteLine(line);
                         string[] parts = line.Split(new[] { ' ',':'}, StringSplitOptions.RemoveEmptyEntries);
+                        Console.WriteLine(parts.Length);
+
                         if (parts.Length >= 9)
                         {
                             int currentPos = int.Parse(parts[0]);
