@@ -65,44 +65,7 @@ namespace CHFBot
         ////////////////
         ////////////////
 
-        public class ScoreExtractor
-        {
-            public int ExtractScoreOfBofSs()
-            {
-                string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(), "TopSquadTotals_*.txt");
-                if (files.Length == 0)
-                {
-                    Console.WriteLine("No recent files found for extraction.");
-                    int squadronTotalScore = 0;
-                    return -1; // Or throw an exception
-                }
-
-                Array.Sort(files);
-                string mostRecentFile = files[files.Length - 1];
-
-                string[] lines = File.ReadAllLines(mostRecentFile);
-                string lineWithBofSs = lines.FirstOrDefault(line => line.Contains("BofSs"));
-
-                if (lineWithBofSs == null)
-                {
-                    Console.WriteLine("No data found for squadron BofSs.");
-                    int squadronTotalScore = 0;
-                    return -1; // Or throw an exception
-                }
-
-                int index = lineWithBofSs.IndexOf("Score:");
-                if (index == -1)
-                {
-                    Console.WriteLine("Score not found for squadron BofSs.");
-                    int squadronTotalScore = 0;
-                    return -1; // Or throw an exception
-                }
-
-                string scorePart = lineWithBofSs.Substring(index + 7); // 7 is the length of "Score: "
-                int score = int.Parse(scorePart.Trim());
-                return score;
-            }
-        }
+        
 
 
         static void Main(string[] args)
@@ -427,26 +390,27 @@ namespace CHFBot
 
 
 
-            var lastWinCounter = winCounter;
-            var lastLossCounter = lossCounter;
-            var lastBufSsWinCounter = bufSsWinCounter;
-            var lastBufSsLossCounter = bufSsLossCounter;
+            var lastWinCounter = sqdObj.WinsChange;
+            var lastLossCounter = sqdObj.LossesChange;
+            var lastBufSsWinCounter = sqdObjBufSs.WinsChange;
+            var lastBufSsLossCounter = sqdObjBufSs.LossesChange;
             winCounter = 0;
             lossCounter = 0;
             bufSsWinCounter = 0;
             bufSsLossCounter = 0;
 
+
             
-            await chnl.SendMessageAsync("Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
+            await chnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
             await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +" (+"+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
             //await chnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
             //await chnl.SendMessageAsync("endOfSessionScoreBufSs is currently: " + endOfSessionScoreBufSs + ". It will now be updated with: " + sqdObjBufSs.Score);
 
-            await esperbotchnl.SendMessageAsync("Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("BofSs: From " + endOfSessionScore + " to " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
-            await esperbotchnl.SendMessageAsync("Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("BufSs: From " + endOfSessionScoreBufSs + " to " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
 
             //await esperbotchnl.SendMessageAsync("endOfSessionScore is currently: " + endOfSessionScore + ". It will now be updated with: " + sqdObj.Score);
@@ -1950,7 +1914,7 @@ namespace CHFBot
 
                 string paddedName;
                 //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
-                string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
+                string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(4, ' ') : "   ";
                 //string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
                 string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
 
@@ -1970,6 +1934,7 @@ namespace CHFBot
                 string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
                 string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
                 string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
+                string paddedAmp = "&".PadLeft(2,' ');
 
 
                 if (squadronObj.Pos < 10)
@@ -1982,7 +1947,7 @@ namespace CHFBot
                     paddedName = squadronObj.SquadronName.PadRight(6, ' ');
                 }
 
-                messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+                messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} {paddedAmp} {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
 
 
                 //!3comparescrapemessageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
@@ -2075,6 +2040,47 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync("Sorry, I only accept bofss and bufss at this time.");
             }
         }
+
+
+        public class ScoreExtractor
+        {
+            public int ExtractScoreOfBofSs()
+            {
+                string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(), "TopSquadTotals_*.txt");
+                if (files.Length == 0)
+                {
+                    Console.WriteLine("No recent files found for extraction.");
+                    int squadronTotalScore = 0;
+                    return -1; // Or throw an exception
+                }
+
+                Array.Sort(files);
+                string mostRecentFile = files[files.Length - 1];
+
+                string[] lines = File.ReadAllLines(mostRecentFile);
+                string lineWithBofSs = lines.FirstOrDefault(line => line.Contains("BofSs"));
+
+                if (lineWithBofSs == null)
+                {
+                    Console.WriteLine("No data found for squadron BofSs.");
+                    int squadronTotalScore = 0;
+                    return -1; // Or throw an exception
+                }
+
+                int index = lineWithBofSs.IndexOf("Score:");
+                if (index == -1)
+                {
+                    Console.WriteLine("Score not found for squadron BofSs.");
+                    int squadronTotalScore = 0;
+                    return -1; // Or throw an exception
+                }
+
+                string scorePart = lineWithBofSs.Substring(index + 7); // 7 is the length of "Score: "
+                int score = int.Parse(scorePart.Trim());
+                return score;
+            }
+        }
+
 
     }
 
