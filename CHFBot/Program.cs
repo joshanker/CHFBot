@@ -664,6 +664,12 @@ namespace CHFBot
                 {
                     await HandleCheckCommand(message);
                 }
+                else if (content.StartsWith("!executetimer"))
+                {
+                    DateTime now = DateTime.Now.AddDays(-1);
+                    string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";
+                    await executeTimer(dateTimePrefix);
+                }
                 else
                 {
                     Console.WriteLine($"No matching command detected: {message}") ;
