@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using Scraper;
 using System.Globalization;
 using System.Xml.Schema;
+using System.CodeDom;
 
 namespace CHFBot
 {
@@ -1296,7 +1297,7 @@ namespace CHFBot
 
         private async Task HandleTop20NoArgCommand(SocketMessage message)
         {
-            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\", ... actually this command is in progress of being changed....");
+            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\", This is case-sensitive");
         }
 
         [CommandDescription("turns on and off login/logoff/move notifications.")]
@@ -1970,9 +1971,10 @@ namespace CHFBot
             //loads the most recent TopSquads file into currentContent.
             currentContent = await commands.LoadStringWithMostRecentTopSquad(message);            
             
-            // Perform a new scrape
+            // Perform a new scrape.  Returns a list of Squadron Objects as an Array.
             SquadronObj[] newContent = await Webscraper.TestScrape2();
             
+            //returns newcontent, which is an array of SquadronObj's.  But the SquadronObj's in it, after being returned, have populated values for things like WinsChange, ScoreChange, etc.
             SquadronObj[] comparisonResult = commands.CompareContents2(currentContent, newContent);
 
             StringBuilder messageBuilder = new StringBuilder();
@@ -1988,48 +1990,41 @@ namespace CHFBot
             if (message.Content.ToLower() == "!check bofss" || message.Content.ToLower() == "!check bufss")
             {
                 //SquadronObj[] sqbObjList = new SquadronObj();
-                SquadronObj content = await Webscraper.ScrapeCheck(message.Content); // Call the TestScrape method
+                SquadronObj content = await Webscraper.ScrapeCheck(message.Content); // Call the TestScrape method. Returns a SquadronObj with populated values for wins/losses/battlesplayed, etc.
 
                 const int maxEmbedLength = 4096;
                 const int maxChunkLength = 2000;
 
-                //if (content.Length <= maxEmbedLength)
-                //{
-                //    // If the content fits within the limit, send it as a single embedded message
-                //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
-                //}
-                //else
-                //{
-                //    Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
-                //    await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
-                //}
-
                 StringBuilder messageBuilder = new StringBuilder();
 
-                messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
+                //messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
 
                 SquadronObj[] squadronArray = new SquadronObj[1];
                 squadronArray[0] = content;
 
-                foreach (var squadronObj in squadronArray)
-                {
-                    string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
-                    string paddedName;
-                    string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
-                    string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+                Commands commands = new Commands();
+                messageBuilder = await commands.FormatAndSendComparisonResults(squadronArray);
 
-                    if (squadronObj.Pos < 10)
-                    {
+                //Let's try using FormatAndSendComparisonResults instead of the below....
+                //foreach (var squadronObj in squadronArray)
+                //{
+                //    string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                //    string paddedName;
+                //    string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                //    string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
 
-                        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
-                    }
-                    else
-                    {
-                        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
-                    }
+                //    if (squadronObj.Pos < 10)
+                //    {
 
-                    messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
-                }
+                //        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                //    }
+                //    else
+                //    {
+                //        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
+                //    }
+
+                //    messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
+                //}
 
                 //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
 

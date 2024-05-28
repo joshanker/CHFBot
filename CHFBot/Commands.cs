@@ -808,18 +808,12 @@ namespace BotCommands
                 foreach (var line in currentLines)
                 {
                     
-
                     if (line.Contains(squadron.SquadronName))
                     {
 
-                        if(squadron.SquadronName == "TFedz")
-                        {
-                            Console.WriteLine("stop!");
-                        }
-
-                        Console.WriteLine(line);
+                        //Console.WriteLine(line);
                         string[] parts = line.Split(new[] { ' ',':'}, StringSplitOptions.RemoveEmptyEntries);
-                        Console.WriteLine(parts.Length);
+                        //Console.WriteLine(parts.Length);
 
                         if (parts.Length >= 9)
                         {
@@ -837,7 +831,7 @@ namespace BotCommands
                                 squadron.Score != currentScore)
                             {
                                 // Annotate the changes
-                                // For demonstration, let's assume you have appropriate properties in SquadronObj to track changes
+                                
                                 squadron.Pos = squadron.Pos;
                                 squadron.PosChange = int.Parse(parts[0]) - squadron.Pos; 
                                 squadron.WinsChange = squadron.Wins - currentWins;
