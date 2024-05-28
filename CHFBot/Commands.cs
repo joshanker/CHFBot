@@ -232,6 +232,10 @@ namespace BotCommands
             string B0AR = "https://warthunder.com/en/community/claninfo/MAD%20BOARS";
             string SOFUA = "https://warthunder.com/en/community/claninfo/Welcome%20to%20Ukraine";
             string WeBak = "https://warthunder.com/en/community/claninfo/NIKE%20x%20UzBeK";
+            string TFedz = "https://warthunder.com/en/community/claninfo/Trooper%20Federation";
+            string AFI = "https://warthunder.com/en/community/claninfo/Anthems%20For%20Insubordinates";
+            string TEHb = "https://warthunder.com/en/community/claninfo/TEHb";
+            string IRAN = "https://warthunder.com/en/community/claninfo/Persian%20Warriors";
 
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
@@ -252,7 +256,11 @@ namespace BotCommands
                     { "LEDAC",  LEDAC},
                     { "B0AR",  B0AR},
                     { "SOFUA", SOFUA },
-                    { "WeBak", WeBak }
+                    { "WeBak", WeBak },
+                    { "TFedz", TFedz },
+                    { "AFI", AFI },
+                    { "TEHb", TEHb },
+                    { "IRAN", IRAN }
                 };
 
             if (urlMap.ContainsKey(input))
