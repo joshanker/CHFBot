@@ -15,6 +15,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Globalization;
+using System.CodeDom;
 
 namespace Scraper
 {
@@ -212,7 +213,7 @@ namespace Scraper
 
         }
 
-
+        //Returns a String
         public static async Task<String> TestScrape()
         {
             string url = "https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/1/sort/dr_era5";
@@ -249,6 +250,7 @@ namespace Scraper
             
         }
 
+        //Returns a list of SquadronObjs as an array
         public static async Task<SquadronObj[]> TestScrape2()
         {
             string url = "https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/1/sort/dr_era5";

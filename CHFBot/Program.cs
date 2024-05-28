@@ -318,7 +318,7 @@ namespace CHFBot
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel esperbotchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
             IMessageChannel bufsssrescoretrackingchl = _client.GetChannel(esperbotchannel) as IMessageChannel;
-            
+
             await chnl.SendMessageAsync("Writing totals to file.");
             await esperbotchnl.SendMessageAsync("Writing totals to file.");
 
@@ -330,7 +330,7 @@ namespace CHFBot
             if (!File.Exists(fileName))
             {
                 // If the file does not exist, create it
-                using (File.Create(fileName)) { } ;
+                using (File.Create(fileName)) { };
             }
             // Check if the file exists
             if (!File.Exists(fileNameBufSs))
@@ -353,6 +353,33 @@ namespace CHFBot
 
             await HandleCompareScrapeCommand(esperbotchnl);
             await HandleCompareScrapeCommand(chnl);
+
+
+
+
+            String currentContent = null;
+            currentContent = await commands.LoadStringWithMostRecentTopSquad(chnl);
+            
+            
+            sqdObj.SquadronName = "BofSs";
+            sqdObjBufSs.SquadronName = "BufSs";
+
+
+            SquadronObj[] newcontent = await Webscraper.TestScrape2();
+
+            SquadronObj[] comparisonResults = commands.CompareContents2(currentContent, newcontent);
+
+
+            var lastWinCounter = comparisonResults[0].WinsChange;
+            //var lastWinCounter = sqdObj.WinsChange;
+            var lastLossCounter = comparisonResults[0].LossesChange;
+            //var lastLossCounter = sqdObj.LossesChange;
+            var lastBufSsWinCounter = sqdObjBufSs.WinsChange;
+            var lastBufSsLossCounter = sqdObjBufSs.LossesChange;
+
+
+
+
 
             ////////////////////////////////
             ///let's do that again for TopSquadTotals.txt
@@ -390,11 +417,6 @@ namespace CHFBot
             }
 
 
-
-            var lastWinCounter = sqdObj.WinsChange;
-            var lastLossCounter = sqdObj.LossesChange;
-            var lastBufSsWinCounter = sqdObjBufSs.WinsChange;
-            var lastBufSsLossCounter = sqdObjBufSs.LossesChange;
             winCounter = 0;
             lossCounter = 0;
             bufSsWinCounter = 0;
@@ -2004,29 +2026,6 @@ namespace CHFBot
 
                 Commands commands = new Commands();
                 messageBuilder = await commands.FormatAndSendComparisonResults(squadronArray);
-
-                //Let's try using FormatAndSendComparisonResults instead of the below....
-                //foreach (var squadronObj in squadronArray)
-                //{
-                //    string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
-                //    string paddedName;
-                //    string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
-                //    string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
-
-                //    if (squadronObj.Pos < 10)
-                //    {
-
-                //        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
-                //    }
-                //    else
-                //    {
-                //        paddedName = squadronObj.SquadronName.PadRight(5, ' ');
-                //    }
-
-                //    messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins} & {paddedLosses}. ({squadronObj.BattlesPlayed}). {squadronObj.Score} ");
-                //}
-
-                //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
 
                 await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
             }
