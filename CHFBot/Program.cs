@@ -305,13 +305,24 @@ namespace CHFBot
         private async Task executeTimer(String prefix)
         {
             Commands commands = new Commands();
-            SquadronObj sqdObj = new SquadronObj();
-            sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
+            
+            
+
+            SquadronObj sqdObj = new SquadronObj
+            {
+                url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs",
+                SquadronName = "BofSs"
+            };
+
             await commands.populateScore(sqdObj);
             squadronTotalScore = sqdObj.Score;
+                        
+            SquadronObj sqdObjBufSs = new SquadronObj
+            {
+                url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs",
+                SquadronName = "BufSs"
+            };
 
-            SquadronObj sqdObjBufSs = new SquadronObj();
-            sqdObjBufSs.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
             await commands.populateScore(sqdObjBufSs);
             squadronTotalScoreBufSs = sqdObjBufSs.Score;
 
@@ -354,39 +365,41 @@ namespace CHFBot
             await HandleCompareScrapeCommand(esperbotchnl);
             await HandleCompareScrapeCommand(chnl);
 
-
-
-
-            String currentContent = null;
-            currentContent = await commands.LoadStringWithMostRecentTopSquad(chnl);
+            String currentContent = await commands.LoadStringWithMostRecentTopSquad(chnl);
             
-            
-            sqdObj.SquadronName = "BofSs";
-            sqdObjBufSs.SquadronName = "BufSs";
-
 
             SquadronObj[] newcontent = await Webscraper.TestScrape2();
 
             SquadronObj[] comparisonResults = commands.CompareContents2(currentContent, newcontent);
 
 
-            var lastWinCounter = comparisonResults[0].WinsChange;
-            //var lastWinCounter = sqdObj.WinsChange;
-            var lastLossCounter = comparisonResults[0].LossesChange;
-            //var lastLossCounter = sqdObj.LossesChange;
-            var lastBufSsWinCounter = sqdObjBufSs.WinsChange;
-            var lastBufSsLossCounter = sqdObjBufSs.LossesChange;
+            var lastWinCounter = 0;
+            var lastLossCounter = 0;
+            var lastBufSsWinCounter = 0;
+            var lastBufSsLossCounter = 0;
+
+            foreach (var squadron in comparisonResults)
+            {
+                if (squadron.SquadronName == "BofSs")
+                {
+                    lastWinCounter = squadron.WinsChange;
+                    lastLossCounter = squadron.LossesChange;
+                }
+                else if (squadron.SquadronName == "BufSs")
+                {
+                    lastBufSsWinCounter = squadron.WinsChange;
+                    lastBufSsLossCounter = squadron.LossesChange;
+                }
+            }
 
 
 
+                ////////////////////////////////
+                ///let's do that again for TopSquadTotals.txt
+                ////////////////////////////////
 
 
-            ////////////////////////////////
-            ///let's do that again for TopSquadTotals.txt
-            ////////////////////////////////
-
-
-            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+                string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string topSquadFileName = prefix.Replace(":", "_").TrimEnd();
             topSquadFileName = $"TopSquadTotals_{topSquadFileName}.txt";
 
@@ -1071,7 +1084,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string input = content.Substring("!top20 ".Length);
 
-            if (new[] { "Cadet", "BofSs", "Academy", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN", }.Contains(input))
+            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN", }.Contains(input))
             {
                 await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
