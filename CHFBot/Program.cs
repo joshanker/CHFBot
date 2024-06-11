@@ -663,6 +663,10 @@ namespace CHFBot
                 {
                     await HandleSquadronTotalScoreCommand(message);
                 }
+                else if (content.StartsWith("!2squadrontotalscore"))
+                {
+                    await Handle2SquadronTotalScoreCommand(message);
+                }
                 else if (content.StartsWith("!check"))
                 {
                     await HandleCheckCommand(message);
@@ -1693,7 +1697,6 @@ namespace CHFBot
         [CommandDescription("I update the daily total to the current total.")]
         private async Task HandleSquadronTotalScoreCommand(SocketMessage message)
         {
-            // Implementation for the !join command
             await message.Channel.SendMessageAsync("OK, " + squadronTotalScore + " is the current value of SquadronTotalScore.  Also, I am executing the populate now.");
 
             Commands commands = new Commands();
@@ -1701,6 +1704,21 @@ namespace CHFBot
             sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
             await commands.populateScore(sqdObj);
             squadronTotalScore = sqdObj.Score;
+
+            await message.Channel.SendMessageAsync("" + squadronTotalScore);
+
+        }
+
+        [CommandDescription("2")]
+        private async Task Handle2SquadronTotalScoreCommand(SocketMessage message)
+        {
+            await message.Channel.SendMessageAsync("OK, " + squadronTotalScoreBufSs + " is the current value of SquadronTotalScoreBufSs.  Also, I am executing the populate now.");
+
+            Commands commands = new Commands();
+            SquadronObj sqdObj = new SquadronObj();
+            sqdObj.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs?69";
+            await commands.populateScore(sqdObj);
+            squadronTotalScoreBufSs = sqdObj.Score;
 
             await message.Channel.SendMessageAsync("" + squadronTotalScore);
 
