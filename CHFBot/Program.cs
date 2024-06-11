@@ -350,23 +350,9 @@ namespace CHFBot
                 using (File.Create(fileNameBufSs)) { };
             }
 
-            // Open the file for writing
-            using (StreamWriter writer = new StreamWriter(fileName, true))
-            {
-                // Write the win and loss counters to the file
-                writer.WriteLine($"{prefix}: Wins: {winCounter}, Losses: {lossCounter}, Total Score: {squadronTotalScore}");
-            }
-            using (StreamWriter writerBufSs = new StreamWriter(fileNameBufSs, true))
-            {
-                // Write the win and loss counters to the file
-                writerBufSs.WriteLine($"{prefix}: Wins: {bufSsWinCounter}, Losses: {bufSsLossCounter}, Total Score: {squadronTotalScoreBufSs}");
-            }
 
-            await HandleCompareScrapeCommand(esperbotchnl);
-            await HandleCompareScrapeCommand(chnl);
 
             String currentContent = await commands.LoadStringWithMostRecentTopSquad(chnl);
-            
 
             SquadronObj[] newcontent = await Webscraper.TestScrape2();
 
@@ -391,6 +377,24 @@ namespace CHFBot
                     lastBufSsLossCounter = squadron.LossesChange;
                 }
             }
+
+
+            // Open the file for writing
+            using (StreamWriter writer = new StreamWriter(fileName, true))
+            {
+                // Write the win and loss counters to the file
+                writer.WriteLine($"{prefix}: Wins: {lastWinCounter}, Losses: {lastLossCounter}, Total Score: {squadronTotalScore}");
+            }
+            using (StreamWriter writerBufSs = new StreamWriter(fileNameBufSs, true))
+            {
+                // Write the win and loss counters to the file
+                writerBufSs.WriteLine($"{prefix}: Wins: {lastBufSsWinCounter}, Losses: {lastBufSsLossCounter}, Total Score: {squadronTotalScoreBufSs}");
+            }
+
+            await HandleCompareScrapeCommand(esperbotchnl);
+            await HandleCompareScrapeCommand(chnl);
+
+
 
 
 
