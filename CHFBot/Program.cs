@@ -16,6 +16,7 @@ using Scraper;
 using System.Globalization;
 using System.Xml.Schema;
 using System.CodeDom;
+using System.Threading;
 
 namespace CHFBot
 {
@@ -333,6 +334,10 @@ namespace CHFBot
             await chnl.SendMessageAsync("Writing totals to file.");
             await esperbotchnl.SendMessageAsync("Writing totals to file.");
 
+            //Let's also write the newer style of info........
+            await WriteCheck("!check bofss");
+            await WriteCheck("!check bufss");
+
             // Create a file name with the date and time prefix
             string fileName = "SREWinLossRecords.txt";
             string fileNameBufSs = "SREWinLossRecordsBufSs.txt";
@@ -350,14 +355,9 @@ namespace CHFBot
                 using (File.Create(fileNameBufSs)) { };
             }
 
-
-
             String currentContent = await commands.LoadStringWithMostRecentTopSquad(chnl);
-
             SquadronObj[] newcontent = await Webscraper.TestScrape2();
-
             SquadronObj[] comparisonResults = commands.CompareContents2(currentContent, newcontent);
-
 
             var lastWinCounter = 0;
             var lastLossCounter = 0;
@@ -379,6 +379,20 @@ namespace CHFBot
             }
 
 
+            try
+            {
+                (int[] bufssRead2, int[] bufssRead1) =  ReadCheck("BufSs");
+                lastBufSsWinCounter = bufssRead1[1] - bufssRead2[1];
+                lastBufSsLossCounter = bufssRead1[2] - bufssRead2[2];
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception, e.g., log the error message
+                Console.WriteLine("failed on the try/catch for bufssread and ReadCheck");
+            }
+
+
+
             // Open the file for writing
             using (StreamWriter writer = new StreamWriter(fileName, true))
             {
@@ -393,8 +407,6 @@ namespace CHFBot
 
             await HandleCompareScrapeCommand(esperbotchnl);
             await HandleCompareScrapeCommand(chnl);
-
-
 
 
 
@@ -433,10 +445,18 @@ namespace CHFBot
                 Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
             }
 
+
+
+
             winCounter = 0;
             lossCounter = 0;
             bufSsWinCounter = 0;
             bufSsLossCounter = 0;
+
+            //ok, before we send our messages, we need to load up the BufSs info...
+            //read in the file, set the vars.
+
+
 
             //esperbot testing channel:
             await chnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
@@ -454,6 +474,9 @@ namespace CHFBot
 
             endOfSessionScore = sqdObj.Score;
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
+            
+
+            
 
         }
         
@@ -2042,21 +2065,12 @@ namespace CHFBot
         {
             if (message.Content.ToLower() == "!check bofss" || message.Content.ToLower() == "!check bufss")
             {
-                //SquadronObj[] sqbObjList = new SquadronObj();
-                SquadronObj content = await Webscraper.ScrapeCheck(message.Content); // Call the TestScrape method. Returns a SquadronObj with populated values for wins/losses/battlesplayed, etc.
-
                 const int maxEmbedLength = 4096;
                 const int maxChunkLength = 2000;
 
-                StringBuilder messageBuilder = new StringBuilder();
+                StringBuilder messageBuilder = await ActivateCheckLoadProcess(message.Content);
 
                 //messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
-
-                SquadronObj[] squadronArray = new SquadronObj[1];
-                squadronArray[0] = content;
-
-                Commands commands = new Commands();
-                messageBuilder = await commands.FormatAndSendComparisonResults(squadronArray);
 
                 await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
             }
@@ -2064,6 +2078,153 @@ namespace CHFBot
             {
                 await message.Channel.SendMessageAsync("Sorry, I only accept bofss and bufss at this time.");
             }
+        }
+
+        private async Task<StringBuilder> ActivateCheckLoadProcess(string content)
+        {
+            SquadronObj content2 = await Webscraper.ScrapeCheck(content); // Call the TestScrape method. Returns a SquadronObj with populated values for wins/losses/battlesplayed, etc.
+
+            SquadronObj[] squadronArray = new SquadronObj[1];
+            squadronArray[0] = content2;
+
+            Commands commands = new Commands();
+            StringBuilder messageBuilder = await commands.FormatAndSendComparisonResults(squadronArray);
+
+            return messageBuilder;
+        }
+
+        private async Task WriteCheck(String content)
+        {
+            if (content.ToLower() == "!check bofss" || content.ToLower() == "!check bufss")
+            {
+              
+                StringBuilder messageBuilder = await ActivateCheckLoadProcess(content);
+
+                //messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
+                //await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
+                //write the checkbufss file.
+
+                // Create a file name with the date and time prefix
+
+
+                string fileName = "CheckFunctionErrorFile.txt";
+
+                if (content.ToLower() == "!check bufss")
+                {
+                    fileName = "CheckBufSs.txt";
+                }
+                if (content.ToLower() == "!check bofss")
+                {
+                    fileName = "CheckBofSs.txt";
+                }
+
+
+                // Check if the file exists
+                if (!File.Exists(fileName))
+                {
+                    // If the file does not exist, create it
+                    using (File.Create(fileName)) { };
+                }
+
+                // Open the file for writing
+                using (StreamWriter writer = new StreamWriter(fileName, true))
+                {
+                    // Write the win and loss counters to the file
+
+
+                    string[] lines = messageBuilder.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    // Skip the first line and join the remaining lines
+                    string contentToWrite = string.Join(Environment.NewLine, lines.Skip(1));
+
+                    // Write the content to the file
+                    //await File.WriteAllTextAsync(filePath, contentToWrite);
+
+
+                    writer.Write(contentToWrite);
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("error in the else of writecheck.");
+            }
+        }
+
+        public static (int[], int[]) ReadCheck(string squadronName)
+        {
+            // Determine the file name based on the squadron name
+            string fileName;
+            if (squadronName == "BufSs")
+            {
+                fileName = "CheckBufSs.txt";
+            }
+            else if (squadronName == "BofSs")
+            {
+                fileName = "CheckBofSs.txt";
+            }
+            else
+            {
+                throw new ArgumentException("Invalid squadron name. Must be either 'BufSs' or 'BofSs'.");
+            }
+
+            if (!File.Exists(fileName))
+            {
+                throw new FileNotFoundException($"The file '{fileName}' does not exist.");
+            }
+
+            string[] lines = File.ReadAllLines(fileName);
+            if (lines.Length < 0)
+            {
+                throw new InvalidOperationException("The file doesn't contain enough lines.");
+            }
+
+            string lastLine = lines.Last();
+            string[] parts = lastLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 6)
+            {
+                throw new InvalidOperationException("The last line does not contain enough parts.");
+            }
+            int pos = int.Parse(parts[0]);
+            string name = parts[1];
+            int wins = int.Parse(parts[2]);
+
+            parts[4] = parts[4].Trim('.');
+            int losses = int.Parse(parts[4]); // Note: Skipping the "&" part
+
+            parts[5] = parts[5].Trim('.');
+            int totalPlayed = int.Parse(parts[5]);
+            int score = int.Parse(parts[6]);
+
+            int[] lastLine2 = new int[] { pos, wins, losses, totalPlayed, score };
+
+
+            string secondToLastLine = lines[lines.Length - 2];
+            string[] parts2 = secondToLastLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 6)
+            {
+                throw new InvalidOperationException("The last line does not contain enough parts.");
+            }
+            int pos2 = int.Parse(parts2[0]);
+            string name2 = parts2[1];
+            int wins2 = int.Parse(parts2[2]);
+
+            parts2[4] = parts2[4].Trim('.');
+            int losses2 = int.Parse(parts2[4]); // Note: Skipping the "&" part
+
+            parts2[5] = parts2[5].Trim('.');
+            int totalPlayed2 = int.Parse(parts2[5].Trim('.').Trim()); // Remove the trailing dot
+            int score2 = int.Parse(parts2[6]);
+
+            int[] secondToLastLine2 = new int[] { pos2, wins2, losses2, totalPlayed2, score2 };
+
+
+
+            //int[] secondToLastLine = lines[lines.Length - 2];
+
+
+
+            return (secondToLastLine2, lastLine2);
         }
 
 
