@@ -927,7 +927,7 @@ namespace CHFBot
         //    }
         //}
 
-        [CommandDescription("Gives player count, totals score, and each players' score.  Needs an input (!totals BofSs). Doesn't link to webpage.")]
+        [CommandDescription("Gives player count, totals score, and each players' score. (!totals BofSs.")]
         private async Task HandleTotalsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1056,8 +1056,6 @@ namespace CHFBot
                 await chnl.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
             }
         }
-
-
 
         [CommandDescription("Reads the most recently saved squadron file and then prints all players & points. !readsqd BofSs")]
         private async Task HandleReadSqdCommand(SocketMessage message)
