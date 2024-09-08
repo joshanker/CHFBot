@@ -107,10 +107,10 @@ namespace Scraper
                 int runNumber = 0;
                 for (int i = 8; i < 6 * number + 6; i = i + 6)
                 {
-                    Console.WriteLine("i is now " + i);
+                    //Console.WriteLine("i is now " + i);
                     
                     runNumber = runNumber + 1;
-                    Console.WriteLine("this is run number" + runNumber);
+                    //Console.WriteLine("this is run number" + runNumber);
                     Player newp = new Player();
 
                     string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
@@ -139,7 +139,7 @@ namespace Scraper
                     }
 
 
-                    Console.WriteLine($"{namexpath}");  
+                    //Console.WriteLine($"{namexpath}");  
                     String plrname = WebUtility.HtmlDecode(node.InnerHtml.Trim('\n').Trim());
 
                     // Check if the node's OuterHtml contains the email flag

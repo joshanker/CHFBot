@@ -366,6 +366,7 @@ namespace CHFBot
 
             foreach (var squadron in comparisonResults)
             {
+                //Console.WriteLine(squadron.SquadronName); 
                 if (squadron.SquadronName == "BofSs")
                 {
                     lastWinCounter = squadron.WinsChange;
@@ -389,6 +390,18 @@ namespace CHFBot
             {
                 // Handle the exception, e.g., log the error message
                 Console.WriteLine("failed on the try/catch for bufssread and ReadCheck");
+            }
+
+            try
+            {
+                (int[] Read2, int[] Read1) = ReadCheck("BofSs");
+                lastWinCounter = Read1[1] - Read2[1];
+                lastLossCounter = Read1[2] - Read2[2];
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception, e.g., log the error message
+                Console.WriteLine("failed on the try/catch for read and ReadCheck");
             }
 
 
@@ -1740,10 +1753,10 @@ namespace CHFBot
             await message.Channel.SendMessageAsync("OK, " + squadronTotalScoreBufSs + " is the current value of SquadronTotalScoreBufSs.  Also, I am executing the populate now.");
 
             Commands commands = new Commands();
-            SquadronObj sqdObj = new SquadronObj();
-            sqdObj.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs?69";
-            await commands.populateScore(sqdObj);
-            squadronTotalScoreBufSs = sqdObj.Score;
+            SquadronObj sqdObj2 = new SquadronObj();
+            sqdObj2.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs?69";
+            await commands.populateScore(sqdObj2);
+            squadronTotalScoreBufSs = sqdObj2.Score;
 
             await message.Channel.SendMessageAsync("" + squadronTotalScore);
 
