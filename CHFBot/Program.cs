@@ -307,7 +307,6 @@ namespace CHFBot
         {
             Commands commands = new Commands();
             
-            
 
             SquadronObj sqdObj = new SquadronObj
             {
@@ -487,9 +486,15 @@ namespace CHFBot
 
             endOfSessionScore = sqdObj.Score;
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
-            
 
+            //////////////////////////////checks/////////////////////////////////
             
+            StringBuilder checkbofss = await ActivateCheckLoadProcess("bofss");
+            await chnl.SendMessageAsync($"```{checkbofss.ToString()}```");
+
+            StringBuilder checkbufss = await ActivateCheckLoadProcess("bufss");
+            await chnl.SendMessageAsync($"```{checkbufss.ToString()}```");
+
 
         }
         
@@ -2080,9 +2085,7 @@ namespace CHFBot
                 const int maxChunkLength = 2000;
 
                 StringBuilder messageBuilder = await ActivateCheckLoadProcess(message.Content);
-
-                //messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
-
+                
                 await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
             }
             else
