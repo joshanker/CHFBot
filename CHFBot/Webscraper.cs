@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Globalization;
 using System.CodeDom;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Scraper
 {
@@ -359,7 +360,21 @@ namespace Scraper
 
         public static async Task<SquadronObj> ScrapeCheck(string message)
         {
-            string sqdToGet = message.Substring(7).Trim();
+            string sqdToGet;
+            if (message.ToLower() == "!check bofss")
+            {
+                sqdToGet = message;
+            }
+            if (message.ToLower() == "!check bufss")
+            {
+                sqdToGet = message;
+            }
+            else
+            {
+                sqdToGet = message.Substring(7).Trim();
+            }
+
+
 
             for (int page = 1; page <= 6; page++) // Iterate over 6 pages
             {

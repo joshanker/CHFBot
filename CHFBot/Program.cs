@@ -487,13 +487,14 @@ namespace CHFBot
             endOfSessionScore = sqdObj.Score;
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
 
-            //////////////////////////////checks/////////////////////////////////
-            
-            StringBuilder checkbofss = await ActivateCheckLoadProcess("bofss");
-            await chnl.SendMessageAsync($"```{checkbofss.ToString()}```");
+            /////////////////////////////////
+            //checks
+            /////////////////////////////////
+            //StringBuilder checkbofss = await ActivateCheckLoadProcess("bofss");
+            //await chnl.SendMessageAsync($"```{checkbofss.ToString()}```");
 
-            StringBuilder checkbufss = await ActivateCheckLoadProcess("bufss");
-            await chnl.SendMessageAsync($"```{checkbufss.ToString()}```");
+            //StringBuilder checkbufss = await ActivateCheckLoadProcess("bufss");
+            //await chnl.SendMessageAsync($"```{checkbufss.ToString()}```");
 
 
         }
@@ -716,7 +717,7 @@ namespace CHFBot
                 {
                     await HandleCheckCommand(message);
                 }
-                else if (content.StartsWith("!executetimer"))
+                else if (content.StartsWith("!2executetimer"))
                 {
                     DateTime now = DateTime.Now.AddDays(-1);
                     string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";

@@ -904,56 +904,68 @@ namespace BotCommands
 
             StringBuilder messageBuilder = new StringBuilder();
             messageBuilder.AppendLine("       Name     Wins    Losses    Played      Pts");
-
-            foreach (var squadronObj in newContent)
+            if (newContent != null)
             {
-                string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
-                string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2, ' ')})" : "    ";
-
-                string paddedName;
-                //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
-                string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
-                //string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
-                string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
-
-                //string WinsChange = squadronObj.WinsChange.ToString().PadLeft(2,' ');
-                //string LossesChange = squadronObj.LossesChange.ToString().PadLeft(2, ' ');
-                //string BattlesPlayedChanged = squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ');
-                //int ScoreChange = squadronObj.ScoreChange;
-
-                string WinsChange = squadronObj.WinsChange != 0 ? squadronObj.WinsChange.ToString().PadLeft(2, ' ') : " ";
-                string LossesChange = squadronObj.LossesChange != 0 ? squadronObj.LossesChange.ToString().PadLeft(2, ' ') : " ";
-                string BattlesPlayedChanged = squadronObj.BattlesPlayedChange != 0 ? squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ') : " ";
-
-                string ScoreChange = squadronObj.ScoreChange != 0 ? squadronObj.ScoreChange.ToString() : " ";
-
-                // Include parentheses only when the corresponding value is non-zero
-                string winsChangeStr = squadronObj.WinsChange != 0 ? $"({WinsChange})" : "";
-                string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
-                string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
-                string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
 
 
-                if (squadronObj.Pos < 10)
+                foreach (var squadronObj in newContent)
                 {
+                    string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
+                    string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2, ' ')})" : "    ";
 
-                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                    string paddedName;
+                    //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
+                    string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
+                    //string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
+                    string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
+
+                    //string WinsChange = squadronObj.WinsChange.ToString().PadLeft(2,' ');
+                    //string LossesChange = squadronObj.LossesChange.ToString().PadLeft(2, ' ');
+                    //string BattlesPlayedChanged = squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ');
+                    //int ScoreChange = squadronObj.ScoreChange;
+
+                    string WinsChange = squadronObj.WinsChange != 0 ? squadronObj.WinsChange.ToString().PadLeft(2, ' ') : " ";
+                    string LossesChange = squadronObj.LossesChange != 0 ? squadronObj.LossesChange.ToString().PadLeft(2, ' ') : " ";
+                    string BattlesPlayedChanged = squadronObj.BattlesPlayedChange != 0 ? squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ') : " ";
+
+                    string ScoreChange = squadronObj.ScoreChange != 0 ? squadronObj.ScoreChange.ToString() : " ";
+
+                    // Include parentheses only when the corresponding value is non-zero
+                    string winsChangeStr = squadronObj.WinsChange != 0 ? $"({WinsChange})" : "";
+                    string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
+                    string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
+                    string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
+
+
+                    if (squadronObj.Pos < 10)
+                    {
+
+                        paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                    }
+                    else
+                    {
+                        paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                    }
+
+                    messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+
+
+
+                    //!3comparescrapemessageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
+
+
+                    //messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}({WinsChange}) & {paddedLosses}({LossesChange}). ({squadronObj.BattlesPlayed})({BattlesPlayedChanged}). {squadronObj.Score}({ScoreChange}) ");
                 }
-                else
-                {
-                    paddedName = squadronObj.SquadronName.PadRight(6, ' ');
-                }
-
-                messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
-
-                
-
-                //!3comparescrapemessageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
 
 
-                //messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}({WinsChange}) & {paddedLosses}({LossesChange}). ({squadronObj.BattlesPlayed})({BattlesPlayedChanged}). {squadronObj.Score}({ScoreChange}) ");
+
+                return messageBuilder;
             }
-            return messageBuilder;
+            else
+            {
+                return messageBuilder;
+            }
+
         }
 
     }
