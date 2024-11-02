@@ -1764,7 +1764,7 @@ namespace CHFBot
             await commands.populateScore(sqdObj2);
             squadronTotalScoreBufSs = sqdObj2.Score;
 
-            await message.Channel.SendMessageAsync("" + squadronTotalScore);
+            await message.Channel.SendMessageAsync("" + squadronTotalScoreBufSs);
 
         }
 
