@@ -2103,9 +2103,19 @@ namespace CHFBot
             squadronArray[0] = content2;
 
             Commands commands = new Commands();
-            StringBuilder messageBuilder = await commands.FormatAndSendComparisonResults(squadronArray);
+            StringBuilder messageBuilder= new StringBuilder();
+            if (squadronArray[0] != null)
+            {
 
-            return messageBuilder;
+                messageBuilder = await commands.FormatAndSendComparisonResults(squadronArray);
+
+                return messageBuilder;
+            }
+            else
+            {
+                return messageBuilder;
+            }
+
         }
 
         private async Task WriteCheck(String content)
