@@ -363,11 +363,11 @@ namespace Scraper
             string sqdToGet;
             if (message.ToLower() == "!check bofss")
             {
-                sqdToGet = message;
+                sqdToGet = "bofss";
             }
             if (message.ToLower() == "!check bufss")
             {
-                sqdToGet = message;
+                sqdToGet = "bufss";
             }
             else
             {

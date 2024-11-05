@@ -717,7 +717,7 @@ namespace CHFBot
                 {
                     await HandleCheckCommand(message);
                 }
-                else if (content.StartsWith("!2executetimer"))
+                else if (content.StartsWith("!executetimer"))
                 {
                     DateTime now = DateTime.Now.AddDays(-1);
                     string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";

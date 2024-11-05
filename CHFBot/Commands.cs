@@ -904,7 +904,7 @@ namespace BotCommands
 
             StringBuilder messageBuilder = new StringBuilder();
             messageBuilder.AppendLine("       Name     Wins    Losses    Played      Pts");
-            if (newContent != null)
+            if (newContent[0] != null)
             {
 
 
