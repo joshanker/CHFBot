@@ -36,7 +36,7 @@ namespace CHFBot
     {
         private static DiscordSocketClient _client;
         private static readonly ulong EsperBotTestingChannel = 1133615880488628344;
-        private static readonly ulong sreScoreTrackingChannel= 742213810752061471;
+        private static readonly ulong sreScoreTrackingChannel = 742213810752061471;
         private static readonly ulong esperbotchannel = 1165452109513244673;
         private static readonly ulong senateChannel = 484153871510405123;
         private static readonly ulong bufssScoreTrackingChannel = 886756342210117663;
@@ -48,6 +48,7 @@ namespace CHFBot
         public bool minuteTimerFive = false;
         public bool bundsBotScoreTracking = false;
         public bool quotes = false;
+        public bool wlCounter = true;
         int winCounter = 0;
         int lossCounter = 0;
         int bufSsWinCounter = 0;
@@ -60,6 +61,8 @@ namespace CHFBot
         int squadronTotalScoreBufSs = 0;
         int endOfSessionScore = 0;
         int endOfSessionScoreBufSs = 0;
+        SquadronObj wlBaselineBofSs = new SquadronObj();
+        SquadronObj wlBaselineBufSs = new SquadronObj();
 
         ////////////// On startup, let's see if we can pull the score.....
         ////////////////
@@ -67,14 +70,14 @@ namespace CHFBot
         ////////////////
         ////////////////
 
-        
+
 
 
         static void Main(string[] args)
         {
             new Program().RunBotAsync().GetAwaiter().GetResult();
 
-            
+
         }
 
         public async Task RunBotAsync()
@@ -128,10 +131,7 @@ namespace CHFBot
             Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
             endOfSessionScore = scoreOfBofSs;
 
-            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs  + ". SRE score set to 0-0.  Use !help for a command list.");
-
-            //await esperbotchnl.SendMessageAsync("EsperBot online! Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". " + "Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
-
+            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
 
         }
 
@@ -161,7 +161,7 @@ namespace CHFBot
             double interval = (targetTime - now).TotalMilliseconds;
             dailyTimer.Interval = interval;
             dailyTimer.Elapsed += OnDailyEvent;
-            
+
             // Calculate the time until 19:00 tomorrow
             DateTime midNow = DateTime.Now;
             DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
@@ -216,28 +216,22 @@ namespace CHFBot
             fiveMinuteTimer.Elapsed += OnFiveMinuteEvent;
             fiveMinuteTimer.AutoReset = true; // Ensure it automatically resets
 
-
-
             hourlyTimer.Start();
             dailyTimer.Start();
             midDailyTimer.Start();
             fiveMinuteTimer.Start();
-
-            
-
-
         }
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
         {
             Commands command = new Commands();
-             
+
             if (quotes == true)
             {
                 string quote = command.getQuote();
                 IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
                 await chnl.SendMessageAsync(quote);
             }
-                        
+
             hourlyTimer.Interval = 60 * 60 * 1000; // One hour in milliseconds
             hourlyTimer.Start();
         }
@@ -263,50 +257,25 @@ namespace CHFBot
         }
         private async void OnFiveMinuteEvent(object source, ElapsedEventArgs e)
         {
-            if(minuteTimerFive == true)
-            { 
-            
-                Console.WriteLine("5 minutes elapsed!");
-                IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-                //await chnl.SendMessageAsync("5 minutes is up.");
-
-                Commands commands = new Commands();
-                SquadronObj oldSqd =await commands.LoadSqd("BofSs");
-                await Handle5MinuteWriteTimer("BofSs");
-                SquadronObj newSqd = await commands.LoadSqd("BofSs");
-
-                List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
-
-
-                    if (oldSqd.Score != newSqd.Score)
-                    {
-                        foreach (var change in ratingChanges)
-                        {
-
-                            if (change.NewRating - change.OldRating > 0)
-                            {
-                                await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                            }
-                            else if (change.NewRating - change.OldRating < 0)
-
-                            {
-                                await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                            }
-                            else
-                            {
-                                await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.OldRating - change.NewRating}");
-                            }
-
-                        }
-                        await chnl.SendMessageAsync("---------- Done ----------");
-                    }
+            if (minuteTimerFive == true)
+            {
+                ProcessIndivPointsChange();
 
             }
+
+
+            if (wlCounter == true)
+            {
+                ProcessSquadron5mScoreChange(wlBaselineBofSs, "BofSs");
+                ProcessSquadron5mScoreChange(wlBaselineBufSs, "BufSs");
+            }
+
+
         }
         private async Task executeTimer(String prefix)
         {
             Commands commands = new Commands();
-            
+
 
             SquadronObj sqdObj = new SquadronObj
             {
@@ -316,7 +285,7 @@ namespace CHFBot
 
             await commands.populateScore(sqdObj);
             squadronTotalScore = sqdObj.Score;
-                        
+
             SquadronObj sqdObjBufSs = new SquadronObj
             {
                 url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs",
@@ -381,7 +350,7 @@ namespace CHFBot
 
             try
             {
-                (int[] bufssRead2, int[] bufssRead1) =  ReadCheck("BufSs");
+                (int[] bufssRead2, int[] bufssRead1) = ReadCheck("BufSs");
                 lastBufSsWinCounter = bufssRead1[1] - bufssRead2[1];
                 lastBufSsLossCounter = bufssRead1[2] - bufssRead2[2];
             }
@@ -422,12 +391,12 @@ namespace CHFBot
 
 
 
-                ////////////////////////////////
-                ///let's do that again for TopSquadTotals.txt
-                ////////////////////////////////
+            ////////////////////////////////
+            ///let's do that again for TopSquadTotals.txt
+            ////////////////////////////////
 
 
-                string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string topSquadFileName = prefix.Replace(":", "_").TrimEnd();
             topSquadFileName = $"TopSquadTotals_{topSquadFileName}.txt";
 
@@ -473,7 +442,7 @@ namespace CHFBot
             //esperbot testing channel:
             await chnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
-            await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs  + " -> " + squadronTotalScoreBufSs +" (+"+ (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
 
             //send the same message to the publically viewable esperbot channel:
             //await esperbotchnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
@@ -498,7 +467,7 @@ namespace CHFBot
 
 
         }
-        
+
         ////////////////////////////////////////////////////////
         //Voice States
         ////////////////////////////////////////////////////////
@@ -506,7 +475,7 @@ namespace CHFBot
         {
             var guild = (user as SocketGuildUser)?.Guild; // Get the guild associated with the user
 
-            if (trackVoiceUpdates == false) 
+            if (trackVoiceUpdates == false)
             {
                 return;
             }
@@ -623,7 +592,7 @@ namespace CHFBot
                         string quote = command.getQuote();
                         await message.Channel.SendMessageAsync(quote);
                     }
-                                        
+
                 }
                 else if (content.StartsWith("!compare "))
                 {
@@ -725,7 +694,7 @@ namespace CHFBot
                 }
                 else
                 {
-                    Console.WriteLine($"No matching command detected: {message}") ;
+                    Console.WriteLine($"No matching command detected: {message}");
                 }
 
             }
@@ -903,7 +872,7 @@ namespace CHFBot
         //        //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
         //        await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
         //        await chnl.SendMessageAsync("-");
-                
+
 
         //        scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
         //    }
@@ -934,8 +903,8 @@ namespace CHFBot
 
         //        var chnl = message.Channel as IMessageChannel;
 
-                
-                
+
+
         //        await chnl.SendMessageAsync("-");
 
         //        await chnl.SendMessageAsync("Total Score: " + squadronObject.Score.ToString());
@@ -964,7 +933,7 @@ namespace CHFBot
                 squadronObject = await scrapeAllAndPopulate.populateScore(squadronObject).ConfigureAwait(true);
                 squadronObject = await scrapeAllAndPopulate.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
                 var chnl = message.Channel as IMessageChannel;
-                                
+
                 await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
                 await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
                 await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
@@ -993,7 +962,7 @@ namespace CHFBot
                 squadronObject = command.validateSquadron(input);
                 squadronObject = await command.populateScore(squadronObject).ConfigureAwait(true);
                 squadronObject = await command.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
-                
+
 
                 string dateTimeString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 string fileName = $"{input}_{dateTimeString}.txt";
@@ -1036,7 +1005,7 @@ namespace CHFBot
 
             if (input == "Cadet" || input == "BofSs" || input == "Academy")
             {
-                
+
                 //var chnl = message.Channel as IMessageChannel;
                 //await chnl.SendMessageAsync("Scraping and writing - please hold...");
                 Commands command = new Commands();
@@ -1103,7 +1072,7 @@ namespace CHFBot
 
                     // Use the squadronObject as needed
                     scrapeAllAndPopulate.printPlayers(chnl, squadronObject);
-                                       
+
                 }
                 else
                 {
@@ -1144,7 +1113,7 @@ namespace CHFBot
                 // Sort players by score in descending order
                 List<Player> top20Players = squadronObject.Players.OrderByDescending(p => p.PersonalClanRating).Take(20).ToList();
 
-               await Command.PrintTop20Players(chnl, squadronObject, top20Players);
+                await Command.PrintTop20Players(chnl, squadronObject, top20Players);
 
             }
             else
@@ -1233,7 +1202,7 @@ namespace CHFBot
         {
             string content = message.Content.Trim();
 
-            if (content.StartsWith("!commands")  || content.StartsWith("!help"))
+            if (content.StartsWith("!commands") || content.StartsWith("!help"))
             {
                 //MethodInfo[] methods = typeof(Program).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 //    .Where(method => method.Name.StartsWith("Handle") && method.Name.EndsWith("Command") && method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(SocketMessage))
@@ -1272,7 +1241,7 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync("Available commands:\n```" + commandsText + "```");
             }
         }
-    
+
         [CommandDescription("Who is online and how many points do they have? If it says player not found, give the player name and Discord ID to Esper.")]
         private async Task HandleQpointsCommand(SocketMessage message)
         {
@@ -1285,13 +1254,13 @@ namespace CHFBot
 
 
             squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
-            
+
             //700529928948678777 (Lounge)
             //1133615880488628344 (esper bot testing)
             //200594110044700675 (server ID)
 
-           // var chnl = message.Channel as IMessageChannel; // 4
-                                    
+            // var chnl = message.Channel as IMessageChannel; // 4
+
             ulong channelId = (ulong)700529928948678777;
             IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
 
@@ -1304,7 +1273,7 @@ namespace CHFBot
 
             string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
             string playerListString = string.Join("", itemsToJoin).ToString();
-       
+
             await Task.Delay(1000);
             await commands.UpdatePlayerIDs(squadronObject);
             await Task.Delay(1000);
@@ -1395,7 +1364,7 @@ namespace CHFBot
             }
             else
             {
-               await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of tracking Voice Channel User Updates is: " + trackVoiceUpdates.ToString());
+                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of tracking Voice Channel User Updates is: " + trackVoiceUpdates.ToString());
 
             }
 
@@ -1406,7 +1375,7 @@ namespace CHFBot
         {
             if (message.Content == "!record")
             {
-               await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+                await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
             }
 
 
@@ -1509,27 +1478,27 @@ namespace CHFBot
             }
 
             string overUnder = words[1];
-            
-                await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
 
-                Commands commands = new Commands();
-                SquadronObj squadronObject = new SquadronObj();
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
 
-                squadronObject = commands.validateSquadron("BofSs");
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron("BofSs");
 
             var chnl = message.Channel as IMessageChannel;
 
             chnl.SendMessageAsync("Players with score " + overUnder + " " + points + ":");
 
             squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
-                squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
 
 
-                //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
-                //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
-                //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+            //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+            //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+            //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
 
-                commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+            commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
 
         }
 
@@ -1617,7 +1586,7 @@ namespace CHFBot
 
                     string combinedEntries = string.Join("\n", lastEntries);
 
-                        await message.Channel.SendMessageAsync(("..." + combinedEntries));
+                    await message.Channel.SendMessageAsync(("..." + combinedEntries));
                 }
                 else
                 {
@@ -1640,7 +1609,7 @@ namespace CHFBot
                 content = message.Content.Trim();
                 string[] parts = content.Split(' ');
 
-                if (parts.Length == 2 && parts[0].Equals("!setwinloss", StringComparison.OrdinalIgnoreCase) )
+                if (parts.Length == 2 && parts[0].Equals("!setwinloss", StringComparison.OrdinalIgnoreCase))
                 {
                     if (parts[0] == "!setwinloss")
                     {
@@ -1906,14 +1875,14 @@ namespace CHFBot
 
             foreach (var squadronObj in content)
             {
-                string paddedPos = squadronObj.Pos.ToString().PadRight(2,' ');
+                string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
                 string paddedName;
                 string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
                 string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
 
                 if (squadronObj.Pos < 10)
                 {
-                 
+
                     paddedName = squadronObj.SquadronName.PadRight(5, ' ');
                 }
                 else
@@ -1926,7 +1895,7 @@ namespace CHFBot
 
             //await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription(messageBuilder.ToString()).Build());
 
-            await message.Channel.SendMessageAsync($"```{ messageBuilder.ToString()}```");
+            await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
 
         }
 
@@ -2014,9 +1983,9 @@ namespace CHFBot
         //        string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2,' ')})" : "    ";
 
         //        string paddedName;
-                
+
         //        string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(4, ' ') : "   ";
-                
+
         //        string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
 
 
@@ -2050,7 +2019,7 @@ namespace CHFBot
 
         //    }
 
-          
+
 
         //    await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
         //}
@@ -2062,11 +2031,11 @@ namespace CHFBot
             string currentContent = null;
 
             //loads the most recent TopSquads file into currentContent.
-            currentContent = await commands.LoadStringWithMostRecentTopSquad(message);            
-            
+            currentContent = await commands.LoadStringWithMostRecentTopSquad(message);
+
             // Perform a new scrape.  Returns a list of Squadron Objects as an Array.
             SquadronObj[] newContent = await Webscraper.TestScrape2();
-            
+
             //returns newcontent, which is an array of SquadronObj's.  But the SquadronObj's in it, after being returned, have populated values for things like WinsChange, ScoreChange, etc.
             SquadronObj[] comparisonResult = commands.CompareContents2(currentContent, newContent);
 
@@ -2086,7 +2055,7 @@ namespace CHFBot
                 const int maxChunkLength = 2000;
 
                 StringBuilder messageBuilder = await ActivateCheckLoadProcess(message.Content);
-                
+
                 await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
             }
             else
@@ -2103,7 +2072,7 @@ namespace CHFBot
             squadronArray[0] = content2;
 
             Commands commands = new Commands();
-            StringBuilder messageBuilder= new StringBuilder();
+            StringBuilder messageBuilder = new StringBuilder();
             if (squadronArray[0] != null)
             {
 
@@ -2122,7 +2091,7 @@ namespace CHFBot
         {
             if (content.ToLower() == "!check bofss" || content.ToLower() == "!check bufss")
             {
-              
+
                 StringBuilder messageBuilder = await ActivateCheckLoadProcess(content);
 
                 //messageBuilder.AppendLine("   Name Wins Losses Total  Pts");
@@ -2293,10 +2262,89 @@ namespace CHFBot
         }
 
 
+        private async Task ProcessIndivPointsChange()
+        {
+            Console.WriteLine("5 minutes elapsed!");
+            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+            Commands commands = new Commands();
+            SquadronObj oldSqd = await commands.LoadSqd("BofSs");
+            await Handle5MinuteWriteTimer("BofSs");
+            SquadronObj newSqd = await commands.LoadSqd("BofSs");
+
+            List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
+
+            if (oldSqd.Score != newSqd.Score)
+            {
+                foreach (var change in ratingChanges)
+                {
+                    if (change.NewRating - change.OldRating > 0)
+                    {
+                        await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                    }
+                    else if (change.NewRating - change.OldRating < 0)
+                    {
+                        await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                    }
+                    else
+                    {
+                        await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                    }
+                }
+
+                await chnl.SendMessageAsync("---------- Done ----------");
+            }
+        }
+
+        private async Task ProcessSquadron5mScoreChange(SquadronObj baseline, string squadronToCheck)
+        {
+            Console.WriteLine("ProcessSquadron5mScoreChange is starting for " + squadronToCheck);
+
+            // Get the latest squadron data (scraped data)
+            SquadronObj squadron = await Webscraper.ScrapeCheck("!check " + squadronToCheck);
+
+            // Initialize baseline wins and losses if they are null (first run)
+            if (baseline.Losses == null || baseline.Wins == null)
+            {
+                baseline.Losses = squadron.Losses;
+                baseline.Wins = squadron.Wins;
+                Console.WriteLine("Baseline initialized with initial wins and losses.");
+                return; // Exit the method after initialization, no comparison needed on first run
+            }
+
+            // Check for changes in wins and losses
+            int winsDifference = squadron.Wins - baseline.Wins;
+            int lossesDifference = squadron.Losses - baseline.Losses;
+
+            // Only report changes if there is a difference
+            if (winsDifference != 0 || lossesDifference != 0)
+            {
+                IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+                if (winsDifference > 0)
+                {
+                    await chnl.SendMessageAsync($"Wins increased by {winsDifference} for {squadronToCheck}." );
+                }
+                if (lossesDifference > 0)
+                {
+                    await chnl.SendMessageAsync($"Losses increased by {lossesDifference} for {squadronToCheck}.");
+                }
+
+                await chnl.SendMessageAsync("---------- Update Complete ----------");
+            }
+            else
+            {
+                Console.WriteLine($"No changes in wins or losses since the last check for {squadronToCheck}.");
+            }
+
+            // Update the baseline to the current squadron stats for the next comparison
+            baseline.Wins = squadron.Wins;
+            baseline.Losses = squadron.Losses;
+        }
+
+
+
+
     }
-
-
-
-
 
 }
