@@ -61,8 +61,22 @@ namespace CHFBot
         int squadronTotalScoreBufSs = 0;
         int endOfSessionScore = 0;
         int endOfSessionScoreBufSs = 0;
+        
         SquadronObj wlBaselineBofSs = new SquadronObj();
         SquadronObj wlBaselineBufSs = new SquadronObj();
+        
+        int startOfSessionWins = 0;
+        int startOfSessionLosses = 0;
+        int midSessionWins = 0;
+        int midSessionLosses = 0;
+        int startOfSessionPoints = 0;
+
+        int StartOfSessionWinsBufSs = 0;
+        int StartOfSessionLossesBufSs = 0;
+        int midSessionWinsBufSs = 0;
+        int midSessionLossesBufSs = 0;
+        int startOfSessionPointsBufSs = 0;
+
 
         ////////////// On startup, let's see if we can pull the score.....
         ////////////////
@@ -132,7 +146,7 @@ namespace CHFBot
             endOfSessionScore = scoreOfBofSs;
 
             await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
-
+            ProcessSquadron5mScoreChange("BofSs");
         }
 
         ////////////////////////////////////////////////////////
@@ -266,8 +280,8 @@ namespace CHFBot
 
             if (wlCounter == true)
             {
-                ProcessSquadron5mScoreChange(wlBaselineBofSs, "BofSs");
-                ProcessSquadron5mScoreChange(wlBaselineBufSs, "BufSs");
+                ProcessSquadron5mScoreChange("BofSs");
+                //ProcessSquadron5mScoreChange("BufSs");
             }
 
 
@@ -2296,51 +2310,127 @@ namespace CHFBot
             }
         }
 
-        private async Task ProcessSquadron5mScoreChange(SquadronObj baseline, string squadronToCheck)
+        //private async Task ProcessSquadron5mScoreChange(string squadronToCheck)
+        //{
+        //    IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+        //    Console.WriteLine("ProcessSquadron5mScoreChange is starting for " + squadronToCheck);
+
+        //    // Get the latest squadron data (scraped data)
+        //    SquadronObj squadron = await Webscraper.ScrapeCheck("!check " + squadronToCheck);
+
+        //    // Initialize baseline wins and losses if they are null (first run)
+        //    if (baseline.Losses == null || baseline.Wins == null)
+        //    {
+        //        baseline.Losses = squadron.Losses;
+        //        baseline.Wins = squadron.Wins;
+
+        //        if (squadronToCheck == "BofSs")
+        //        {
+        //            wStartOfSessionBofSs = squadron.Wins;
+        //            lStartOfSessionBofSs = squadron.Losses;
+        //        }
+
+        //        if (squadronToCheck == "BufSs")
+        //        {
+        //            lStartOfSessionBufSs = squadron.Losses;
+        //            wStartOfSessionBufSs = squadron.Wins;
+        //        }
+
+        //        Console.WriteLine("Baseline initialized with initial wins and losses.");
+        //        Console.WriteLine("also initialized w-and-l-startofsession-bofss-and-bufss.");
+        //        await chnl.SendMessageAsync($"Record is now {wStartOfSessionBofSs + baseline.Wins} and {lStartOfSessionBofSs + baseline.Losses}");
+        //        return; // Exit the method after initialization, no comparison needed on first run
+        //    }
+
+        //    // Check for changes in wins and losses
+        //    int winsDifference = squadron.Wins - baseline.Wins;
+        //    int lossesDifference = squadron.Losses - baseline.Losses;
+
+        //    // Only report changes if there is a difference
+        //    if (winsDifference != 0 || lossesDifference != 0)
+        //    {
+
+
+        //        if (winsDifference > 0)
+        //        {
+
+        //            await chnl.SendMessageAsync($"Wins increased by {winsDifference} for {squadronToCheck}." );
+        //            await chnl.SendMessageAsync($"Record is now {wStartOfSessionBofSs + baseline.Wins} and {lStartOfSessionBofSs + baseline.Losses}");
+        //        }
+        //        if (lossesDifference > 0)
+        //        {
+
+        //            await chnl.SendMessageAsync($"Losses increased by {lossesDifference} for {squadronToCheck}.");
+        //        }
+
+
+
+        //        //await chnl.SendMessageAsync("---------- Update Complete ----------");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"No changes in wins or losses since the last check for {squadronToCheck}.");
+        //    }
+
+        //    // Update the baseline to the current squadron stats for the next comparison
+        //    baseline.Wins = squadron.Wins;
+        //    baseline.Losses = squadron.Losses;
+        //}
+
+
+
+
+
+        private async Task ProcessSquadron5mScoreChange(string squadron)
         {
-            Console.WriteLine("ProcessSquadron5mScoreChange is starting for " + squadronToCheck);
+            Console.WriteLine("ProcessSquadron5mScoreChange is starting");
+            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
 
             // Get the latest squadron data (scraped data)
-            SquadronObj squadron = await Webscraper.ScrapeCheck("!check " + squadronToCheck);
+            SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check {squadron}");
 
-            // Initialize baseline wins and losses if they are null (first run)
-            if (baseline.Losses == null || baseline.Wins == null)
+            // Initialize startOfSession variables if they're zero (first run)
+            if (startOfSessionWins == 0 && startOfSessionLosses == 0)
             {
-                baseline.Losses = squadron.Losses;
-                baseline.Wins = squadron.Wins;
-                Console.WriteLine("Baseline initialized with initial wins and losses.");
-                return; // Exit the method after initialization, no comparison needed on first run
+                startOfSessionWins = squadron5m.Wins;
+                startOfSessionLosses = squadron5m.Losses;
+                midSessionWins = startOfSessionWins;
+                midSessionLosses = startOfSessionLosses;
+                startOfSessionPoints = squadron5m.Score;
+
+                Console.WriteLine("Initialized start of session variables with initial wins and losses.");
+                await chnl.SendMessageAsync($"Initialized start of session variables with initial wins and score ({startOfSessionWins}) and losses ({startOfSessionLosses}, {startOfSessionPoints}).");
+                return; // Exit the method after initialization, no comparison needed on the first run
             }
 
-            // Check for changes in wins and losses
-            int winsDifference = squadron.Wins - baseline.Wins;
-            int lossesDifference = squadron.Losses - baseline.Losses;
+            // Calculate the difference in wins and losses since the last check
+            int winsDifference = squadron5m.Wins - midSessionWins;
+            int lossesDifference = squadron5m.Losses - midSessionLosses;
 
             // Only report changes if there is a difference
             if (winsDifference != 0 || lossesDifference != 0)
             {
-                IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-
                 if (winsDifference > 0)
                 {
-                    await chnl.SendMessageAsync($"Wins increased by {winsDifference} for {squadronToCheck}." );
+                    await chnl.SendMessageAsync($"Wins increased by {winsDifference}. Current wins: {squadron5m.Wins}");
+                    midSessionWins = squadron5m.Wins; // Update mid-session wins to the latest
                 }
                 if (lossesDifference > 0)
                 {
-                    await chnl.SendMessageAsync($"Losses increased by {lossesDifference} for {squadronToCheck}.");
+                    await chnl.SendMessageAsync($"Losses increased by {lossesDifference}. Current losses: {squadron5m.Losses}");
+                    midSessionLosses = squadron5m.Losses; // Update mid-session losses to the latest
                 }
 
-                await chnl.SendMessageAsync("---------- Update Complete ----------");
+                await chnl.SendMessageAsync($"Current session record: {midSessionWins - startOfSessionWins} & {midSessionLosses - startOfSessionLosses}, Total: Wins = {squadron5m.Wins} & {squadron5m.Losses}. Starting score of {startOfSessionPoints} and the delta is {squadron5m.Score - startOfSessionPoints}");
             }
             else
             {
-                Console.WriteLine($"No changes in wins or losses since the last check for {squadronToCheck}.");
+                Console.WriteLine("No changes in wins or losses since the last check.");
+                //await chnl.SendMessageAsync($"No changes in wins or losses since the last check. (Current wins: {squadron5m.Wins}, losses: {squadron5m.Losses}).");
             }
-
-            // Update the baseline to the current squadron stats for the next comparison
-            baseline.Wins = squadron.Wins;
-            baseline.Losses = squadron.Losses;
         }
+
+
 
 
 
