@@ -252,7 +252,8 @@ namespace CHFBot
         private async void OnDailyEvent(object source, ElapsedEventArgs e)
         {
             DateTime now = DateTime.Now.AddDays(-1);
-
+            startOfSessionWins = 0;
+            startOfSessionLosses = 0;
             // Create a date and time prefix
             string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
@@ -262,7 +263,8 @@ namespace CHFBot
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
             DateTime now = DateTime.Now;
-
+            startOfSessionWins = 0;
+            startOfSessionLosses = 0;
             // Create a date and time prefix
             string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session:{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
@@ -2399,7 +2401,7 @@ namespace CHFBot
                 startOfSessionPoints = squadron5m.Score;
 
                 Console.WriteLine("Initialized start of session variables with initial wins and losses.");
-                await chnl.SendMessageAsync($"Initialized start of session variables with initial wins and score ({startOfSessionWins}) and losses ({startOfSessionLosses}, {startOfSessionPoints}).");
+                await chnl.SendMessageAsync($"Initialized start of session variables with initial wins and score ({startOfSessionWins}) and {startOfSessionLosses}, ({startOfSessionPoints} total score).");
                 return; // Exit the method after initialization, no comparison needed on the first run
             }
 
@@ -2421,7 +2423,7 @@ namespace CHFBot
                     midSessionLosses = squadron5m.Losses; // Update mid-session losses to the latest
                 }
 
-                await chnl.SendMessageAsync($"Current session record: {midSessionWins - startOfSessionWins} & {midSessionLosses - startOfSessionLosses}, Total: Wins = {squadron5m.Wins} & {squadron5m.Losses}. Starting score of {startOfSessionPoints} and the delta is {squadron5m.Score - startOfSessionPoints}");
+                await chnl.SendMessageAsync($"Current session record: {midSessionWins - startOfSessionWins} & {midSessionLosses - startOfSessionLosses}, (Total: {squadron5m.Wins} & {squadron5m.Losses}). Starting score: {startOfSessionPoints} and the session delta is {squadron5m.Score - startOfSessionPoints} pts");
             }
             else
             {
