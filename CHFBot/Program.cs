@@ -62,8 +62,8 @@ namespace CHFBot
         int endOfSessionScore = 0;
         int endOfSessionScoreBufSs = 0;
         
-        SquadronObj wlBaselineBofSs = new SquadronObj();
-        SquadronObj wlBaselineBufSs = new SquadronObj();
+        //SquadronObj wlBaselineBofSs = new SquadronObj();
+        //SquadronObj wlBaselineBufSs = new SquadronObj();
         
         int startOfSessionWins = 0;
         int startOfSessionLosses = 0;
@@ -273,6 +273,12 @@ namespace CHFBot
             StartOfSessionLossesBufSs = 0;
             StartOfSessionWinsBufSs = 0;
 
+            midSessionWins = 0;
+            midSessionLosses = 0;
+            midSessionLossesBufSs = 0;
+            midSessionLossesBufSs = 0;
+
+
             // Create a date and time prefix
             string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
@@ -286,6 +292,11 @@ namespace CHFBot
             startOfSessionLosses = 0;
             StartOfSessionWinsBufSs = 0;
             StartOfSessionLossesBufSs = 0;
+            midSessionWins = 0;
+            midSessionLosses = 0;
+            midSessionLossesBufSs = 0;
+            midSessionLossesBufSs = 0;
+
             // Create a date and time prefix
             string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-EU Session:{now.Hour}:{now.Minute}:{now.Second}";
             await executeTimer(dateTimePrefix);
@@ -497,6 +508,8 @@ namespace CHFBot
             HandleCheckCommand("!check BofSs", chnl);
             HandleCheckCommand("!check BufSs", chnl);
 
+            HandleCheckCommand("!check BofSs", esperbotchnl);
+            HandleCheckCommand("!check BufSs", esperbotchnl);
 
             /////////////////////////////////
             //checks
@@ -2087,26 +2100,6 @@ namespace CHFBot
             await message.SendMessageAsync($"```{messageBuilder.ToString()}```");
         }
 
-
-        //[CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
-        //private async Task HandleCheckCommand(SocketMessage message)
-        //{
-        //    if (message.Content.ToLower() == "!check bofss" || message.Content.ToLower() == "!check bufss")
-        //    {
-        //        const int maxEmbedLength = 4096;
-        //        const int maxChunkLength = 2000;
-
-        //        StringBuilder messageBuilder = await ActivateCheckLoadProcess(message.Content);
-
-        //        await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
-        //    }
-        //    else
-        //    {
-        //        await message.Channel.SendMessageAsync("Sorry, I only accept bofss and bufss at this time.");
-        //    }
-        //}
-
-        // Core function that accepts a command and a channel
         [CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
         private async Task HandleCheckCommand(string command, IMessageChannel channel)
         {
@@ -2127,15 +2120,11 @@ namespace CHFBot
             }
         }
 
-
         // Wrapper method for actual `SocketMessage` handling
         private async Task HandleCheckCommand(SocketMessage message)
         {
             await HandleCheckCommand(message.Content, message.Channel);
         }
-
-
-
 
         private async Task<StringBuilder> ActivateCheckLoadProcess(string content)
         {
@@ -2294,7 +2283,6 @@ namespace CHFBot
             return (secondToLastLine2, lastLine2);
         }
 
-
         public class ScoreExtractor
         {
             public int ExtractScoreOfBofSs()
@@ -2334,7 +2322,6 @@ namespace CHFBot
             }
         }
 
-
         private async Task ProcessIndivPointsChange()
         {
             Console.WriteLine("5 minutes elapsed!");
@@ -2373,13 +2360,7 @@ namespace CHFBot
         {
             SquadronObj sqd = await Webscraper.ScrapeCheck($"!check {squadron}");
 
-
-
         }
-
-
-
-
 
         //private async Task ProcessSquadron5mScoreChange(string squadron)
         //{
