@@ -1430,7 +1430,15 @@ namespace CHFBot
         {
             if (message.Content == "!record")
             {
-                await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+
+                //await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+                SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check BofSs");
+
+
+
+                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {squadron5m.Wins - startOfSessionWins}-{squadron5m.Losses-startOfSessionLosses}.");
+
+
             }
 
 
