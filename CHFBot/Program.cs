@@ -483,6 +483,16 @@ namespace CHFBot
             bufSsWinCounter = 0;
             bufSsLossCounter = 0;
 
+            startOfSessionWins = 0;
+            startOfSessionLosses = 0;
+            StartOfSessionLossesBufSs = 0;
+            StartOfSessionWinsBufSs = 0;
+
+            midSessionWins = 0;
+            midSessionLosses = 0;
+            midSessionLossesBufSs = 0;
+            midSessionLossesBufSs = 0;
+
             //ok, before we send our messages, we need to load up the BufSs info...
             //read in the file, set the vars.
 
