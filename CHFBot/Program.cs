@@ -2462,6 +2462,8 @@ namespace CHFBot
                     midSessionLossesCounter += lossesDifference;
                     lastRunsWinsCumulativeCounter += winsDifference;
                     lastRunsLossesCumulativeCounter += lossesDifference;
+                    midWinsTemp += winsDifference;
+                    midLossesTemp += lossesDifference;
                 }
                 else
                 {
@@ -2469,11 +2471,12 @@ namespace CHFBot
                     midSessionLossesCounterBufSs += lossesDifference;
                     lastRunsWinsCumulativeCounterBufSs += winsDifference;
                     lastRunsLossesCumulativeCounterBufSs += lossesDifference;
+
                 }
 
                 // Calculate session score delta from the start of the session
                 int sessionScoreDelta = squadron5m.Score - startPointsTemp;
-                await chnl.SendMessageAsync($"{squadron} session update: {winsDifference} wins, {lossesDifference} losses, score delta: {sessionScoreDelta} pts.");
+                await chnl.SendMessageAsync($"{squadron} session update: {winsDifference} wins, {lossesDifference} losses, ({midWinsTemp}/{midLossesTemp}) score delta: {sessionScoreDelta} pts.");
             }
             //else
             //{
