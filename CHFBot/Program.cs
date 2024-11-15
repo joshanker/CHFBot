@@ -147,12 +147,12 @@ namespace CHFBot
             ITextChannel srescoretrackingchnl = _client.GetChannel(sreScoreTrackingChannel) as ITextChannel;
             ITextChannel esperbotchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
 
-            ScoreExtractor extractor = new ScoreExtractor();
-            int scoreOfBofSs = extractor.ExtractScoreOfBofSs();
-            Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
-            endOfSessionScore = scoreOfBofSs;
+            //ScoreExtractor extractor = new ScoreExtractor();
+            //int scoreOfBofSs = extractor.ExtractScoreOfBofSs();
+            //Console.WriteLine($"Score of BofSs: {scoreOfBofSs}");
+            //endOfSessionScore = scoreOfBofSs;
 
-            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
+
             ProcessSquadron5mScoreChange("BofSs");
             ProcessSquadron5mScoreChange("BufSs");
 
@@ -166,6 +166,18 @@ namespace CHFBot
             sqdObj2.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs?69";
             await commands.populateScore(sqdObj2);
             squadronTotalScoreBufSs = sqdObj2.Score;
+
+            HandleCheckCommand("!check BofSs", chnl);
+            HandleCheckCommand("!check BufSs", chnl);
+            HandleCheckCommand("!check BofSs", esperbotchnl);
+            HandleCheckCommand("!check BufSs", esperbotchnl);
+
+            int scoreOfBofSs = sqdObj.Score;
+            int scoreOfBufSs = sqdObj2.Score;
+
+            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
+
+
 
 
         }
