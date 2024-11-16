@@ -2471,7 +2471,8 @@ namespace CHFBot
                     midSessionLossesCounterBufSs += lossesDifference;
                     lastRunsWinsCumulativeCounterBufSs += winsDifference;
                     lastRunsLossesCumulativeCounterBufSs += lossesDifference;
-
+                    midWinsTemp += winsDifference;
+                    midLossesTemp += lossesDifference;
                 }
 
                 // Calculate session score delta from the start of the session
