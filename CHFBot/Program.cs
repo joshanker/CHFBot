@@ -688,6 +688,10 @@ namespace CHFBot
                 {
                     await HandleRecordCommand(message);
                 }
+                else if (content.StartsWith("!2record"))
+                {
+                    await Handle2RecordCommand(message);
+                }
                 else if (content.StartsWith("!listplayers"))
                 {
                     await HandleListplayersCommand(message);
@@ -1429,18 +1433,22 @@ namespace CHFBot
         {
             if (message.Content == "!record")
             {
-
                 //await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
                 SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check BofSs");
 
+                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {squadron5m.Wins - startOfSessionWins}-{squadron5m.Losses-startOfSessionLosses} ({squadron5m.Score - startOfSessionPoints}).");
+             }
+        }
 
+        private async Task Handle2RecordCommand(SocketMessage message)
+        {
+            if (message.Content == "!2record")
+            {
+                //await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+                SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check BufSs");
 
-                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {squadron5m.Wins - startOfSessionWins}-{squadron5m.Losses-startOfSessionLosses}.");
-
-
+                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {squadron5m.Wins - StartOfSessionWinsBufSs}-{squadron5m.Losses - StartOfSessionLossesBufSs} ({squadron5m.Score - startOfSessionPointsBufSs}).");
             }
-
-
         }
 
         [CommandDescription("turns on and off hourly Quotes.")]
@@ -2478,6 +2486,9 @@ namespace CHFBot
                 // Calculate session score delta from the start of the session
                 int sessionScoreDelta = squadron5m.Score - startPointsTemp;
                 await chnl.SendMessageAsync($"{squadron} session update: {winsDifference} wins, {lossesDifference} losses, ({midWinsTemp}/{midLossesTemp}) score delta: {sessionScoreDelta} pts.");
+                
+                await chnl.SendMessageAsync($"Update! BofSs is {midSessionWinsCounter}/{midSessionLossesCounter} and BufSs is {midSessionWinsCounterBufSs}/{midSessionLossesCounterBufSs}. {squadron} delta is now {sessionScoreDelta}.");
+
             }
             //else
             //{
