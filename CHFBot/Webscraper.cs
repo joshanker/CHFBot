@@ -332,13 +332,57 @@ namespace Scraper
 
         }
 
-        private static async Task<string> DownloadPageAsync(string url)
+        //private static async Task<string> DownloadPageAsync(string url)
+        //{
+        //    using (HttpClient client = new HttpClient())
+        //    {
+        //        return await client.GetStringAsync(url);
+        //    }
+        //}
+
+        private static async Task<string> DownloadPageAsync(string url, int maxRetries = 3, int delayMilliseconds = 2000)
         {
             using (HttpClient client = new HttpClient())
             {
-                return await client.GetStringAsync(url);
+                for (int attempt = 1; attempt <= maxRetries; attempt++)
+                {
+                    try
+                    {
+                        // Attempt to download the page
+                        return await client.GetStringAsync(url);
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        Console.WriteLine($"Attempt {attempt} failed with error: {ex.Message}");
+
+                        // If it's the last attempt, rethrow the exception
+                        if (attempt == maxRetries)
+                        {
+                            Console.WriteLine("Max retries reached. Unable to load the page.");
+                            throw;
+                        }
+
+                        // Wait for a delay before retrying
+                        Console.WriteLine($"Retrying in {delayMilliseconds} ms...");
+                        await Task.Delay(delayMilliseconds);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle other unexpected exceptions
+                        Console.WriteLine($"Unexpected error on attempt {attempt}: {ex.Message}");
+                        if (attempt == maxRetries)
+                        {
+                            throw;
+                        }
+                        await Task.Delay(delayMilliseconds);
+                    }
+                }
             }
+
+            // Fallback return (should never reach here unless retries fail completely)
+            return string.Empty;
         }
+
 
         private static string[] SplitDataIntoChunks(string rawData)
         {

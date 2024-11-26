@@ -482,8 +482,6 @@ namespace CHFBot
 
             ResetWLSessionVariables();
 
-            //ok, before we send our messages, we need to load up the BufSs info...
-            //read in the file, set the vars.
 
 
 
@@ -507,8 +505,8 @@ namespace CHFBot
             HandleCheckCommand("!check BofSs", chnl);
             HandleCheckCommand("!check BufSs", chnl);
 
-            HandleCheckCommand("!check BofSs", esperbotchnl);
-            HandleCheckCommand("!check BufSs", esperbotchnl);
+            //HandleCheckCommand("!check BofSs", esperbotchnl);
+            //HandleCheckCommand("!check BufSs", esperbotchnl);
 
             /////////////////////////////////
             //checks
