@@ -322,6 +322,7 @@ namespace CHFBot
             {
                 ProcessSquadron5mScoreChange("BofSs");
                 ProcessSquadron5mScoreChange("BufSs");
+                ProcessSquadron5mScoreChanges();
             }
 
 
@@ -2496,6 +2497,128 @@ namespace CHFBot
             //}
 
         }
+
+        private async Task ProcessSquadron5mScoreChanges()
+        {
+            IMessageChannel chnl = _client.GetChannel(esperbotchannel) as IMessageChannel;
+
+            // Define squadron names
+            string[] squadrons = { "BofSs", "BufSs" };
+
+            // Temporary variables for output
+            int bofSsWinsDifference = 0, bofSsLossesDifference = 0, bofSsScoreDelta = 0;
+            int bufSsWinsDifference = 0, bufSsLossesDifference = 0, bufSsScoreDelta = 0;
+
+            foreach (var squadron in squadrons)
+            {
+                // Get the latest squadron data (scraped data)
+                SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check {squadron}");
+
+                // Determine which set of global variables to use based on the squadron name
+                int startWinsTemp, startLossesTemp, midWinsTemp, midLossesTemp, startPointsTemp, lastWinsTemp, lastLossesTemp;
+
+                if (squadron == "BofSs")
+                {
+                    startWinsTemp = startOfSessionWins;
+                    startLossesTemp = startOfSessionLosses;
+                    midWinsTemp = midSessionWinsCounter;
+                    midLossesTemp = midSessionLossesCounter;
+                    startPointsTemp = startOfSessionPoints;
+                    lastWinsTemp = lastRunsWinsCumulativeCounter;
+                    lastLossesTemp = lastRunsLossesCumulativeCounter;
+                }
+                else if (squadron == "BufSs")
+                {
+                    startWinsTemp = StartOfSessionWinsBufSs;
+                    startLossesTemp = StartOfSessionLossesBufSs;
+                    midWinsTemp = midSessionWinsCounterBufSs;
+                    midLossesTemp = midSessionLossesCounterBufSs;
+                    startPointsTemp = startOfSessionPointsBufSs;
+                    lastWinsTemp = lastRunsWinsCumulativeCounterBufSs;
+                    lastLossesTemp = lastRunsLossesCumulativeCounterBufSs;
+                }
+                else
+                {
+                    Console.WriteLine("Unknown squadron.");
+                    continue;
+                }
+
+                // Initialize session start values if they haven't been set
+                if (startWinsTemp == 0)
+                {
+                    startWinsTemp = squadron5m.Wins;
+                    startLossesTemp = squadron5m.Losses;
+                    midWinsTemp = 0;
+                    midLossesTemp = 0;
+                    startPointsTemp = squadron5m.Score;
+                    lastWinsTemp = 0;
+                    lastLossesTemp = 0;
+
+                    // Set global variables based on squadron
+                    if (squadron == "BofSs")
+                    {
+                        startOfSessionWins = startWinsTemp;
+                        startOfSessionLosses = startLossesTemp;
+                        midSessionWinsCounter = midWinsTemp;
+                        midSessionLossesCounter = midLossesTemp;
+                        startOfSessionPoints = startPointsTemp;
+                        lastRunsWinsCumulativeCounter = lastWinsTemp;
+                        lastRunsLossesCumulativeCounter = lastLossesTemp;
+                    }
+                    else
+                    {
+                        StartOfSessionWinsBufSs = startWinsTemp;
+                        StartOfSessionLossesBufSs = startLossesTemp;
+                        midSessionWinsCounterBufSs = midWinsTemp;
+                        midSessionLossesCounterBufSs = midLossesTemp;
+                        startOfSessionPointsBufSs = startPointsTemp;
+                        lastRunsWinsCumulativeCounterBufSs = lastWinsTemp;
+                        lastRunsLossesCumulativeCounterBufSs = lastLossesTemp;
+                    }
+
+                    await chnl.SendMessageAsync($"Initialized start of session for {squadron}: {startWinsTemp} wins, {startLossesTemp} losses, {startPointsTemp} total score.");
+                    continue;
+                }
+
+                // Calculate difference in wins and losses since last check
+                int winsDifference = squadron5m.Wins - startWinsTemp - lastWinsTemp;
+                int lossesDifference = squadron5m.Losses - startLossesTemp - lastLossesTemp;
+
+                // Only report changes if there is a difference in wins or losses
+                if (winsDifference != 0 || lossesDifference != 0)
+                {
+                    // Record the difference in wins & losses since last check in global variables
+                    if (squadron == "BofSs")
+                    {
+                        midSessionWinsCounter += winsDifference;
+                        midSessionLossesCounter += lossesDifference;
+                        lastRunsWinsCumulativeCounter += winsDifference;
+                        lastRunsLossesCumulativeCounter += lossesDifference;
+                        bofSsWinsDifference = winsDifference;
+                        bofSsLossesDifference = lossesDifference;
+                        bofSsScoreDelta = squadron5m.Score - startPointsTemp;
+                    }
+                    else
+                    {
+                        midSessionWinsCounterBufSs += winsDifference;
+                        midSessionLossesCounterBufSs += lossesDifference;
+                        lastRunsWinsCumulativeCounterBufSs += winsDifference;
+                        lastRunsLossesCumulativeCounterBufSs += lossesDifference;
+                        bufSsWinsDifference = winsDifference;
+                        bufSsLossesDifference = lossesDifference;
+                        bufSsScoreDelta = squadron5m.Score - startPointsTemp;
+                    }
+                }
+            }
+
+            // Combine both updates into one message
+            await chnl.SendMessageAsync(
+                $"Session Update:\n" +
+                $"- BofSs: {bofSsWinsDifference} wins, {bofSsLossesDifference} losses, score delta: {bofSsScoreDelta} pts ({midSessionWinsCounter}/{midSessionLossesCounter}).\n" +
+                $"- BufSs: {bufSsWinsDifference} wins, {bufSsLossesDifference} losses, score delta: {bufSsScoreDelta} pts ({midSessionWinsCounterBufSs}/{midSessionLossesCounterBufSs})."
+            );
+        }
+
 
         private void ResetWLSessionVariables()
         {
