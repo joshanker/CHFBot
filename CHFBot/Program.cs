@@ -161,11 +161,13 @@ namespace CHFBot
             sqdObj.url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs";
             await commands.populateScore(sqdObj);
             squadronTotalScore = sqdObj.Score;
+            endOfSessionScore = sqdObj.Score;
 
             SquadronObj sqdObj2 = new SquadronObj();
             sqdObj2.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs?69";
             await commands.populateScore(sqdObj2);
             squadronTotalScoreBufSs = sqdObj2.Score;
+            endOfSessionScoreBufSs = sqdObj2.Score;
 
             HandleCheckCommand("!check BofSs", chnl);
             HandleCheckCommand("!check BufSs", chnl);
