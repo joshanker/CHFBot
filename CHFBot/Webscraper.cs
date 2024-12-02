@@ -413,6 +413,10 @@ namespace Scraper
             {
                 sqdToGet = "bufss";
             }
+            if (message.ToLower() == "!check briss")
+            {
+                sqdToGet = "briss";
+            }
             else
             {
                 sqdToGet = message.Substring(7).Trim();
@@ -443,7 +447,10 @@ namespace Scraper
                     {
                         sqdToGet = "BufSs";
                     }
-
+                    if (sqdToGet == "briss")
+                    {
+                        sqdToGet = "BriSs";
+                    }
 
                     if (squadronName == sqdToGet)
                     {

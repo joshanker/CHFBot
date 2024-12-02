@@ -2119,7 +2119,7 @@ namespace CHFBot
         [CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
         private async Task HandleCheckCommand(string command, IMessageChannel channel)
         {
-            if (command.ToLower() == "!check bofss" || command.ToLower() == "!check bufss")
+            if (command.ToLower() == "!check bofss" || command.ToLower() == "!check bufss" || command.ToLower() == "!check briss")
             {
                 const int maxEmbedLength = 4096;
                 const int maxChunkLength = 2000;
@@ -2132,7 +2132,7 @@ namespace CHFBot
             }
             else
             {
-                await channel.SendMessageAsync("Sorry, I only accept bofss and bufss at this time.");
+                await channel.SendMessageAsync("Sorry, I only accept bofss and bufss and briss at this time.");
             }
         }
 
@@ -2501,6 +2501,7 @@ namespace CHFBot
         private async Task ProcessSquadron5mScoreChanges()
         {
             IMessageChannel chnl = _client.GetChannel(esperbotchannel) as IMessageChannel;
+            IMessageChannel chnl2 = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
 
             // Define squadron names
             string[] squadrons = { "BofSs", "BufSs" };
@@ -2608,15 +2609,19 @@ namespace CHFBot
                         bufSsLossesDifference = lossesDifference;
                         bufSsScoreDelta = squadron5m.Score - startPointsTemp;
                     }
+
+                    // Combine both updates into one message
+                    await chnl2.SendMessageAsync(
+                        $"Session Update:\n" +
+                        $"- BofSs: {bofSsWinsDifference} wins, {bofSsLossesDifference} losses, score delta: {bofSsScoreDelta} pts ({midSessionWinsCounter}/{midSessionLossesCounter}).\n" +
+                        $"- BufSs: {bufSsWinsDifference} wins, {bufSsLossesDifference} losses, score delta: {bufSsScoreDelta} pts ({midSessionWinsCounterBufSs}/{midSessionLossesCounterBufSs})."
+                    );
+
+
                 }
             }
 
-            // Combine both updates into one message
-            await chnl.SendMessageAsync(
-                $"Session Update:\n" +
-                $"- BofSs: {bofSsWinsDifference} wins, {bofSsLossesDifference} losses, score delta: {bofSsScoreDelta} pts ({midSessionWinsCounter}/{midSessionLossesCounter}).\n" +
-                $"- BufSs: {bufSsWinsDifference} wins, {bufSsLossesDifference} losses, score delta: {bufSsScoreDelta} pts ({midSessionWinsCounterBufSs}/{midSessionLossesCounterBufSs})."
-            );
+            
         }
 
 
