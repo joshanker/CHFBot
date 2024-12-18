@@ -738,9 +738,9 @@ namespace CHFBot
                 {
                     await HandleListAltsCommand(message);
                 }
-                else if (content.StartsWith("!resetwlsessionvariables"))
+                else if (content.StartsWith("!resetsessionwlvariables"))
                 {
-                    await HandleresetwlsessionvariablesCommand(message);
+                    await HandleresetsessionwlvariablesCommand(message);
                 }
                 //else if (content.StartsWith("!testscrape"))
                 //{
@@ -1458,12 +1458,13 @@ namespace CHFBot
 
         }
 
-        private async Task HandleresetwlsessionvariablesCommand(SocketMessage message)
+        private async Task HandleresetsessionwlvariablesCommand(SocketMessage message)
             
         {
             if (message.Content == "!resetsessionwlvariables")
             {
                 ResetWLSessionVariables();
+                await message.Channel.SendMessageAsync("reset");   
             }
 
         }
@@ -1729,10 +1730,10 @@ namespace CHFBot
                         {
                             if (int.TryParse(counters[0], out int newWins) && int.TryParse(counters[1], out int newLosses))
                             {
-                                startOfSessionWins = newWins;
-                                startOfSessionLosses = newLosses;
+                                midSessionWinsCounter = newWins;
+                                midSessionLossesCounter = newLosses;
 
-                                await message.Channel.SendMessageAsync($"Win and Loss counters updated. Wins: {winCounter}, Losses: {lossCounter}");
+                                await message.Channel.SendMessageAsync($"Win and Loss counters updated. Wins: {midSessionWinsCounter}, Losses: {midSessionLossesCounter}");
                             }
                             else
                             {
@@ -1775,10 +1776,10 @@ namespace CHFBot
                         {
                             if (int.TryParse(counters[0], out int newWins) && int.TryParse(counters[1], out int newLosses))
                             {
-                                StartOfSessionWinsBufSs = newWins;
-                                StartOfSessionLossesBufSs = newLosses;
+                                midSessionWinsCounterBufSs = newWins;
+                                midSessionLossesCounterBufSs = newLosses;
 
-                                await message.Channel.SendMessageAsync($"BufSs Win and Loss counters updated. Wins: {bufSsWinCounter}, Losses: {bufSsLossCounter}");
+                                await message.Channel.SendMessageAsync($"BufSs Win and Loss counters updated. Wins: {midSessionWinsCounterBufSs}, Losses: {midSessionLossesCounterBufSs}");
                             }
                             else
                             {
