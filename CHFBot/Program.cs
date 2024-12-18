@@ -734,6 +734,14 @@ namespace CHFBot
                 {
                     await Handle2SetWinLossCommand(message);
                 }
+                else if (content.StartsWith("!setstartingscore"))
+                {
+                    await HandleSetStartingScoreCommand(message);
+                }
+                else if (content.StartsWith("!2setstartingscore"))
+                {
+                    await Handle2SetStartingScoreCommand(message);
+                }
                 else if (content.StartsWith("!listalts"))
                 {
                     await HandleListAltsCommand(message);
@@ -1795,6 +1803,69 @@ namespace CHFBot
                 else
                 {
                     await message.Channel.SendMessageAsync("Invalid command format. Use '!setwinloss wins/losses'.");
+                }
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("C'mon, now, only Esper or an officer has that power.");
+            }
+        }
+
+        private async Task HandleSetStartingScoreCommand(SocketMessage message)
+        {
+            string content = message.ToString().ToLower();
+            if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
+            {
+                content = message.Content.Trim();
+                string[] parts = content.Split(' ');
+
+                if (parts.Length == 2 && parts[0].Equals("!setstartingscore", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (int.TryParse(parts[1], out int score))
+                    {
+                        startOfSessionPoints = score;
+                        await message.Channel.SendMessageAsync($"Start of session points set to: {startOfSessionPoints}.");
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("Invalid value. Please use the format '!setstartingscore <number>' with a valid integer.");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("Invalid format. Please use the format '!setstartingscore <number>'.");
+                }
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("C'mon, now, only Esper or an officer has that power.");
+            }
+        }
+
+
+        private async Task Handle2SetStartingScoreCommand(SocketMessage message)
+        {
+            string content = message.ToString().ToLower();
+            if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
+            {
+                content = message.Content.Trim();
+                string[] parts = content.Split(' ');
+
+                if (parts.Length == 2 && parts[0].Equals("!setstartingscore", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (int.TryParse(parts[1], out int score))
+                    {
+                        startOfSessionPointsBufSs = score;
+                        await message.Channel.SendMessageAsync($"Start of session points set to: {startOfSessionPointsBufSs}.");
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("Invalid value. Please use the format '!setstartingscore <number>' with a valid integer.");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("Invalid format. Please use the format '!setstartingscore <number>'.");
                 }
             }
             else
