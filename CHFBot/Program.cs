@@ -1486,7 +1486,7 @@ namespace CHFBot
                 //await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
                 SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check BofSs");
 
-                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {squadron5m.Wins - startOfSessionWins}-{squadron5m.Losses-startOfSessionLosses} ({squadron5m.Score - startOfSessionPoints}).");
+                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {midSessionWinsCounter}-{midSessionLossesCounter} ({squadron5m.Score - startOfSessionPoints}).");
              }
         }
 
@@ -1497,7 +1497,7 @@ namespace CHFBot
                 //await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
                 SquadronObj squadron5m = await Webscraper.ScrapeCheck($"!check BufSs");
 
-                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {squadron5m.Wins - StartOfSessionWinsBufSs}-{squadron5m.Losses - StartOfSessionLossesBufSs} ({squadron5m.Score - startOfSessionPointsBufSs}).");
+                await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {midSessionWinsCounterBufSs}-{midSessionLossesCounterBufSs} ({squadron5m.Score - startOfSessionPointsBufSs}).");
             }
         }
 
@@ -1851,12 +1851,12 @@ namespace CHFBot
                 content = message.Content.Trim();
                 string[] parts = content.Split(' ');
 
-                if (parts.Length == 2 && parts[0].Equals("!setstartingscore", StringComparison.OrdinalIgnoreCase))
+                if (parts.Length == 2 && parts[0].Equals("!2setstartingscore", StringComparison.OrdinalIgnoreCase))
                 {
                     if (int.TryParse(parts[1], out int score))
                     {
                         startOfSessionPointsBufSs = score;
-                        await message.Channel.SendMessageAsync($"Start of session points set to: {startOfSessionPointsBufSs}.");
+                        await message.Channel.SendMessageAsync($"Start of session points for BufSs set to: {startOfSessionPointsBufSs}.");
                     }
                     else
                     {
