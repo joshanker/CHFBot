@@ -738,6 +738,10 @@ namespace CHFBot
                 {
                     await HandleListAltsCommand(message);
                 }
+                else if (content.StartsWith("!resetwlsessionvariables"))
+                {
+                    await HandleresetwlsessionvariablesCommand(message);
+                }
                 //else if (content.StartsWith("!testscrape"))
                 //{
                 //    await HandleTestScrapeCommand(message);
@@ -1453,6 +1457,17 @@ namespace CHFBot
             }
 
         }
+
+        private async Task HandleresetwlsessionvariablesCommand(SocketMessage message)
+            
+        {
+            if (message.Content == "!resetsessionwlvariables")
+            {
+                ResetWLSessionVariables();
+            }
+
+        }
+
 
         [CommandDescription("Displays the win/loss counts for this SRE session.")]
         private async Task HandleRecordCommand(SocketMessage message)
@@ -2239,6 +2254,9 @@ namespace CHFBot
 
         }
 
+
+
+
         private async Task WriteCheck(String content)
         {
             if (content.ToLower() == "!check bofss" || content.ToLower() == "!check bufss")
@@ -2451,6 +2469,9 @@ namespace CHFBot
             SquadronObj sqd = await Webscraper.ScrapeCheck($"!check {squadron}");
 
         }
+
+        
+
 
         //the realest
         //private async Task ProcessSquadron5mScoreChange(string squadron)
