@@ -236,6 +236,7 @@ namespace BotCommands
             string AFI = "https://warthunder.com/en/community/claninfo/Anthems%20For%20Insubordinates";
             string TEHb = "https://warthunder.com/en/community/claninfo/TEHb";
             string IRAN = "https://warthunder.com/en/community/claninfo/Persian%20Warriors";
+            string BriSs = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs";
 
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
@@ -260,6 +261,7 @@ namespace BotCommands
                     { "TFedz", TFedz },
                     { "AFI", AFI },
                     { "TEHb", TEHb },
+                    { "BriSs", BriSs },
                     { "IRAN", IRAN }
                 };
 
@@ -558,7 +560,7 @@ namespace BotCommands
             // Implementation for the !readsqd command
             //string input = message.Content.Substring("!readsqd ".Length);
 
-            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            if (input == "Cadet" || input == "BofSs" || input == "Academy" || input == "BriSs")
             {
                 //var chnl = message.Channel as IMessageChannel;
                 string directoryPath = AppDomain.CurrentDomain.BaseDirectory;

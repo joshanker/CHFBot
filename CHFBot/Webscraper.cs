@@ -114,29 +114,69 @@ namespace Scraper
                     //Console.WriteLine("this is run number" + runNumber);
                     Player newp = new Player();
 
-                    string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
+                    //string namexpath = "//*[@id=\'bodyRoot\']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/a";
 
-                    //*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[134]/noindex/div/a
-                    //*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[128]/a
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[134]/noindex/div/a
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[128]/a
 
-                    //*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[134]/noindex/div/a
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[134]/noindex/div/a
 
 
 
+                    //HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
+
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[50]/a
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[56]/noindex/div/a
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[56]/noindex/div/a/text()
+                    ////*[@id="bodyRoot"]/div[4]/div[2]/div[3]/div/section/div[3]/div/div[56]/noindex/div/a
+
+                    //string suffixToReplace = "/noindex/div/a";
+                    //string replacement = "/a";
+                    //if (node == null) {
+
+                    //    {
+                    //        // Replace the suffix with the desired replacement
+                    //        string result = namexpath.Substring(0, namexpath.Length - suffixToReplace.Length) + replacement;
+                    //        Console.WriteLine("replacing. Result is: " + result);
+
+                    //        node = doc.DocumentNode.SelectSingleNode(result);
+                    //    }
+
+                    //}
+
+                    string namexpath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[3]/div/div[" + i + "]/noindex/div/a";
+
+                    // Correct XPath that works
+                    string correctXpathSuffix = "/a";
+
+                    // Problematic suffix to be replaced
+                    string problematicXpathSuffix = "/noindex/div/a";
+
+                    // Attempt to select the node
                     HtmlNode node = doc.DocumentNode.SelectSingleNode(namexpath);
 
-                    string suffixToReplace = "/noindex/div/a";
-                    string replacement = "/a";
-                    if (node == null) {
-                        
+                    if (node == null)
+                    {
+                        // Check if the current XPath contains the problematic suffix
+                        if (namexpath.Contains(problematicXpathSuffix))
                         {
-                            // Replace the suffix with the desired replacement
-                            string result = namexpath.Substring(0, namexpath.Length - suffixToReplace.Length) + replacement;
-                            Console.WriteLine("replacing. Result is: " + result);
-                            node = doc.DocumentNode.SelectSingleNode(result);
-                        }
-                        
+                            // Replace the problematic suffix with the correct one
+                            string fixedXpath = namexpath.Replace(problematicXpathSuffix, correctXpathSuffix);
+                            //Console.WriteLine("Replacing. Fixed XPath is: " + fixedXpath);
 
+                            // Try to select the node again with the corrected XPath
+                            node = doc.DocumentNode.SelectSingleNode(fixedXpath);
+                        }
+                    }
+
+                    // Check if node is still null after replacement
+                    if (node == null)
+                    {
+                        //Console.WriteLine("Node is still null after replacement. XPath might be incorrect.");
+                    }
+                    else
+                    {
+                        //Console.WriteLine("Node successfully found: " + node.InnerHtml);
                     }
 
 
@@ -219,11 +259,12 @@ namespace Scraper
             {
                 string htmlContent = await client.GetStringAsync(sqdobj.url);
 
+
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(htmlContent);
 
                 string scorePath = "//*[@id='bodyRoot']/div[4]/div[2]/div[3]/div/section/div[2]/div[3]/div[2]/div[1]/div[2]";
-
+                                    
                 HtmlNode score = doc.DocumentNode.SelectSingleNode(scorePath);
                 string value = score.InnerText;
 

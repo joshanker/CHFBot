@@ -124,6 +124,7 @@ namespace CHFBot
             await _client.StartAsync();
             await Task.Delay(-1);
 
+            pointsCheckBriSs();
 
         }
 
@@ -278,6 +279,9 @@ namespace CHFBot
             midDailyTimer.Start();
             fiveMinuteTimer.Start();
             oneMinuteTimer.Start();
+
+
+            
         }
         private async void OnHourlyEvent(object source, ElapsedEventArgs e)
         {
@@ -306,6 +310,7 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
+            pointsCheckBriSs();
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
@@ -318,6 +323,7 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
+            pointsCheckBriSs();
         }
         private async void OnFiveMinuteEvent(object source, ElapsedEventArgs e)
         {
@@ -326,7 +332,6 @@ namespace CHFBot
                 ProcessIndivPointsChange();
             }
 
-
             if (wlCounter == true)
             {
                 //ProcessSquadron5mScoreChange("BofSs");
@@ -334,6 +339,7 @@ namespace CHFBot
                 //ProcessSquadron1mScoreChanges();
             }
 
+            //pointsCheckBriSs();
 
         }
         private async void OnOneMinuteEvent(object source, ElapsedEventArgs e)
@@ -343,15 +349,19 @@ namespace CHFBot
             {
                 //ProcessSquadron5mScoreChange("BofSs");
                 //ProcessSquadron5mScoreChange("BufSs");
-                ProcessSquadron1mScoreChanges();
+
+               ProcessSquadron1mScoreChanges();
+                              
+
             }
+
+            //pointsCheckBriSs();
 
 
         }
         private async Task executeTimer(String prefix)
         {
             Commands commands = new Commands();
-
 
             SquadronObj sqdObj = new SquadronObj
             {
@@ -1099,7 +1109,7 @@ namespace CHFBot
 
             ITextChannel chnl = _client.GetChannel(EsperBotTestingChannel) as ITextChannel;
 
-            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            if (input == "Cadet" || input == "BofSs" || input == "Academy" || input == "BriSs")
             {
 
                 //var chnl = message.Channel as IMessageChannel;
@@ -1137,7 +1147,7 @@ namespace CHFBot
             }
             else
             {
-                await chnl.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                await chnl.SendMessageAsync("Squadron needs to be Cadet, BofSs, BriSs or Academy.");
             }
         }
 
@@ -1187,7 +1197,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string input = content.Substring("!top20 ".Length);
 
-            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN", }.Contains(input))
+            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN","BriSs" }.Contains(input))
             {
                 await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
@@ -1441,7 +1451,7 @@ namespace CHFBot
 
         private async Task HandleTop20NoArgCommand(SocketMessage message)
         {
-            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\", This is case-sensitive");
+            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\",\"BriSs\" This is case-sensitive");
         }
 
         [CommandDescription("turns on and off login/logoff/move notifications.")]
@@ -2516,6 +2526,45 @@ namespace CHFBot
 
             if (oldSqd.Score != newSqd.Score)
             {
+                foreach (var change in ratingChanges)
+                {
+                    if (change.NewRating - change.OldRating > 0)
+                    {
+                        await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                    }
+                    else if (change.NewRating - change.OldRating < 0)
+                    {
+                        await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                    }
+                    else
+                    {
+                        await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                    }
+                }
+
+                await chnl.SendMessageAsync("---------- Done ----------");
+            }
+        }
+
+        private async Task pointsCheckBriSs()
+        {
+            //Console.WriteLine("1 minute elapsed!");
+            
+
+            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+
+            await chnl.SendMessageAsync("triggering pointsCheckBriSs");
+
+            Commands commands = new Commands();
+            SquadronObj oldSqd = await commands.LoadSqd("BriSs");
+            await Handle5MinuteWriteTimer("BriSs");
+            SquadronObj newSqd = await commands.LoadSqd("BriSs");
+
+            List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
+
+            if (oldSqd.Score != newSqd.Score)
+            {
+                await chnl.SendMessageAsync("old score != new score");
                 foreach (var change in ratingChanges)
                 {
                     if (change.NewRating - change.OldRating > 0)
