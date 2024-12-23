@@ -339,7 +339,7 @@ namespace CHFBot
                 //ProcessSquadron1mScoreChanges();
             }
 
-            //pointsCheckBriSs();
+            pointsCheckBriSs();
 
         }
         private async void OnOneMinuteEvent(object source, ElapsedEventArgs e)
@@ -2549,11 +2549,12 @@ namespace CHFBot
         private async Task pointsCheckBriSs()
         {
             //Console.WriteLine("1 minute elapsed!");
-            
 
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+            IMessageChannel chnl2 = _client.GetChannel(esperbotchannel) as IMessageChannel;
+            
 
-            await chnl.SendMessageAsync("triggering pointsCheckBriSs");
+            //await chnl.SendMessageAsync("triggering pointsCheckBriSs");
 
             Commands commands = new Commands();
             SquadronObj oldSqd = await commands.LoadSqd("BriSs");
@@ -2564,7 +2565,7 @@ namespace CHFBot
 
             if (oldSqd.Score != newSqd.Score)
             {
-                await chnl.SendMessageAsync("old score != new score");
+                //await chnl.SendMessageAsync("old score != new score");
                 foreach (var change in ratingChanges)
                 {
                     if (change.NewRating - change.OldRating > 0)
@@ -2582,6 +2583,7 @@ namespace CHFBot
                 }
 
                 await chnl.SendMessageAsync("---------- Done ----------");
+                await chnl2.SendMessageAsync("BriSs had a points change.  Beta feature, see testing channel.");
             }
         }
 
