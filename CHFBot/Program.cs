@@ -1224,7 +1224,7 @@ namespace CHFBot
             }
             else
             {
-                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                await message.Channel.SendMessageAsync("I didn't recognize your input. This command is case-sensitive, BTW.");
             }
         }
 
@@ -1310,9 +1310,6 @@ namespace CHFBot
 
             if (content.StartsWith("!commands") || content.StartsWith("!help"))
             {
-                //MethodInfo[] methods = typeof(Program).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-                //    .Where(method => method.Name.StartsWith("Handle") && method.Name.EndsWith("Command") && method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(SocketMessage))
-                //    .ToArray();
 
                 MethodInfo[] methods = typeof(Program).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
     .Where(method => method.Name.StartsWith("Handle") && method.Name.EndsWith("Command") && method.GetParameters().Length == 1 &&
@@ -1341,14 +1338,13 @@ namespace CHFBot
                 }
 
 
-
                 string commandsText = string.Join("\n", commandList);
 
                 await message.Channel.SendMessageAsync("Available commands:\n```" + commandsText + "```");
             }
         }
 
-        [CommandDescription("Who is online and how many points do they have? If it says player not found, give the player name and Discord ID to Esper.")]
+        [CommandDescription("Who is online and how many points do they have? If player not found, give player name & Discord ID to Esper.")]
         private async Task HandleQpointsCommand(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
@@ -1454,7 +1450,7 @@ namespace CHFBot
             await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\",\"BriSs\" This is case-sensitive");
         }
 
-        [CommandDescription("turns on and off login/logoff/move notifications.")]
+        [CommandDescription("turns on & off login/logoff/move notifs.")]
         private async Task HandleTrackVoiceUpdatesCommand(SocketMessage message)
         {
             if (message.Content == "!trackvoiceupdates on")
@@ -1487,7 +1483,6 @@ namespace CHFBot
 
         }
 
-
         [CommandDescription("Displays the win/loss counts for this SRE session.")]
         private async Task HandleRecordCommand(SocketMessage message)
         {
@@ -1511,7 +1506,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("turns on and off hourly Quotes.")]
+        [CommandDescription("turns on & off hourly Quotes.")]
         private async Task HandleTurnQuotesCommand(SocketMessage message)
         {
             if (message.Content == "!turnquotes on")
@@ -1532,7 +1527,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("turns on and off the 5 minute timer.")]
+        [CommandDescription("turns on & off the 5 minute timer.")]
         private async Task HandleTurn5mTimerCommand(SocketMessage message)
         {
             if (message.Content == "!turn5mtimer on")
@@ -1553,7 +1548,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("turns on and off BundsBot Score reporting")]
+        [CommandDescription("turns on & off BundsBot Score reporting")]
         private async Task HandleTurnBundsBotScoreTrackingCommand(SocketMessage message)
         {
             if (message.Content.ToLower() == "!turnbundsbotscoretracking on")
@@ -1852,7 +1847,6 @@ namespace CHFBot
             }
         }
 
-
         private async Task Handle2SetStartingScoreCommand(SocketMessage message)
         {
             string content = message.ToString().ToLower();
@@ -1883,7 +1877,6 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync("C'mon, now, only Esper or an officer has that power.");
             }
         }
-
 
         [CommandDescription("listalts - Shows alts and points on each.")]
         private async Task HandleListAltsCommand(SocketMessage message)
@@ -1949,7 +1942,7 @@ namespace CHFBot
 
         }
 
-        [CommandDescription("I update the daily total to the current total.")]
+        [CommandDescription("Updates the daily total to the current total.")]
         private async Task HandleSquadronTotalScoreCommand(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("OK, " + squadronTotalScore + " is the current value of SquadronTotalScore.  Also, I am executing the populate now.");
@@ -1978,116 +1971,6 @@ namespace CHFBot
             await message.Channel.SendMessageAsync("" + squadronTotalScoreBufSs);
 
         }
-
-        //[CommandDescription("old")]
-        //private async Task HandleTestScrapeCommand(SocketMessage message)
-        //{
-
-        //    string content = await Webscraper.TestScrape(); // Call the TestScrape method
-
-        //    const int maxEmbedLength = 4096;
-        //    const int maxChunkLength = 2000;
-
-        //    if (content.Length <= maxEmbedLength)
-        //    {
-        //        // If the content fits within the limit, send it as a single embedded message
-        //        await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"```{content}```").Build());
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("content.length is greater than or equal to maxEmbedLength.");
-        //        await message.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription($"content.length is greater than or equal to maxEmbedLength.").Build());
-        //    }
-
-
-        //}
-
-
-        //[CommandDescription("old.")]
-        //private async Task HandleCompareScrapeCommand(SocketMessage message)
-        //{
-
-        //    // Dates with leading zeros
-        //    string currentDateLeadingZeros = DateTime.Now.ToString("yyyy-MM-dd");
-        //    string yesterdayDateLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
-        //    string twoDaysAgoDateLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
-
-        //    // Dates without leading zeros
-        //    string currentDateNoLeadingZeros = DateTime.Now.ToString("yyyy-M-d");
-        //    string yesterdayDateNoLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-M-d");
-        //    string twoDaysAgoDateNoLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-M-d");
-
-        //    string[] possibleFilenames = 
-        //        {
-        //        $"TopSquadTotals_{currentDateLeadingZeros}*.txt", 
-        //        $"TopSquadTotals_{yesterdayDateLeadingZeros}*.txt", 
-        //        $"TopSquadTotals_{twoDaysAgoDateLeadingZeros}*.txt",
-        //        $"TopSquadTotals_{currentDateNoLeadingZeros}*.txt", 
-        //        $"TopSquadTotals_{yesterdayDateNoLeadingZeros}*.txt", 
-        //        $"TopSquadTotals_{twoDaysAgoDateNoLeadingZeros}*.txt"
-        //        };
-
-        //    string mostRecentFilename = null;
-
-        //    foreach (var filenamePattern in possibleFilenames)
-        //    {
-        //        string[] matchingFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), filenamePattern);
-        //        if (matchingFiles.Length > 0)
-        //        {
-        //            mostRecentFilename = matchingFiles[matchingFiles.Length - 1]; // Get the most recent file
-        //            break;
-        //        }
-        //    }
-        //    string currentContent =null;
-        //    if (mostRecentFilename != null)
-        //    {
-        //        // File exists, read its content and perform comparison
-        //        currentContent = File.ReadAllText(mostRecentFilename);
-        //        // Perform comparison with the currentContent
-        //    }
-        //    else
-        //    {
-        //        string errorMessage = "No recent files found for comparison.";
-        //        Console.WriteLine(errorMessage);
-        //        await message.Channel.SendMessageAsync(errorMessage);
-
-        //        return;
-
-        //    }
-
-        //    // Perform a new scrape
-        //    string newContent = await Webscraper.TestScrape();
-
-        //    // Compare the totals (You'll need to implement this logic) content and newContent
-        //    // For example:
-        //    // ComparisonResult comparisonResult = CompareTotals(currentContent, newContent);
-
-        //    // Send the comparison result
-        //    // await message.Channel.SendMessageAsync($"Comparison Result: {comparisonResult}");
-
-        //    // For now, let's just send the current and new content for testing
-        //    //await message.Channel.SendMessageAsync($"Current Content (from {currentDateLeadingZeros:yyyy-MM-dd}):\n```{currentContent}```\nNew Content:\n```{newContent}```");
-
-
-        //    // Compare the contents
-        //    Commands commands = new Commands();
-
-        //    string comparisonResult = commands.CompareContents(currentContent, newContent);
-
-        //    //await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
-
-
-        //    if (comparisonResult.Length > 1900)
-        //    {
-        //        // Truncate the message content to fit within the limit
-        //        comparisonResult = comparisonResult.Substring(0, 1900);
-        //        Console.WriteLine("Message content was truncated to fit within the 1900-character limit.");
-        //        //commands.SendLongContentAsEmbedAsync(message.Channel, comparisonResult);
-        //        await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
-        //    }
-        //    else { await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```"); }
-
-        //}
 
 
         [CommandDescription("Dislpays live TopSquadrons stats. Useful for manual, real-time tracking.")]
@@ -2140,131 +2023,6 @@ namespace CHFBot
             await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
 
         }
-
-
-        //[CommandDescription("Deprecated.  !2comparecrape.")]
-        //private async Task Handle2CompareScrapeCommand(SocketMessage message)
-        //{
-
-        //    // Dates with leading zeros
-        //    string currentDateLeadingZeros = DateTime.Now.ToString("yyyy-MM-dd");
-        //    string yesterdayDateLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
-        //    string twoDaysAgoDateLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd");
-
-        //    // Dates without leading zeros
-        //    string currentDateNoLeadingZeros = DateTime.Now.ToString("yyyy-M-d");
-        //    string yesterdayDateNoLeadingZeros = DateTime.Now.AddDays(-1).ToString("yyyy-M-d");
-        //    string twoDaysAgoDateNoLeadingZeros = DateTime.Now.AddDays(-2).ToString("yyyy-M-d");
-
-        //    string[] possibleFilenames =
-        //        {
-        //        $"TopSquadTotals_{currentDateLeadingZeros}*.txt",
-        //        $"TopSquadTotals_{yesterdayDateLeadingZeros}*.txt",
-        //        $"TopSquadTotals_{twoDaysAgoDateLeadingZeros}*.txt",
-        //        $"TopSquadTotals_{currentDateNoLeadingZeros}*.txt",
-        //        $"TopSquadTotals_{yesterdayDateNoLeadingZeros}*.txt",
-        //        $"TopSquadTotals_{twoDaysAgoDateNoLeadingZeros}*.txt"
-        //        };
-
-        //    string mostRecentFilename = null;
-
-        //    foreach (var filenamePattern in possibleFilenames)
-        //    {
-        //        string[] matchingFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), filenamePattern);
-        //        if (matchingFiles.Length > 0)
-        //        {
-        //            mostRecentFilename = matchingFiles[matchingFiles.Length - 1]; // Get the most recent file
-        //            break;
-        //        }
-        //    }
-        //    string currentContent = null;
-        //    if (mostRecentFilename != null)
-        //    {
-        //        // File exists, read its content and perform comparison
-        //        currentContent = File.ReadAllText(mostRecentFilename);
-        //        // Perform comparison with the currentContent
-        //    }
-        //    else
-        //    {
-        //        string errorMessage = "No recent files found for comparison.";
-        //        Console.WriteLine(errorMessage);
-        //        await message.Channel.SendMessageAsync(errorMessage);
-        //        return;
-        //    }
-
-        //    // Perform a new scrape
-        //    SquadronObj[] newContent = await Webscraper.TestScrape2();
-
-        //    // Compare the contents
-        //    Commands commands = new Commands();
-
-        //    SquadronObj[] comparisonResult = commands.CompareContents2(currentContent, newContent);
-
-        //    //await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
-
-
-        //    //if (comparisonResult.Length > 1900)
-        //    {
-        //        // Truncate the message content to fit within the limit
-        //      //  comparisonResult = comparisonResult.Substring(0, 1900);
-        //      //  Console.WriteLine("Message content was truncated to fit within the 1900-character limit.");
-        //        //commands.SendLongContentAsEmbedAsync(message.Channel, comparisonResult);
-        //        //await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```");
-        //    }
-        //    //else { await message.Channel.SendMessageAsync($"Comparison Result:\n```{comparisonResult}```"); }
-
-
-
-        //    StringBuilder messageBuilder = new StringBuilder();
-
-        //    messageBuilder.AppendLine("       Name     Wins    Losses    Played      Pts");
-
-        //    foreach (var squadronObj in newContent)
-        //    {
-        //        string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
-        //        string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2,' ')})" : "    ";
-
-        //        string paddedName;
-
-        //        string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(4, ' ') : "   ";
-
-        //        string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
-
-
-
-        //        string WinsChange = squadronObj.WinsChange != 0 ? squadronObj.WinsChange.ToString().PadLeft(2, ' ') : " ";
-        //        string LossesChange = squadronObj.LossesChange != 0 ? squadronObj.LossesChange.ToString().PadLeft(2, ' ') : " ";
-        //        string BattlesPlayedChanged = squadronObj.BattlesPlayedChange != 0 ? squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ') : " ";
-
-        //        string ScoreChange = squadronObj.ScoreChange != 0 ? squadronObj.ScoreChange.ToString() : " ";
-
-        //        // Include parentheses only when the corresponding value is non-zero
-        //        string winsChangeStr = squadronObj.WinsChange != 0 ? $"({WinsChange})" : "";
-        //        string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
-        //        string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
-        //        string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
-        //        string paddedAmp = "&".PadLeft(2,' ');
-
-
-        //        if (squadronObj.Pos < 10)
-        //        {
-
-        //            paddedName = squadronObj.SquadronName.PadRight(6, ' ');
-        //        }
-        //        else
-        //        {
-        //            paddedName = squadronObj.SquadronName.PadRight(6, ' ');
-        //        }
-
-        //        messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} {paddedAmp} {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
-
-
-        //    }
-
-
-
-        //    await message.Channel.SendMessageAsync($"```{messageBuilder.ToString()}```");
-        //}
 
         [CommandDescription("Compares the end-of-session totals to what's live right now. Shows the changes since.")]
         private async Task HandleCompareScrapeCommand(IMessageChannel message)
@@ -2335,9 +2093,6 @@ namespace CHFBot
             }
 
         }
-
-
-
 
         private async Task WriteCheck(String content)
         {
