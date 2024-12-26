@@ -1506,7 +1506,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("turns on & off hourly Quotes.")]
+        //[CommandDescription("turns on & off hourly Quotes.")]
         private async Task HandleTurnQuotesCommand(SocketMessage message)
         {
             if (message.Content == "!turnquotes on")
@@ -1527,7 +1527,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("turns on & off the 5 minute timer.")]
+        //[CommandDescription("turns on & off the 5 minute timer.")]
         private async Task HandleTurn5mTimerCommand(SocketMessage message)
         {
             if (message.Content == "!turn5mtimer on")
@@ -1548,7 +1548,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("turns on & off BundsBot Score reporting")]
+        //[CommandDescription("turns on & off BundsBot Score reporting")]
         private async Task HandleTurnBundsBotScoreTrackingCommand(SocketMessage message)
         {
             if (message.Content.ToLower() == "!turnbundsbotscoretracking on")
@@ -1626,8 +1626,7 @@ namespace CHFBot
             commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
 
         }
-
-        [CommandDescription("Listplayers for BufSs")]
+                
         private async Task Handle2ListplayersCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1770,7 +1769,6 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("!2SetWinLoss <Num/Num> of current session.")]
         private async Task Handle2SetWinLossCommand(SocketMessage message)
         {
             string content = message.ToString().ToLower();
@@ -2066,6 +2064,7 @@ namespace CHFBot
         }
 
         // Wrapper method for actual `SocketMessage` handling
+        [CommandDescription("Prints current stats.  !check <bufss> or !check <bofss>")]
         private async Task HandleCheckCommand(SocketMessage message)
         {
             await HandleCheckCommand(message.Content, message.Channel);
