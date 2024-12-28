@@ -732,6 +732,10 @@ namespace CHFBot
                 {
                     await Handle2ListplayersCommand(message);
                 }
+                else if (content.StartsWith("!3listplayers"))
+                {
+                    await Handle3ListplayersCommand(message);
+                }
                 else if (content.StartsWith("!lastten"))
                 {
                     await HandleLastTenCommand(message);
@@ -1667,6 +1671,65 @@ namespace CHFBot
             SquadronObj squadronObject = new SquadronObj();
 
             squadronObject = commands.validateSquadron("BufSs");
+
+
+
+            var chnl = message.Channel as IMessageChannel;
+
+            chnl.SendMessageAsync("Players with score " + overUnder + " " + points + ":");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+
+            //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+            //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+            //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+
+            commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+
+        }
+
+        private async Task Handle3ListplayersCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+
+            // Split the input string into words
+            string[] words = content.Split(' ');
+
+            // Check that the first word is "!listplayers"
+            if (words[0] != "!3listplayers")
+            {
+                // If the first word is not "!listplayers", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the second word is either "over" or "under"
+            if (words[1] != "over" && words[1] != "under")
+            {
+                // If the second word is not "over" or "under", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the third word is a valid number
+            int points;
+            if (!int.TryParse(words[2], out points))
+            {
+                // If the third word is not a valid number, then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            string overUnder = words[1];
+
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
+
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron("BriSs");
 
 
 
