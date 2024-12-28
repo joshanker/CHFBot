@@ -1630,7 +1630,8 @@ namespace CHFBot
             commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
 
         }
-                
+
+        [CommandDescription("2")]
         private async Task Handle2ListplayersCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1690,6 +1691,7 @@ namespace CHFBot
 
         }
 
+        [CommandDescription("3")]
         private async Task Handle3ListplayersCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
