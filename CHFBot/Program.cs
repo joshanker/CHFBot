@@ -207,7 +207,7 @@ namespace CHFBot
 
             // Calculate the time until 4:30 AM tomorrow
             DateTime now = DateTime.Now;
-            DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 4, 30, 0);
+            DateTime targetTime = new DateTime(now.Year, now.Month, now.Day, 3, 30, 0);
 
             if (now > targetTime)
             {
@@ -220,7 +220,7 @@ namespace CHFBot
 
             // Calculate the time until 19:00 tomorrow
             DateTime midNow = DateTime.Now;
-            DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 19, 00, 0);
+            DateTime midTargetTime = new DateTime(midNow.Year, midNow.Month, midNow.Day, 18, 30, 0);
 
             if (midNow > midTargetTime)
             {
