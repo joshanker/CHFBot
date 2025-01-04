@@ -47,6 +47,7 @@ namespace CHFBot
         public bool trackVoiceUpdates = false;
         public bool minuteTimerFive = false;
         public bool bundsBotScoreTracking = false;
+        public bool briSsScoreTracking = false;
         public bool quotes = false;
         public bool wlCounter = true;
         int winCounter = 0;
@@ -183,7 +184,7 @@ namespace CHFBot
             int scoreOfBofSs = sqdObj.Score;
             int scoreOfBufSs = sqdObj2.Score;
 
-            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
+            await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". BriSs score tracking: " + briSsScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
 
 
 
@@ -538,6 +539,7 @@ namespace CHFBot
 
             HandleCheckCommand("!check BofSs", chnl);
             HandleCheckCommand("!check BufSs", chnl);
+            HandleCheckCommand("!check BriSs", chnl);
 
             //HandleCheckCommand("!check BofSs", esperbotchnl);
             //HandleCheckCommand("!check BufSs", esperbotchnl);
@@ -715,6 +717,10 @@ namespace CHFBot
                 else if (content.StartsWith("!turnbundsbotscoretracking"))
                 {
                     await HandleTurnBundsBotScoreTrackingCommand(message);
+                }
+                else if (content.StartsWith("!turnbrissbotscoretracking"))
+                {
+                    await HandleTurnBriSsScoreTrackingCommand(message);
                 }
                 else if (content.StartsWith("!record"))
                 {
@@ -1573,6 +1579,27 @@ namespace CHFBot
             }
         }
 
+        //[CommandDescription("turns on & off BriSs Score reporting")]
+        private async Task HandleTurnBriSsScoreTrackingCommand(SocketMessage message)
+        {
+            if (message.Content.ToLower() == "!turnbrissscoretracking on")
+            {
+                briSsScoreTracking = true;
+                await message.Channel.SendMessageAsync("OK, turning on BriSs score tracking");
+            }
+
+            else if (message.Content.ToLower() == "!turnbrissscoretracking off")
+            {
+                briSsScoreTracking = false;
+                await message.Channel.SendMessageAsync("OK, turning off BriSs score tracking");
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of BriSs score tracking: " + briSsScoreTracking.ToString());
+
+            }
+        }
+
         [CommandDescription("Listplayers <over> / <under> <points> - example: \"!listplayers under 1500\"")]
         private async Task HandleListplayersCommand(SocketMessage message)
         {
@@ -2367,42 +2394,47 @@ namespace CHFBot
 
         private async Task pointsCheckBriSs()
         {
-            //Console.WriteLine("1 minute elapsed!");
 
-            IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
-            IMessageChannel chnl2 = _client.GetChannel(esperbotchannel) as IMessageChannel;
-            
-
-            //await chnl.SendMessageAsync("triggering pointsCheckBriSs");
-
-            Commands commands = new Commands();
-            SquadronObj oldSqd = await commands.LoadSqd("BriSs");
-            await Handle5MinuteWriteTimer("BriSs");
-            SquadronObj newSqd = await commands.LoadSqd("BriSs");
-
-            List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
-
-            if (oldSqd.Score != newSqd.Score)
+            if (briSsScoreTracking = true)
             {
-                //await chnl.SendMessageAsync("old score != new score");
-                foreach (var change in ratingChanges)
-                {
-                    if (change.NewRating - change.OldRating > 0)
-                    {
-                        await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                    }
-                    else if (change.NewRating - change.OldRating < 0)
-                    {
-                        await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                    }
-                    else
-                    {
-                        await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
-                    }
-                }
 
-                await chnl.SendMessageAsync("---------- Done ----------");
-                await chnl2.SendMessageAsync("BriSs had a points change.  Beta feature, see testing channel.");
+                //Console.WriteLine("1 minute elapsed!");
+
+                IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
+                IMessageChannel chnl2 = _client.GetChannel(esperbotchannel) as IMessageChannel;
+
+
+                //await chnl.SendMessageAsync("triggering pointsCheckBriSs");
+
+                Commands commands = new Commands();
+                SquadronObj oldSqd = await commands.LoadSqd("BriSs");
+                await Handle5MinuteWriteTimer("BriSs");
+                SquadronObj newSqd = await commands.LoadSqd("BriSs");
+
+                List<Commands.PlayerRatingChange> ratingChanges = commands.CompareSquadrons(oldSqd, newSqd);
+
+                if (oldSqd.Score != newSqd.Score)
+                {
+                    //await chnl.SendMessageAsync("old score != new score");
+                    foreach (var change in ratingChanges)
+                    {
+                        if (change.NewRating - change.OldRating > 0)
+                        {
+                            await chnl.SendMessageAsync($"WIN! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                        }
+                        else if (change.NewRating - change.OldRating < 0)
+                        {
+                            await chnl.SendMessageAsync($"LOSS! {change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                        }
+                        else
+                        {
+                            await chnl.SendMessageAsync($"{change.PlayerName}, Old: {change.OldRating}, New: {change.NewRating} Diff: {change.NewRating - change.OldRating}");
+                        }
+                    }
+
+                    await chnl.SendMessageAsync("---------- Done ----------");
+                    await chnl2.SendMessageAsync("BriSs had a points change.  Beta feature, see testing channel.");
+                }
             }
         }
 
