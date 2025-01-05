@@ -312,6 +312,7 @@ namespace CHFBot
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
             pointsCheckBriSs();
+            
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
         {
@@ -659,6 +660,8 @@ namespace CHFBot
                 else if (content.StartsWith("!writesqd "))
                 {
                     await HandleWriteSqdCommand(message);
+
+
                 }
                 else if (content.StartsWith("!readsqd "))
                 {
@@ -1068,7 +1071,7 @@ namespace CHFBot
             // Implementation for the !writesqd command
             string input = message.Content.Substring("!writesqd ".Length);
 
-            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            if (input == "Cadet" || input == "BofSs" || input == "Academy" || input == "BriSs" || input == "BufSs")
             {
                 var chnl = message.Channel as IMessageChannel;
                 await chnl.SendMessageAsync("Scraping and writing - please hold...");
@@ -1107,7 +1110,7 @@ namespace CHFBot
             }
             else
             {
-                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, BufSs, BriSs or Academy.");
             }
         }
 
@@ -1167,7 +1170,7 @@ namespace CHFBot
             // Implementation for the !readsqd command
             string input = message.Content.Substring("!readsqd ".Length);
 
-            if (input == "Cadet" || input == "BofSs" || input == "Academy")
+            if (input == "Cadet" || input == "BofSs" || input == "Academy" || input == "BufSs" || input == "BriSs")
             {
                 var chnl = message.Channel as IMessageChannel;
                 string directoryPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -1197,7 +1200,7 @@ namespace CHFBot
             }
             else
             {
-                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, BufSs, BriSs, or Academy.");
             }
         }
 

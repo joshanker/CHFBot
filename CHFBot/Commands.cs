@@ -289,11 +289,10 @@ namespace BotCommands
             try
             {
                 Console.WriteLine("Populating score..." + DateTime.Now);
-                //string url = "https://warthunder.com/en/community/claninfo/Cadet";
-                //string url = objname.url;
+
                 Webscraper scraper = new Webscraper();
                 sqdobj = await scraper.scrapeWebsiteAndPopulateScoreAsync(sqdobj);
-                //Console.WriteLine("Website all and populate.");
+
 
                 return sqdobj;
             }
