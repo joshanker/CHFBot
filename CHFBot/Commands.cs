@@ -237,6 +237,7 @@ namespace BotCommands
             string TEHb = "https://warthunder.com/en/community/claninfo/TEHb";
             string IRAN = "https://warthunder.com/en/community/claninfo/Persian%20Warriors";
             string BriSs = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs";
+            
 
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);

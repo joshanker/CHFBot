@@ -61,12 +61,14 @@ namespace CHFBot
         System.Timers.Timer oneMinuteTimer = new System.Timers.Timer(1000 * 60 * 1);
         int squadronTotalScore = 0;
         int squadronTotalScoreBufSs = 0;
+        int squadronTotalScoreBriSs = 0;
         int endOfSessionScore = 0;
         int endOfSessionScoreBufSs = 0;
-        
+        int endOfSessionScoreBriSs = 0;
+
         //SquadronObj wlBaselineBofSs = new SquadronObj();
         //SquadronObj wlBaselineBufSs = new SquadronObj();
-        
+
         int startOfSessionWins = 0;
         int startOfSessionLosses = 0;
         int midSessionWinsCounter = 0;
@@ -133,7 +135,7 @@ namespace CHFBot
             await _client.StartAsync();
             await Task.Delay(-1);
 
-            pointsCheckBriSs();
+            //pointsCheckBriSs();
 
         }
 
@@ -184,13 +186,23 @@ namespace CHFBot
             squadronTotalScoreBufSs = sqdObj2.Score;
             endOfSessionScoreBufSs = sqdObj2.Score;
 
+            SquadronObj sqdObj3 = new SquadronObj();
+            sqdObj3.url = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs";
+            await commands.populateScore(sqdObj3);
+            squadronTotalScoreBriSs = sqdObj3.Score;
+            endOfSessionScoreBriSs = sqdObj3.Score;
+
+
             HandleCheckCommand("!check BofSs", chnl);
             HandleCheckCommand("!check BufSs", chnl);
+            HandleCheckCommand("!check BriSs", chnl);
             HandleCheckCommand("!check BofSs", esperbotchnl);
             HandleCheckCommand("!check BufSs", esperbotchnl);
+            HandleCheckCommand("!check BriSs", esperbotchnl);
 
             int scoreOfBofSs = sqdObj.Score;
             int scoreOfBufSs = sqdObj2.Score;
+            int scoreOfBriSs = sqdObj3.Score;
 
             await chnl.SendMessageAsync("EsperBot online!. Quotes: " + quotes + ". " + "Voice channel tracking: " + trackVoiceUpdates + ". " + "5m timer: " + minuteTimerFive + ". BundsBot score tracking: " + bundsBotScoreTracking + ". BriSs score tracking: " + briSsScoreTracking + ". Setting last recorded score to " + scoreOfBofSs + ". SRE score set to 0-0.  Use !help for a command list.");
 
@@ -319,7 +331,7 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             dailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             dailyTimer.Start();
-            pointsCheckBriSs();
+            //pointsCheckBriSs();
             
         }
         private async void OnMidDailyEvent(object source, ElapsedEventArgs e)
@@ -333,7 +345,7 @@ namespace CHFBot
             await executeTimer(dateTimePrefix);
             midDailyTimer.Interval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
             midDailyTimer.Start();
-            pointsCheckBriSs();
+            //pointsCheckBriSs();
         }
         private async void OnFiveMinuteEvent(object source, ElapsedEventArgs e)
         {
@@ -349,7 +361,7 @@ namespace CHFBot
                 //ProcessSquadron1mScoreChanges();
             }
 
-            pointsCheckBriSs();
+            //pointsCheckBriSs();
 
         }
         private async void OnOneMinuteEvent(object source, ElapsedEventArgs e)
@@ -391,6 +403,15 @@ namespace CHFBot
             await commands.populateScore(sqdObjBufSs);
             squadronTotalScoreBufSs = sqdObjBufSs.Score;
 
+            SquadronObj sqdObjBriSs = new SquadronObj
+            {
+                url = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs",
+                SquadronName = "BriSs"
+            };
+
+            await commands.populateScore(sqdObjBriSs);
+            squadronTotalScoreBriSs = sqdObjBriSs.Score;
+
             IMessageChannel chnl = _client.GetChannel(EsperBotTestingChannel) as IMessageChannel;
             ITextChannel esperbotchnl = _client.GetChannel(esperbotchannel) as ITextChannel;
             IMessageChannel bufsssrescoretrackingchl = _client.GetChannel(esperbotchannel) as IMessageChannel;
@@ -401,10 +422,12 @@ namespace CHFBot
             //Let's also write the newer style of info........
             await WriteCheck("!check bofss");
             await WriteCheck("!check bufss");
+            await WriteCheck("!check briss");
 
             // Create a file name with the date and time prefix
             string fileName = "SREWinLossRecords.txt";
             string fileNameBufSs = "SREWinLossRecordsBufSs.txt";
+            string fileNameBriSs = "SREWinLossRecordsBriSs.txt";
 
             // Check if the file exists
             if (!File.Exists(fileName))
@@ -427,6 +450,8 @@ namespace CHFBot
             var lastLossCounter = 0;
             var lastBufSsWinCounter = 0;
             var lastBufSsLossCounter = 0;
+            var lastBriSsWinCounter = 0;
+            var lastBriSsLossCounter = 0;
 
             foreach (var squadron in comparisonResults)
             {
@@ -440,6 +465,11 @@ namespace CHFBot
                 {
                     lastBufSsWinCounter = squadron.WinsChange;
                     lastBufSsLossCounter = squadron.LossesChange;
+                }
+                else if (squadron.SquadronName == "BriSs")
+                {
+                    lastBriSsWinCounter = squadron.WinsChange;
+                    lastBriSsLossCounter = squadron.LossesChange;
                 }
             }
 
@@ -468,6 +498,17 @@ namespace CHFBot
                 Console.WriteLine("failed on the try/catch for read and ReadCheck");
             }
 
+            try
+            {
+                (int[] brissRead2, int[] brissRead1) = ReadCheck("BriSs");
+                lastBriSsWinCounter = brissRead1[1] - brissRead2[1];
+                lastBriSsLossCounter = brissRead1[2] - brissRead2[2];
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception, e.g., log the error message
+                Console.WriteLine("failed on the try/catch for brissread and ReadCheck");
+            }
 
 
             // Open the file for writing
@@ -481,6 +522,12 @@ namespace CHFBot
                 // Write the win and loss counters to the file
                 writerBufSs.WriteLine($"{prefix}: Wins: {lastBufSsWinCounter}, Losses: {lastBufSsLossCounter}, Total Score: {squadronTotalScoreBufSs}");
             }
+            using (StreamWriter writerBriSs = new StreamWriter(fileNameBriSs, true))
+            {
+                // Write the win and loss counters to the file
+                writerBriSs.WriteLine($"{prefix}: Wins: {lastBriSsWinCounter}, Losses: {lastBriSsLossCounter}, Total Score: {squadronTotalScoreBriSs}");
+            }
+
 
             await HandleCompareScrapeCommand(esperbotchnl);
             await HandleCompareScrapeCommand(chnl);
@@ -533,18 +580,18 @@ namespace CHFBot
             await chnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
             await chnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            
+            await chnl.SendMessageAsync("BriSs: Win/Loss: (" + lastBriSsWinCounter + "-" + lastBriSsLossCounter + "). Total squadron score: " + endOfSessionScoreBriSs + " -> " + squadronTotalScoreBriSs + " (+" + (squadronTotalScoreBriSs - endOfSessionScoreBriSs).ToString() + ").");
 
-            //send the same message to the publically viewable esperbot channel:
-            //await esperbotchnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + ") -> " + "(" + winCounter + "-" + lossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
-
-            //await esperbotchnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + ") " + "-> (" + bufSsWinCounter + "-" + bufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
             await esperbotchnl.SendMessageAsync("BofSs Win/Loss: (" + lastWinCounter + "-" + lastLossCounter + "). Total squadron score: " + endOfSessionScore + " -> " + squadronTotalScore + " (+" + (squadronTotalScore - endOfSessionScore).ToString() + ").");
 
             await esperbotchnl.SendMessageAsync("BufSs: Win/Loss: (" + lastBufSsWinCounter + "-" + lastBufSsLossCounter + "). Total squadron score: " + endOfSessionScoreBufSs + " -> " + squadronTotalScoreBufSs + " (+" + (squadronTotalScoreBufSs - endOfSessionScoreBufSs).ToString() + ").");
+            await esperbotchnl.SendMessageAsync("BriSs: Win/Loss: (" + lastBriSsWinCounter + "-" + lastBriSsLossCounter + "). Total squadron score: " + endOfSessionScoreBriSs + " -> " + squadronTotalScoreBriSs + " (+" + (squadronTotalScoreBriSs - endOfSessionScoreBriSs).ToString() + ").");
 
 
             endOfSessionScore = sqdObj.Score;
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
+            endOfSessionScoreBriSs = sqdObjBriSs.Score;
 
             HandleCheckCommand("!check BofSs", chnl);
             HandleCheckCommand("!check BufSs", chnl);
@@ -1255,7 +1302,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string squadronName = content.Substring("!compare ".Length);
 
-            if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy")
+            if (squadronName == "Cadet" || squadronName == "BofSs" || squadronName == "Academy" || squadronName == "BriSs" || squadronName == "BufSs")
             {
                 Commands commands = new Commands();
 
@@ -1274,7 +1321,7 @@ namespace CHFBot
             }
             else
             {
-                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, or Academy.");
+                await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, BufSs, BriSs or Academy.");
             }
         }
 
@@ -2405,7 +2452,7 @@ namespace CHFBot
 
         private async Task pointsCheckBriSs()
         {
-
+            
             if (briSsScoreTracking = true)
             {
 
@@ -2584,10 +2631,10 @@ namespace CHFBot
 
             if (anyChanges)
             {
-                await chnl.SendMessageAsync($"BofSs: {midSessionWinsCounter}-{midSessionLossesCounter} (Delta: {sessionScoreDelta}). " +
+                await chnl.SendMessageAsync($"```BofSs: {midSessionWinsCounter}-{midSessionLossesCounter} (Delta: {sessionScoreDelta}). " +
                     $"BufSs is {midSessionWinsCounterBufSs}-{midSessionLossesCounterBufSs} (Delta: {sessionScoreDeltaBufSs})." 
                                          +
-                    $" BriSs is {midSessionWinsCounterBriSs}-{midSessionLossesCounterBriSs} (Delta: {sessionScoreDeltaBriSs}).");
+                    $" BriSs is {midSessionWinsCounterBriSs}-{midSessionLossesCounterBriSs} (Delta: {sessionScoreDeltaBriSs}).```");
 
 
 
