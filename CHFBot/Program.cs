@@ -441,6 +441,11 @@ namespace CHFBot
                 // If the file does not exist, create it
                 using (File.Create(fileNameBufSs)) { };
             }
+            if (!File.Exists(fileNameBriSs))
+            {
+                // If the file does not exist, create it
+                using (File.Create(fileNameBriSs)) { };
+            }
 
             String currentContent = await commands.LoadStringWithMostRecentTopSquad(chnl);
             SquadronObj[] newcontent = await Webscraper.TestScrape2();
@@ -2245,7 +2250,7 @@ namespace CHFBot
 
         private async Task WriteCheck(String content)
         {
-            if (content.ToLower() == "!check bofss" || content.ToLower() == "!check bufss")
+            if (content.ToLower() == "!check bofss" || content.ToLower() == "!check bufss" || content.ToLower() == "!check briss")
             {
 
                 StringBuilder messageBuilder = await ActivateCheckLoadProcess(content);
@@ -2266,6 +2271,10 @@ namespace CHFBot
                 if (content.ToLower() == "!check bofss")
                 {
                     fileName = "CheckBofSs.txt";
+                }
+                if (content.ToLower() == "!check briss")
+                {
+                    fileName = "CheckBriSs.txt";
                 }
 
 
