@@ -2322,9 +2322,13 @@ namespace CHFBot
             {
                 fileName = "CheckBofSs.txt";
             }
+            else if (squadronName == "BriSs")
+            {
+                fileName = "CheckBriSs.txt";
+            }
             else
             {
-                throw new ArgumentException("Invalid squadron name. Must be either 'BufSs' or 'BofSs'.");
+                throw new ArgumentException("Invalid squadron name. Must be either 'BufSs' or 'BofSs' or 'BriSs'.");
             }
 
             if (!File.Exists(fileName))
