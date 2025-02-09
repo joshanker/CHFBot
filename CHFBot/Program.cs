@@ -18,6 +18,9 @@ using System.Xml.Schema;
 using System.CodeDom;
 using System.Threading;
 
+
+
+
 namespace CHFBot
 {
 
@@ -864,6 +867,10 @@ namespace CHFBot
                 else if (content.StartsWith("!check"))
                 {
                     await HandleCheckCommand(message);
+                }
+                else if (content.StartsWith("!altvehicles"))
+                {
+                    await HandleAltVehiclesCommand(message);
                 }
                 else if (content.StartsWith("!executetimer"))
                 {
@@ -2514,8 +2521,120 @@ namespace CHFBot
             SquadronObj sqd = await Webscraper.ScrapeCheck($"!check {squadron}");
 
         }
+        private async Task HandleAltVehiclesCommand(SocketMessage message)
+        {
+            string csvFilePath = "AltSpreadsheet.csv"; // Replace with the actual path
+            string userInput = message.Content; // Get the user's message
 
-        
+            string[] parts = userInput.Split(' ');
+
+            if (parts.Length != 2 || !parts[0].Equals("!altvehicles", StringComparison.OrdinalIgnoreCase))
+            {
+                await message.Channel.SendMessageAsync("Invalid input. Use '!altvehicles <alt name>'.");
+                return;
+            }
+
+            string altName = parts[1];
+
+            altName = SanitizeInput(altName);
+
+            if (string.IsNullOrEmpty(altName))
+            {
+                await message.Channel.SendMessageAsync("Invalid alt name.");
+                return;
+            }
+
+            Dictionary<string, List<(string Header, string Vehicle)>> altVehicles = GetAltVehicles(csvFilePath);
+
+            if (altVehicles == null)
+            {
+                await message.Channel.SendMessageAsync("Error reading CSV file.");
+                return;
+            }
+
+            if (altVehicles.ContainsKey(altName))
+            {
+                string output = $"Vehicles for {altName}:\n";
+                foreach (var vehicleData in altVehicles[altName])
+                {
+                    output += $"- {vehicleData.Header}: {vehicleData.Vehicle}\n";
+                }
+                await message.Channel.SendMessageAsync(output);
+
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync($"Alt name '{altName}' not found.");
+            }
+        }
+
+
+        public static Dictionary<string, List<(string Header, string Vehicle)>> GetAltVehicles(string csvFilePath)
+        {
+            Dictionary<string, List<(string Header, string Vehicle)>> altVehicles = new Dictionary<string, List<(string Header, string Vehicle)>>(StringComparer.OrdinalIgnoreCase);
+
+            try
+            {
+                using (var reader = new StreamReader(csvFilePath))
+                {
+                    string headerLine = reader.ReadLine(); // Read the header line
+                    string[] headers = headerLine.Split(',');
+
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        string[] fields = line.Split(',');
+
+                        if (fields.Length > 2) // Check to avoid index out of bounds exception.
+                        {
+                            string playerName = fields[2].Trim('"'); // Player name is in the THIRD column (index 2). Trim quotes
+
+                            if (string.IsNullOrEmpty(playerName)) continue; // Skip empty rows
+
+                            List<(string Header, string Vehicle)> vehicles = new List<(string Header, string Vehicle)>();
+
+                            for (int i = 8; i <= 53 && i < fields.Length && i < headers.Length; i++) //Columns I to BI (8 to 53)
+                            {
+                                string vehicle = fields[i].Trim('"'); // Trim quotes
+                                string header = headers[i].Trim('"'); // Get header for the column
+
+                                if (!string.IsNullOrEmpty(vehicle))
+                                {
+                                    vehicles.Add((header, vehicle));
+                                }
+                            }
+
+                            altVehicles[playerName] = vehicles;
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine($"Error: CSV file not found at {csvFilePath}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading CSV: {ex.Message}");
+                return null;
+            }
+
+            return altVehicles;
+        }
+
+
+        private static string SanitizeInput(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            string sanitized = Regex.Replace(input, @"[^a-zA-Z0-9_\s]", ""); // Added underscore
+            return sanitized.Trim();
+        }
+
+
+
+
+
 
         private async Task ProcessSquadron1mScoreChanges()
         {
