@@ -57,6 +57,8 @@ namespace CHFBot
         int lossCounter = 0;
         int bufSsWinCounter = 0;
         int bufSsLossCounter = 0;
+        public Dictionary<ulong, int> userNumbers = new Dictionary<ulong, int>(); // Stores user ID -> assigned number
+        public int takeaANumberNumber = 1; // Tracks the next available number
         System.Timers.Timer hourlyTimer = new System.Timers.Timer(1000 * 60 * 60); //one hour in milliseconds
         System.Timers.Timer dailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
         System.Timers.Timer midDailyTimer = new System.Timers.Timer(1000 * 60 * 60 * 24); //one day in milliseconds
@@ -388,7 +390,12 @@ namespace CHFBot
         {
             Commands commands = new Commands();
 
-            SquadronObj sqdObj = new SquadronObj
+            userNumbers.Clear();
+            takeaANumberNumber = 1; // Tracks the next available number
+
+
+
+        SquadronObj sqdObj = new SquadronObj
             {
                 url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs",
                 SquadronName = "BofSs"
@@ -704,18 +711,7 @@ namespace CHFBot
                 {
                     await message.Channel.SendMessageAsync("Pong!");
                 }
-                //else if (content.StartsWith("!join"))
-                //{
-                //    await HandleJoinCommand(message);
-                //}
-                // else if (content.StartsWith("!scrapesquadron "))
-                //{
-                //    await HandleScrapeSquadronCommand(message);
-                //}
-                //else if (content.StartsWith("!squadronsum "))
-                //{
-                //    await HandleSquadronSumCommand(message);
-                //}
+
                 else if (content.StartsWith("!totals "))
                 {
                     await HandleTotalsCommand(message);
@@ -871,6 +867,14 @@ namespace CHFBot
                 else if (content.StartsWith("!altvehicles"))
                 {
                     await HandleAltVehiclesCommand(message);
+                }
+                else if (content.StartsWith("!takeanumber"))
+                {
+                    await HandleTakeANumberCommand(message);
+                }
+                else if (content.StartsWith("!shownumbers"))
+                {
+                    await HandleShowNumbersCommand(message);
                 }
                 else if (content.StartsWith("!executetimer"))
                 {
@@ -1335,6 +1339,41 @@ namespace CHFBot
             {
                 await message.Channel.SendMessageAsync("Squadron needs to be Cadet, BofSs, BufSs, BriSs or Academy.");
             }
+        }
+
+
+        [CommandDescription("Gives you a number to help with queue ordering")]
+        private async Task HandleTakeANumberCommand(SocketMessage message)
+        {
+            var user = message.Author as SocketGuildUser;
+            var username = user?.Nickname ?? user?.Username ?? "Unknown User";
+            var userId = user.Id;
+
+            // Assign a new number (overwrite old one if exists)
+            userNumbers[userId] = takeaANumberNumber;
+            await message.Channel.SendMessageAsync($"Okay, {username}, you are now number {takeaANumberNumber}.");
+            takeaANumberNumber++;
+        }
+
+        // Command to display all assigned numbers
+        [CommandDescription("Shows who has what number.")]
+        private async Task HandleShowNumbersCommand(SocketMessage message)
+        {
+            if (userNumbers.Count == 0)
+            {
+                await message.Channel.SendMessageAsync("No numbers have been assigned yet.");
+                return;
+            }
+
+            var response = "**Current number assignments:**\n";
+            foreach (var entry in userNumbers)
+            {
+                var user = (message.Channel as SocketGuildChannel)?.Guild.GetUser(entry.Key);
+                var username = user?.Nickname ?? user?.Username ?? "Unknown User";
+                response += $"{entry.Value}: {username}\n";
+            }
+
+            await message.Channel.SendMessageAsync(response);
         }
 
         private string[] GetMostRecentFiles(string squadronName, int count)
