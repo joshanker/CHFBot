@@ -772,6 +772,10 @@ namespace CHFBot
                 {
                     await HandleTrackVoiceUpdatesCommand(message);
                 }
+                else if (content.StartsWith("!directbotcommands"))
+                {
+                    await HandleDirectBotCommandsCommand(message);
+                }
                 else if (content.StartsWith("!record"))
                 {
                     await HandleRecordCommand(message);
@@ -798,19 +802,19 @@ namespace CHFBot
                 }
                 else if (content.StartsWith("!setwinloss"))
                 {
-                    await HandleSetWinLossCommand(message);
+                    await HandleSetWinLossCom(message);
                 }
                 else if (content.StartsWith("!2setwinloss"))
                 {
-                    await Handle2SetWinLossCommand(message);
+                    await Handle2SetWinLossCom(message);
                 }
                 else if (content.StartsWith("!setstartingscore"))
                 {
-                    await HandleSetStartingScoreCommand(message);
+                    await HandleSetStartingScoreCom(message);
                 }
                 else if (content.StartsWith("!2setstartingscore"))
                 {
-                    await Handle2SetStartingScoreCommand(message);
+                    await Handle2SetStartingScoreCom(message);
                 }
                 else if (content.StartsWith("!listalts"))
                 {
@@ -818,7 +822,7 @@ namespace CHFBot
                 }
                 else if (content.StartsWith("!resetsessionwlvariables"))
                 {
-                    await HandleresetsessionwlvariablesCommand(message);
+                    await HandleresetsessionwlvariablesCom(message);
                 }
                 //else if (content.StartsWith("!testscrape"))
                 //{
@@ -842,11 +846,11 @@ namespace CHFBot
                 }
                 else if (content.StartsWith("!squadrontotalscore"))
                 {
-                    await HandleSquadronTotalScoreCommand(message);
+                    await HandleSquadronTotalScoreCom(message);
                 }
                 else if (content.StartsWith("!2squadrontotalscore"))
                 {
-                    await Handle2SquadronTotalScoreCommand(message);
+                    await Handle2SquadronTotalScoreCom(message);
                 }
                 else if (content.StartsWith("!check"))
                 {
@@ -1554,7 +1558,7 @@ namespace CHFBot
 
         }
 
-        private async Task HandleresetsessionwlvariablesCommand(SocketMessage message)
+        private async Task HandleresetsessionwlvariablesCom(SocketMessage message)
             
         {
             if (message.Content == "!resetsessionwlvariables")
@@ -1565,6 +1569,16 @@ namespace CHFBot
 
         }
 
+        [CommandDescription("These are commands that you shouldn't use.")]
+        private async Task HandleDirectBotCommandsCommand(SocketMessage message)
+        {
+           
+                //await message.Channel.SendMessageAsync("Win/Loss count for this session is: " + winCounter + "-" + lossCounter + ".");
+                
+
+                await message.Channel.SendMessageAsync($"The following commands are available for directly changing bot variables.  Please do NOT use the commands unless you know what you're doing.\n!resetsessionwlvariables\r\n!SetWinLoss\r\n!2SetWinLoss\n!SetStartingScore\r\n!2SetStartingScore\r\n!SquadronTotalScore\r\n!2SquadronTotalScore");
+            
+        }
         [CommandDescription("Displays the win/loss counts for this SRE session.")]
         private async Task HandleRecordCommand(SocketMessage message)
         {
@@ -1804,7 +1818,7 @@ namespace CHFBot
         }
 
         [CommandDescription("!SetWinLoss <Num/Num> of current session.")]
-        private async Task HandleSetWinLossCommand(SocketMessage message)
+        private async Task HandleSetWinLossCom(SocketMessage message)
         {
             string content = message.ToString().ToLower();
             if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
@@ -1849,7 +1863,7 @@ namespace CHFBot
             }
         }
 
-        private async Task Handle2SetWinLossCommand(SocketMessage message)
+        private async Task Handle2SetWinLossCom(SocketMessage message)
         {
             string content = message.ToString().ToLower();
             if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
@@ -1894,7 +1908,7 @@ namespace CHFBot
             }
         }
 
-        private async Task HandleSetStartingScoreCommand(SocketMessage message)
+        private async Task HandleSetStartingScoreCom(SocketMessage message)
         {
             string content = message.ToString().ToLower();
             if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
@@ -1925,7 +1939,7 @@ namespace CHFBot
             }
         }
 
-        private async Task Handle2SetStartingScoreCommand(SocketMessage message)
+        private async Task Handle2SetStartingScoreCom(SocketMessage message)
         {
             string content = message.ToString().ToLower();
             if (message.Author.Id == 308128406699245568 || ((SocketGuildUser)message.Author).Roles.Any(r => r.Id == officerRoleId))
@@ -2021,7 +2035,7 @@ namespace CHFBot
         }
 
        // [CommandDescription("Updates the daily total to the current total.")]
-        private async Task HandleSquadronTotalScoreCommand(SocketMessage message)
+        private async Task HandleSquadronTotalScoreCom(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("OK, " + squadronTotalScore + " is the current value of SquadronTotalScore.  Also, I am executing the populate now.");
 
@@ -2036,7 +2050,7 @@ namespace CHFBot
         }
 
         [CommandDescription("2")]
-        private async Task Handle2SquadronTotalScoreCommand(SocketMessage message)
+        private async Task Handle2SquadronTotalScoreCom(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("OK, " + squadronTotalScoreBufSs + " is the current value of SquadronTotalScoreBufSs.  Also, I am executing the populate now.");
 
@@ -2576,7 +2590,7 @@ namespace CHFBot
             return altVehicles;
         }
 
-        [CommandDescription("!turn <settings> on|off")]
+        [CommandDescription("!turn <setting> on|off")]
         private async Task HandleTurnCommand(SocketMessage message)
         {
             
@@ -2617,7 +2631,7 @@ namespace CHFBot
             await message.Channel.SendMessageAsync($"{feature} is now {action.ToUpper()}.");
         }
 
-        [CommandDescription("")]
+        [CommandDescription("Displays current Settings")]
         private async Task HandleSettingsCommand(SocketMessage message)
         {
             if (featureToggles.Count == 0)
