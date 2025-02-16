@@ -1105,7 +1105,7 @@ namespace CHFBot
         //    }
         //}
 
-        [CommandDescription("Gives player count, totals score, and each players' score. (!totals BofSs.")]
+        [CommandDescription("Player count, totals score, and each player's score. (!totals BofSs.")]
         private async Task HandleTotalsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1136,7 +1136,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Scrapes a squadron and write the info to a file.")]
+        [CommandDescription("Scrapes a squadron & writes the info to a file.")]
         private async Task HandleWriteSqdCommand(SocketMessage message)
         {
             // Implementation for the !writesqd command
@@ -1275,7 +1275,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Lists the top 20 players in any of the top 10 squadrons and how many points they have.")]
+        [CommandDescription("Lists top 20 players & how many points they have.")]
         private async Task HandleTop20Command(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1312,7 +1312,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Examines the last two written files for BofSs and lists joiners & leavers. !compare BofSs")]
+        [CommandDescription("Examines the last 2 written files & lists joiners & leavers. !compare BofSs")]
         private async Task HandleCompareCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1353,6 +1353,8 @@ namespace CHFBot
             userNumbers[userId] = takeaANumberNumber;
             await message.Channel.SendMessageAsync($"Okay, {username}, you are now number {takeaANumberNumber}.");
             takeaANumberNumber++;
+
+            HandleShowNumbersCommand(message);
         }
 
         // Command to display all assigned numbers
@@ -1390,7 +1392,7 @@ namespace CHFBot
             return mostRecentFiles;
         }
 
-        [CommandDescription("Picks a gamemode, type, and BR.  If you don't like what it chooses, just spam it until you get one you like.")]
+        [CommandDescription("Picks a gamemode, type, and BR.  Don't like what it chooses? Spam it until you get one you like.")]
         private async Task HandleRandoCommandoCommand(SocketMessage message)
         {
             string[] gameModes = { "AB", "RB" }; // Available game modes
@@ -1422,7 +1424,6 @@ namespace CHFBot
             return battleRatings.ToArray();
         }
 
-        [CommandDescription("This is a list of commands you can use. Some need modifiers, like a squadron.")]
         private async Task HandleCommandsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -1463,7 +1464,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("Who is online and how many points do they have? If player not found, give player name & Discord ID to Esper.")]
+        [CommandDescription("Who is online & how many points do they have? If player not found, give player name & Discord ID to Esper.")]
         private async Task HandleQpointsCommand(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
@@ -1569,7 +1570,7 @@ namespace CHFBot
             await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\",\"BriSs\" This is case-sensitive");
         }
 
-        [CommandDescription("turns on & off login/logoff/move notifs.")]
+        //[CommandDescription("turns on & off login/logoff/move notifs.")]
         private async Task HandleTrackVoiceUpdatesCommand(SocketMessage message)
         {
             if (message.Content == "!trackvoiceupdates on")
@@ -1887,7 +1888,7 @@ namespace CHFBot
 
         }
 
-        [CommandDescription("Displays the last ten SRE session counts.")]
+        //[CommandDescription("Displays the last ten SRE session counts.")]
         private async Task HandleLastTenCommand(SocketMessage message)
         {
             string content = message.ToString().ToLower();
@@ -2141,7 +2142,7 @@ namespace CHFBot
 
         }
 
-        [CommandDescription("Updates the daily total to the current total.")]
+       // [CommandDescription("Updates the daily total to the current total.")]
         private async Task HandleSquadronTotalScoreCommand(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("OK, " + squadronTotalScore + " is the current value of SquadronTotalScore.  Also, I am executing the populate now.");
