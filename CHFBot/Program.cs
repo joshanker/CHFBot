@@ -101,6 +101,13 @@ namespace CHFBot
         int startOfSessionPointsBriSs = 0;
         int sessionScoreDeltaBriSs = 0;
 
+        private Dictionary<string, bool> featureToggles = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "quotes", false },
+            { "minuteTimerFive", false },
+            { "bundsBotScoreTracking", false },
+            { "briSsScoreTracking", false }
+        };
 
 
 
@@ -140,7 +147,7 @@ namespace CHFBot
             await _client.StartAsync();
             await Task.Delay(-1);
 
-            //pointsCheckBriSs();
+
 
         }
 
@@ -366,7 +373,6 @@ namespace CHFBot
                 //ProcessSquadron1mScoreChanges();
             }
 
-            //pointsCheckBriSs();
 
         }
         private async void OnOneMinuteEvent(object source, ElapsedEventArgs e)
@@ -381,8 +387,6 @@ namespace CHFBot
                               
 
             }
-
-            //pointsCheckBriSs();
 
 
         }
@@ -768,22 +772,6 @@ namespace CHFBot
                 {
                     await HandleTrackVoiceUpdatesCommand(message);
                 }
-                else if (content.StartsWith("!turnquotes"))
-                {
-                    await HandleTurnQuotesCommand(message);
-                }
-                else if (content.StartsWith("!turn5mtimer"))
-                {
-                    await HandleTurn5mTimerCommand(message);
-                }
-                else if (content.StartsWith("!turnbundsbotscoretracking"))
-                {
-                    await HandleTurnBundsBotScoreTrackingCommand(message);
-                }
-                else if (content.StartsWith("!turnbrissscoretracking"))
-                {
-                    await HandleTurnBriSsScoreTrackingCommand(message);
-                }
                 else if (content.StartsWith("!record"))
                 {
                     await HandleRecordCommand(message);
@@ -875,6 +863,14 @@ namespace CHFBot
                 else if (content.StartsWith("!shownumbers"))
                 {
                     await HandleShowNumbersCommand(message);
+                }
+                else if (content.StartsWith("!turn"))
+                {
+                    await HandleTurnCommand(message);
+                }
+                else if (content.StartsWith("!settings"))
+                {
+                    await HandleSettingsCommand(message);
                 }
                 else if (content.StartsWith("!executetimer"))
                 {
@@ -1342,41 +1338,7 @@ namespace CHFBot
         }
 
 
-        [CommandDescription("Gives you a number to help with queue ordering")]
-        private async Task HandleTakeANumberCommand(SocketMessage message)
-        {
-            var user = message.Author as SocketGuildUser;
-            var username = user?.Nickname ?? user?.Username ?? "Unknown User";
-            var userId = user.Id;
-
-            // Assign a new number (overwrite old one if exists)
-            userNumbers[userId] = takeaANumberNumber;
-            await message.Channel.SendMessageAsync($"Okay, {username}, you are now number {takeaANumberNumber}.");
-            takeaANumberNumber++;
-
-            HandleShowNumbersCommand(message);
-        }
-
-        // Command to display all assigned numbers
-        [CommandDescription("Shows who has what number.")]
-        private async Task HandleShowNumbersCommand(SocketMessage message)
-        {
-            if (userNumbers.Count == 0)
-            {
-                await message.Channel.SendMessageAsync("No numbers have been assigned yet.");
-                return;
-            }
-
-            var response = "**Current number assignments:**\n";
-            foreach (var entry in userNumbers)
-            {
-                var user = (message.Channel as SocketGuildChannel)?.Guild.GetUser(entry.Key);
-                var username = user?.Nickname ?? user?.Username ?? "Unknown User";
-                response += $"{entry.Value}: {username}\n";
-            }
-
-            await message.Channel.SendMessageAsync(response);
-        }
+       
 
         private string[] GetMostRecentFiles(string squadronName, int count)
         {
@@ -1614,7 +1576,7 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {midSessionWinsCounter}-{midSessionLossesCounter} ({squadron5m.Score - startOfSessionPoints}).");
              }
         }
-
+        [CommandDescription("2")]
         private async Task Handle2RecordCommand(SocketMessage message)
         {
             if (message.Content == "!2record")
@@ -1625,91 +1587,7 @@ namespace CHFBot
                 await message.Channel.SendMessageAsync($"Win/Loss count for this session is: {midSessionWinsCounterBufSs}-{midSessionLossesCounterBufSs} ({squadron5m.Score - startOfSessionPointsBufSs}).");
             }
         }
-
-        //[CommandDescription("turns on & off hourly Quotes.")]
-        private async Task HandleTurnQuotesCommand(SocketMessage message)
-        {
-            if (message.Content == "!turnquotes on")
-            {
-                quotes = true;
-                await message.Channel.SendMessageAsync("OK, turning on hourly quotes.");
-            }
-
-            else if (message.Content == "!turnquotes off")
-            {
-                quotes = false;
-                await message.Channel.SendMessageAsync("OK, turning off hourly quotes.");
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of quotes is: " + quotes.ToString());
-
-            }
-        }
-
-        //[CommandDescription("turns on & off the 5 minute timer.")]
-        private async Task HandleTurn5mTimerCommand(SocketMessage message)
-        {
-            if (message.Content == "!turn5mtimer on")
-            {
-                minuteTimerFive = true;
-                await message.Channel.SendMessageAsync("OK, turning on the 5 minute timer");
-            }
-
-            else if (message.Content == "!turn5mtimer off")
-            {
-                minuteTimerFive = false;
-                await message.Channel.SendMessageAsync("OK, turning off the 5 minute timer");
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of the 5 minute timer is: " + minuteTimerFive.ToString());
-
-            }
-        }
-
-        //[CommandDescription("turns on & off BundsBot Score reporting")]
-        private async Task HandleTurnBundsBotScoreTrackingCommand(SocketMessage message)
-        {
-            if (message.Content.ToLower() == "!turnbundsbotscoretracking on")
-            {
-                bundsBotScoreTracking = true;
-                await message.Channel.SendMessageAsync("OK, turning on BundsBot score tracking");
-            }
-
-            else if (message.Content.ToLower() == "!turnbundsbotscoretracking off")
-            {
-                bundsBotScoreTracking = false;
-                await message.Channel.SendMessageAsync("OK, turning off BundsBot score tracking");
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of BundsBot score tracking: " + bundsBotScoreTracking.ToString());
-
-            }
-        }
-
-        //[CommandDescription("turns on & off BriSs Score reporting")]
-        private async Task HandleTurnBriSsScoreTrackingCommand(SocketMessage message)
-        {
-            if (message.Content.ToLower() == "!turnbrissscoretracking on")
-            {
-                briSsScoreTracking = true;
-                await message.Channel.SendMessageAsync("OK, turning on BriSs score tracking");
-            }
-
-            else if (message.Content.ToLower() == "!turnbrissscoretracking off")
-            {
-                briSsScoreTracking = false;
-                await message.Channel.SendMessageAsync("OK, turning off BriSs score tracking");
-            }
-            else
-            {
-                await message.Channel.SendMessageAsync("Sorry, the only options are \"on\" and \"off\".  \nThe current status of BriSs score tracking: " + briSsScoreTracking.ToString());
-
-            }
-        }
-
+        
         [CommandDescription("Listplayers <over> / <under> <points> - example: \"!listplayers under 1500\"")]
         private async Task HandleListplayersCommand(SocketMessage message)
         {
@@ -2608,6 +2486,41 @@ namespace CHFBot
             }
         }
 
+        [CommandDescription("Gives you a number to help with queue ordering")]
+        private async Task HandleTakeANumberCommand(SocketMessage message)
+        {
+            var user = message.Author as SocketGuildUser;
+            var username = user?.Nickname ?? user?.Username ?? "Unknown User";
+            var userId = user.Id;
+
+            // Assign a new number (overwrite old one if exists)
+            userNumbers[userId] = takeaANumberNumber;
+            await message.Channel.SendMessageAsync($"Okay, {username}, you are now number {takeaANumberNumber}.");
+            takeaANumberNumber++;
+
+            HandleShowNumbersCommand(message);
+        }
+
+        // Command to display all assigned numbers
+        [CommandDescription("Shows who has what number.")]
+        private async Task HandleShowNumbersCommand(SocketMessage message)
+        {
+            if (userNumbers.Count == 0)
+            {
+                await message.Channel.SendMessageAsync("No numbers have been assigned yet.");
+                return;
+            }
+
+            var response = "**Current number assignments:**\n";
+            foreach (var entry in userNumbers)
+            {
+                var user = (message.Channel as SocketGuildChannel)?.Guild.GetUser(entry.Key);
+                var username = user?.Nickname ?? user?.Username ?? "Unknown User";
+                response += $"{entry.Value}: {username}\n";
+            }
+
+            await message.Channel.SendMessageAsync(response);
+        }
 
         public static Dictionary<string, List<(string Header, string Vehicle)>> GetAltVehicles(string csvFilePath)
         {
@@ -2662,6 +2575,67 @@ namespace CHFBot
 
             return altVehicles;
         }
+
+        [CommandDescription("!turn <settings> on|off")]
+        private async Task HandleTurnCommand(SocketMessage message)
+        {
+            
+            string[] tempParts = message.Content.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string[] parts;
+            if (tempParts.Length >= 3)
+            {
+                parts = new string[] { tempParts[0], tempParts[1], string.Join(" ", tempParts.Skip(2)) };
+            }
+            else
+            {
+                parts = tempParts;
+            }
+
+            if (parts.Length < 3)
+            {
+                await message.Channel.SendMessageAsync("Usage: !turn <feature> <on/off>");
+                return;
+            }
+
+            string feature = parts[1].ToLower();
+            string action = parts[2].ToLower();
+
+            if (!featureToggles.ContainsKey(feature))
+            {
+                await message.Channel.SendMessageAsync($"Unknown feature '{feature}'. Available features: {string.Join(", ", featureToggles.Keys)}");
+                return;
+            }
+
+            if (action != "on" && action != "off")
+            {
+                await message.Channel.SendMessageAsync("Invalid action. Use 'on' or 'off'.");
+                return;
+            }
+
+            featureToggles[feature] = (action == "on");
+            await message.Channel.SendMessageAsync($"{feature} is now {action.ToUpper()}.");
+        }
+
+        [CommandDescription("")]
+        private async Task HandleSettingsCommand(SocketMessage message)
+        {
+            if (featureToggles.Count == 0)
+            {
+                await message.Channel.SendMessageAsync("No settings available.");
+                return;
+            }
+
+            string settings = "Current Settings:\n" +
+                              string.Join("\n", featureToggles.Select(kvp => $"- {kvp.Key}: {(kvp.Value ? "ON" : "OFF")}"));
+
+            await message.Channel.SendMessageAsync(settings);
+        }
+
+
+
+
+
 
 
         private static string SanitizeInput(string input)
@@ -2886,6 +2860,10 @@ namespace CHFBot
             brissData.HasBeenInitialized = false;
 
         }
+
+
+
+
 
 
 
