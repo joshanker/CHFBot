@@ -796,6 +796,14 @@ namespace CHFBot
                 {
                     await Handle3ListplayersCommand(message);
                 }
+                else if (content.StartsWith("!4listplayers"))
+                {
+                    await Handle4ListplayersCommand(message);
+                }
+                else if (content.StartsWith("!5listplayers"))
+                {
+                    await Handle5ListplayersCommand(message);
+                }
                 else if (content.StartsWith("!lastten"))
                 {
                     await HandleLastTenCommand(message);
@@ -1779,6 +1787,117 @@ namespace CHFBot
             commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
 
         }
+        [CommandDescription("4")]
+        private async Task Handle4ListplayersCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+
+            // Split the input string into words
+            string[] words = content.Split(' ');
+
+            // Check that the first word is "!listplayers"
+            if (words[0] != "!4listplayers")
+            {
+                // If the first word is not "!listplayers", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the second word is either "over" or "under"
+            if (words[1] != "over" && words[1] != "under")
+            {
+                // If the second word is not "over" or "under", then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            // Check that the third word is a valid number
+            int points;
+            if (!int.TryParse(words[2], out points))
+            {
+                // If the third word is not a valid number, then the input is invalid
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <over> / <under> <points>");
+                return;
+            }
+
+            string overUnder = words[1];
+
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
+
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron("EXLY");
+
+
+
+            var chnl = message.Channel as IMessageChannel;
+
+            chnl.SendMessageAsync("Players with score " + overUnder + " " + points + ":");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+
+            //await chnl.SendMessageAsync("Squadron: " + squadronObject.SquadronName);
+            //await chnl.SendMessageAsync("Player Count: " + squadronObject.Players.Count);
+            //await chnl.SendMessageAsync("Score: " + squadronObject.Score.ToString());
+
+            commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+
+        }
+
+        [CommandDescription("5Listplayers [<over> | <under>] <squadron> <points> - example: \"!listplayers BofSs under 1500\"")]
+        private async Task Handle5ListplayersCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+            string[] words = content.Split(' ');
+
+            if (words.Length < 4) // Require at least 4 words: !listplayers <squadron> <over/under> <points>
+            {
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <squadron> [<over>|<under>] <points> - I didn't get 4 words.");
+                return;
+            }
+
+            string squadronName = words[1]; // Get the squadron name from the second word
+            string overUnder = words[2];
+            int points;
+
+            if (!int.TryParse(words[3], out points)) // Get points from the fourth word
+            {
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <squadron> <over> / <under> <points> - I didn't get points from the 4th word.");
+                return;
+            }
+
+            if (overUnder != "over" && overUnder != "under")
+            {
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <squadron> <over> / <under> <points> - I didn't see 'over' or 'under' in the right spot.");
+                return;
+            }
+
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
+
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron(squadronName); // Use the provided squadron name
+
+            if (squadronObject == null) // Check if squadron is valid
+            {
+                await message.Channel.SendMessageAsync($"Squadron '{squadronName}' not found.");
+                return;
+            }
+
+            var chnl = message.Channel as IMessageChannel;
+
+            await chnl.SendMessageAsync("Players in " + squadronName + " with score " + overUnder + " " + points + ":");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+            commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+        }
+
 
         //[CommandDescription("Displays the last ten SRE session counts.")]
         private async Task HandleLastTenCommand(SocketMessage message)
