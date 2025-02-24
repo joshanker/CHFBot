@@ -251,7 +251,7 @@ namespace BotCommands
             string url = "not yet set...";
             SquadronObj squadronObject = new SquadronObj(input, url);
 
-            var urlMap = new Dictionary<string, string>
+            var urlMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) // Case-insensitive comparer
                 {
                     { "Cadet", cadetUrl },
                     { "BofSs", BofSsUrl },
