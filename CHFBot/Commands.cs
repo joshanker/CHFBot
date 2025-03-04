@@ -126,6 +126,39 @@ namespace BotCommands
             await SendLongContentAsEmbedAsync(chnl, longContent);
         }
 
+        public async void printPlayersOverUnder2(IMessageChannel chnl, SquadronObj sqdobj, String overUnder, int points)
+        {
+            overUnder = overUnder.ToLower();
+            StringBuilder sb = new StringBuilder();
+
+            // Sort the players by number of points, from most to least
+            var sortedPlayers = sqdobj.Players.OrderByDescending(player => player.PersonalClanRating);
+            sb.AppendLine($"{" ",-50}");
+            foreach (Player player in sortedPlayers)
+            {
+
+                if (overUnder == "over")
+                {
+                    if (player.PersonalClanRating >= points)
+                    {
+                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName} {player.DateOfEntry} ");
+                    }
+                }
+                if (overUnder == "under")
+                {
+                    if (player.PersonalClanRating <= points)
+                    {
+                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName,-18} {player.DateOfEntry}");
+                    }
+                }
+
+            }
+            sqdobj.allsqd = sb.ToString();
+            string longContent = sqdobj.allsqd;
+            await SendLongContentAsEmbedAsync(chnl, longContent);
+        }
+
+
         public async Task PrintTop20Players(IMessageChannel chnl, SquadronObj sqdobj, List<Player> top20Players)
         {
             StringBuilder sb = new StringBuilder();

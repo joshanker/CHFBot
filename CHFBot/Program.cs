@@ -760,10 +760,10 @@ namespace CHFBot
                 {
                     await HandleCommandsCommand(message);
                 }
-                else if (content.StartsWith("!qpoints"))
-                {
-                    await HandleQpointsCommand(message);
-                }
+                //else if (content.StartsWith("!3qpoints"))
+                //{
+                //    await Handle3QpointsCommand(message);
+                //}
                 else if (content.StartsWith("!help"))
                 {
                     await HandleCommandsCommand(message);
@@ -787,6 +787,10 @@ namespace CHFBot
                 else if (content.StartsWith("!listplayers"))
                 {
                     await HandleListplayersCommand(message);
+                }
+                else if (content.StartsWith("!eos"))
+                {
+                    await HandleEOSCommand(message);
                 }
                 //else if (content.StartsWith("!2listplayers"))
                 //{
@@ -1439,107 +1443,318 @@ namespace CHFBot
         }
 
         [CommandDescription("Who is online & how many points do they have? If player not found, give player name & Discord ID to Esper.")]
-        private async Task HandleQpointsCommand(SocketMessage message)
-        {
-            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+        //        private async Task HandleQpointsCommand(SocketMessage message)
+        //        {
+        //            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
-            Commands commands = new Commands();
-            //Commands scrapeAllAndPopulate = new Commands();
-            SquadronObj squadronObject = new SquadronObj();
-            squadronObject = commands.validateSquadron("BofSs");
+        //            Commands commands = new Commands();
+
+        //            SquadronObj squadronObject = new SquadronObj();
+        //            squadronObject = commands.validateSquadron("BofSs");
 
 
-            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+        //            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
 
-            //700529928948678777 (Lounge)
-            //1133615880488628344 (esper bot testing)
-            //200594110044700675 (server ID)
+        //            ulong channelId = (ulong)700529928948678777;
+        //            IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
 
-            // var chnl = message.Channel as IMessageChannel; // 4
+        //            // Create a list to store member usernames
+        //            List<string> playerList = new List<string>();
+        //            var playerInfoList = new List<(string PlayerName, string Points)>();
 
-            ulong channelId = (ulong)700529928948678777;
-            IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
+        //            await Task.Delay(1000);
+        //            playerList = await commands.GeneratePlayerList(_client, voiceChannel.Id, playerList);
 
-            // Create a list to store member usernames
-            List<string> playerList = new List<string>();
-            var playerInfoList = new List<(string PlayerName, string Points)>();
+        //            string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
+        //            string playerListString = string.Join("", itemsToJoin).ToString();
 
-            await Task.Delay(1000);
-            playerList = await commands.GeneratePlayerList(_client, voiceChannel.Id, playerList);
+        //            await Task.Delay(1000);
+        //            await commands.UpdatePlayerIDs(squadronObject);
+        //            await Task.Delay(1000);
 
-            string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
-            string playerListString = string.Join("", itemsToJoin).ToString();
+        //            StringBuilder responseBuilder = new StringBuilder();
 
-            await Task.Delay(1000);
-            await commands.UpdatePlayerIDs(squadronObject);
-            await Task.Delay(1000);
+        //            foreach (var playerName in playerList)
+        //            {
+        //                if (ulong.TryParse(playerName.Split(' ')[0], out ulong discordId))
+        //                {
+        //                    Player player = squadronObject.Players.FirstOrDefault(p => p.DiscordID == discordId);
 
-            StringBuilder responseBuilder = new StringBuilder();
+        //                    if (player != null)
+        //                    {
+        //                        playerInfoList.Add((player.PlayerName, player.PersonalClanRating.ToString()));
+        //                    }
+        //                    else
+        //                    {
+        //                        ulong userId = discordId;
+        //                        var user = _client.GetUser(userId);
 
-            foreach (var playerName in playerList)
-            {
-                if (ulong.TryParse(playerName.Split(' ')[0], out ulong discordId))
-                {
-                    Player player = squadronObject.Players.FirstOrDefault(p => p.DiscordID == discordId);
+        //                        if (user != null)
+        //                        {
+        //                            playerInfoList.Add((discordId.ToString(), $"Player not found - {user.Username}"));
+        //                        }
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    playerInfoList.Add((playerName, "Invalid format"));
+        //                }
+        //            }
 
-                    if (player != null)
-                    {
-                        playerInfoList.Add((player.PlayerName, player.PersonalClanRating.ToString()));
-                    }
-                    else
-                    {
-                        ulong userId = discordId;
-                        var user = _client.GetUser(userId);
-
-                        if (user != null)
-                        {
-                            playerInfoList.Add((discordId.ToString(), $"Player not found - {user.Username}"));
-                        }
-                    }
-                }
-                else
-                {
-                    playerInfoList.Add((playerName, "Invalid format"));
-                }
-            }
-
-            // Send the response as a message
-
-            //await message.Channel.SendMessageAsync(responseBuilder.ToString());
-            // Sort the list by points in descending order
-            //playerInfoList = playerInfoList.OrderByDescending(p => int.Parse(p.Points)).ToList();
-            playerInfoList = playerInfoList.OrderByDescending(p =>
-            {
-                if (int.TryParse(p.Points, out int points))
-                {
-                    return points;
-                }
-                return 0; // Set a default value for invalid points
-            }).ToList();
+        //;
+        //            playerInfoList = playerInfoList.OrderByDescending(p =>
+        //            {
+        //                if (int.TryParse(p.Points, out int points))
+        //                {
+        //                    return points;
+        //                }
+        //                return 0; // Set a default value for invalid points
+        //            }).ToList();
 
 
 
-
-            //var responseBuilder = new StringBuilder();
-
-            // Iterate through the sorted list and build your response
-            foreach (var playerInfo in playerInfoList)
-            {
-                responseBuilder.AppendLine($"{playerInfo.PlayerName,-20}: {playerInfo.Points,-6} points");
-            }
+        //            // Iterate through the sorted list and build your response
+        //            foreach (var playerInfo in playerInfoList)
+        //            {
+        //                responseBuilder.AppendLine($"{playerInfo.PlayerName,-20}: {playerInfo.Points,-6} points");
+        //            }
 
 
+        //            await commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString()); //Player Names and Points
+        //            await commands.SendLongContentAsEmbedAsync(message.Channel, playerListString); //IDs and Discord Names
+
+        //            //await message.Channel.SendMessageAsync(response);
+        //        }
+        //private async Task Handle2QpointsCommand(SocketMessage message)
+        //{
+        //    await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+
+        //    Commands commands = new Commands();
+
+        //    // Validate and scrape for BofSs
+        //    SquadronObj squadronObject1 = commands.validateSquadron("BofSs");
+        //    if (squadronObject1 == null)
+        //    {
+        //        await message.Channel.SendMessageAsync("Squadron 'BofSs' not found.");
+        //        return;
+        //    }
+        //    squadronObject1 = await commands.scrapeAllAndPopulate(squadronObject1).ConfigureAwait(true);
+
+        //    // Validate and scrape for BufSs
+        //    SquadronObj squadronObject2 = commands.validateSquadron("BufSs");
+        //    if (squadronObject2 == null)
+        //    {
+        //        await message.Channel.SendMessageAsync("Squadron 'BufSs' not found.");
+        //        return;
+        //    }
+        //    squadronObject2 = await commands.scrapeAllAndPopulate(squadronObject2).ConfigureAwait(true);
+
+        //    // Validate and scrape for BriSs
+        //    SquadronObj squadronObject3 = commands.validateSquadron("BriSs");
+        //    if (squadronObject3 == null)
+        //    {
+        //        await message.Channel.SendMessageAsync("Squadron 'BriSs' not found.");
+        //        return;
+        //    }
+        //    squadronObject3 = await commands.scrapeAllAndPopulate(squadronObject3).ConfigureAwait(true);
+
+        //    ulong channelId = (ulong)700529928948678777;
+        //    IVoiceChannel voiceChannel = _client.GetChannel(channelId) as IVoiceChannel;
+
+        //    List<string> playerList = new List<string>();
+        //    var playerInfoList = new List<(string PlayerName, string Points)>();
+
+        //    await Task.Delay(1000);
+        //    playerList = await commands.GeneratePlayerList(_client, voiceChannel.Id, playerList);
+
+        //    string[] itemsToJoin = playerList.Take(playerList.Count - 1).ToArray();
+        //    string playerListString = string.Join("", itemsToJoin).ToString();
+
+        //    await Task.Delay(1000);
+        //    await commands.UpdatePlayerIDs(squadronObject1);
+        //    await commands.UpdatePlayerIDs(squadronObject2);
+        //    await commands.UpdatePlayerIDs(squadronObject3);
+        //    await Task.Delay(1000);
+
+        //    StringBuilder responseBuilder = new StringBuilder();
+
+        //    foreach (var playerName in playerList)
+        //    {
+        //        if (ulong.TryParse(playerName.Split(' ')[0], out ulong discordId))
+        //        {
+        //            Player player1 = squadronObject1.Players.FirstOrDefault(p => p.DiscordID == discordId);
+        //            Player player2 = squadronObject2.Players.FirstOrDefault(p => p.DiscordID == discordId);
+        //            Player player3 = squadronObject3.Players.FirstOrDefault(p => p.DiscordID == discordId);
+
+        //            if (player1 != null)
+        //            {
+        //                playerInfoList.Add((player1.PlayerName, player1.PersonalClanRating.ToString()));
+        //            }
+        //            else if (player2 != null)
+        //            {
+        //                playerInfoList.Add((player2.PlayerName, player2.PersonalClanRating.ToString()));
+        //            }
+        //            else if (player3 != null)
+        //            {
+        //                playerInfoList.Add((player3.PlayerName, player3.PersonalClanRating.ToString()));
+        //            }
+        //            else
+        //            {
+        //                ulong userId = discordId;
+        //                var user = _client.GetUser(userId);
+
+        //                if (user != null)
+        //                {
+        //                    playerInfoList.Add((discordId.ToString(), $"Player not found - {user.Username}"));
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            playerInfoList.Add((playerName, "Invalid format"));
+        //        }
+        //    }
+
+        //    playerInfoList = playerInfoList.OrderByDescending(p =>
+        //    {
+        //        if (int.TryParse(p.Points, out int points))
+        //        {
+        //            return points;
+        //        }
+        //        return 0;
+        //    }).ToList();
+
+        //    foreach (var playerInfo in playerInfoList)
+        //    {
+        //        responseBuilder.AppendLine($"{playerInfo.PlayerName,-20}: {playerInfo.Points,-6} points");
+        //    }
+
+        //    await commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString());
+        //    await commands.SendLongContentAsEmbedAsync(message.Channel, playerListString);
+        //}
 
 
-            await commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString()); //Player Names and Points
-
-            await commands.SendLongContentAsEmbedAsync(message.Channel, playerListString); //IDs and Discord Names
 
 
-            //await message.Channel.SendMessageAsync(response);
+//private async Task Handle3QpointsCommand(SocketMessage message)
+//    {
+//        await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
+
+//        Commands commands = new Commands();
+
+//        // Validate and scrape for squadrons
+//        SquadronObj squadronObject1 = commands.validateSquadron("BofSs");
+//        SquadronObj squadronObject2 = commands.validateSquadron("BufSs");
+//        SquadronObj squadronObject3 = commands.validateSquadron("BriSs");
+
+//        if (squadronObject1 == null || squadronObject2 == null || squadronObject3 == null)
+//        {
+//            await message.Channel.SendMessageAsync("One or more squadrons not found.");
+//            return;
+//        }
+
+//        squadronObject1 = await commands.scrapeAllAndPopulate(squadronObject1).ConfigureAwait(true);
+//        squadronObject2 = await commands.scrapeAllAndPopulate(squadronObject2).ConfigureAwait(true);
+//        squadronObject3 = await commands.scrapeAllAndPopulate(squadronObject3).ConfigureAwait(true);
+
+//        if (message.Channel is SocketGuildChannel guildChannel)
+//        {
+//            SocketGuild guild = guildChannel.Guild;
+
+//            HashSet<ulong> uniqueUserIds = new HashSet<ulong>();
+//            List<IGuildUser> allUsersInVoice = new List<IGuildUser>();
+
+//            foreach (SocketVoiceChannel voiceChannel in guild.VoiceChannels)
+//            {
+//                foreach (IGuildUser user in voiceChannel.Users)
+//                {
+//                    if (user is SocketGuildUser socketUser && socketUser.VoiceState != null && uniqueUserIds.Add(user.Id))
+//                    {
+//                        allUsersInVoice.Add(user);
+//                    }
+//                }
+//            }
+
+//            StringBuilder responseBuilder = new StringBuilder();
+//            var playerInfoList = new List<(string PlayerName, string Points)>();
+
+//            await commands.UpdatePlayerIDs(squadronObject1);
+//            await commands.UpdatePlayerIDs(squadronObject2);
+//            await commands.UpdatePlayerIDs(squadronObject3);
+
+//            foreach (IGuildUser user in allUsersInVoice)
+//            {
+//                if (user.IsBot) { continue; }
+//                string discordName = RemoveEmojis(user.DisplayName);
+//                string cleanDiscordName = discordName.Trim();
+
+//                Player player1 = squadronObject1.Players.FirstOrDefault(p => CleanPlayerName(p.PlayerName).Equals(cleanDiscordName, StringComparison.OrdinalIgnoreCase));
+//                Player player2 = squadronObject2.Players.FirstOrDefault(p => CleanPlayerName(p.PlayerName).Equals(cleanDiscordName, StringComparison.OrdinalIgnoreCase));
+//                Player player3 = squadronObject3.Players.FirstOrDefault(p => CleanPlayerName(p.PlayerName).Equals(cleanDiscordName, StringComparison.OrdinalIgnoreCase));
+
+//                if (player1 != null)
+//                {
+//                    playerInfoList.Add((user.DisplayName, player1.PersonalClanRating.ToString()));
+//                }
+//                else if (player2 != null)
+//                {
+//                    playerInfoList.Add((user.DisplayName, player2.PersonalClanRating.ToString()));
+//                }
+//                else if (player3 != null)
+//                {
+//                    playerInfoList.Add((user.DisplayName, player3.PersonalClanRating.ToString()));
+//                }
+//                else
+//                {
+//                    playerInfoList.Add((user.DisplayName, "Player not found"));
+//                }
+//            }
+
+//            playerInfoList = playerInfoList.OrderByDescending(p =>
+//            {
+//                if (int.TryParse(p.Points, out int points))
+//                {
+//                    return points;
+//                }
+//                return 0;
+//            }).ToList();
+
+//            foreach (var playerInfo in playerInfoList)
+//            {
+//                responseBuilder.AppendLine($"{playerInfo.PlayerName,-20}: {playerInfo.Points,-6} points");
+//            }
+
+//            await commands.SendLongContentAsEmbedAsync(message.Channel, responseBuilder.ToString());
+//        }
+//        else
+//        {
+//            await message.Channel.SendMessageAsync("This command can only be used in a server channel.");
+//            return;
+//        }
+//    }
+
+    private string RemoveEmojis(string text)
+    {
+
+            string emojiRegex = @"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])";
+            return Regex.Replace(text, emojiRegex, "");
+
         }
 
-        private async Task HandleTop20NoArgCommand(SocketMessage message)
+        private string CleanPlayerName(string playerName)
+    {
+        return playerName.Trim();
+    }
+
+
+
+
+
+
+
+
+
+    private async Task HandleTop20NoArgCommand(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\",\"BriSs\",\"EXLY\",\"ASP1D\",\"Nrst\",\"IAVRI\",\"R6PL\",\"EPRO\",\"CLIM\" - This is case-sensitive");
         }
@@ -1896,6 +2111,58 @@ namespace CHFBot
             squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
 
             commands.printPlayersOverUnder(chnl, squadronObject, overUnder, points);
+        }
+
+
+        [CommandDescription("EOS [<over> | <under>] <squadron> <points> - example: \"!listplayers BofSs under 1500\"")]
+        private async Task HandleEOSCommand(SocketMessage message)
+        {
+            string content = message.Content.Trim();
+            string[] words = content.Split(' ');
+
+            if (words.Length < 4) // Require at least 4 words: !listplayers <squadron> <over/under> <points>
+            {
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <squadron> [<over>|<under>] <points> - I didn't get 4 words.");
+                return;
+            }
+
+            string squadronName = words[1]; // Get the squadron name from the second word
+            string overUnder = words[2];
+            int points;
+
+            if (!int.TryParse(words[3], out points)) // Get points from the fourth word
+            {
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <squadron> <over> / <under> <points> - I didn't get points from the 4th word.");
+                return;
+            }
+
+            if (overUnder != "over" && overUnder != "under")
+            {
+                await message.Channel.SendMessageAsync("Invalid command. Please use !listplayers <squadron> <over> / <under> <points> - I didn't see 'over' or 'under' in the right spot.");
+                return;
+            }
+
+            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments.");
+
+            Commands commands = new Commands();
+            SquadronObj squadronObject = new SquadronObj();
+
+            squadronObject = commands.validateSquadron(squadronName); // Use the provided squadron name
+
+            if (squadronObject == null) // Check if squadron is valid
+            {
+                await message.Channel.SendMessageAsync($"Squadron '{squadronName}' not found.");
+                return;
+            }
+
+            var chnl = message.Channel as IMessageChannel;
+
+            await chnl.SendMessageAsync("Players in " + squadronName + " with score " + overUnder + " " + points + ":");
+
+            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
+            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
+
+            commands.printPlayersOverUnder2(chnl, squadronObject, overUnder, points);
         }
 
 
