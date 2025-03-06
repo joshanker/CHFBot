@@ -400,28 +400,22 @@ namespace CHFBot
 
 
         SquadronObj sqdObj = new SquadronObj
-            {
-                url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs",
-                SquadronName = "BofSs"
-            };
+            {   url = "https://warthunder.com/en/community/claninfo/Band%20Of%20Scrubs",
+                SquadronName = "BofSs"};
 
             await commands.populateScore(sqdObj);
             squadronTotalScore = sqdObj.Score;
 
             SquadronObj sqdObjBufSs = new SquadronObj
-            {
-                url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs",
-                SquadronName = "BufSs"
-            };
+            {url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs",
+                SquadronName = "BufSs"};
 
             await commands.populateScore(sqdObjBufSs);
             squadronTotalScoreBufSs = sqdObjBufSs.Score;
 
             SquadronObj sqdObjBriSs = new SquadronObj
-            {
-                url = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs",
-                SquadronName = "BriSs"
-            };
+            {url = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs",
+                SquadronName = "BriSs"};
 
             await commands.populateScore(sqdObjBriSs);
             squadronTotalScoreBriSs = sqdObjBriSs.Score;
@@ -612,9 +606,13 @@ namespace CHFBot
             endOfSessionScoreBufSs = sqdObjBufSs.Score;
             endOfSessionScoreBriSs = sqdObjBriSs.Score;
 
-            HandleCheckCommand("!check BofSs", chnl);
-            HandleCheckCommand("!check BufSs", chnl);
-            HandleCheckCommand("!check BriSs", chnl);
+            await HandleCheckCommand("!check BofSs", chnl);
+            await HandleCheckCommand("!check BufSs", chnl);
+            await HandleCheckCommand("!check BriSs", chnl);
+
+            await HandleCheckCommand("!check BofSs", esperbotchnl);
+            await HandleCheckCommand("!check BufSs", esperbotchnl);
+            await HandleCheckCommand("!check BriSs", esperbotchnl);
 
             //HandleCheckCommand("!check BofSs", esperbotchnl);
             //HandleCheckCommand("!check BufSs", esperbotchnl);
@@ -3133,7 +3131,7 @@ namespace CHFBot
                     }
 
 
-                    await chnl.SendMessageAsync($"Initialized start of session for {squadron}: {data.StartWins} wins, {data.StartLosses} losses, {data.StartPoints} total score.");
+                    await chnl2.SendMessageAsync($"Initialized start of session for {squadron}: {data.StartWins} wins, {data.StartLosses} losses, {data.StartPoints} total score.");
                     continue; // Only continue if it's the FIRST ever initialization
                 }
 
