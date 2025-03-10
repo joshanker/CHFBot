@@ -2112,7 +2112,7 @@ namespace CHFBot
         }
 
 
-        [CommandDescription("EOS [<over> | <under>] <squadron> <points> - example: \"!listplayers BofSs under 1500\"")]
+        [CommandDescription("EOS <squadron> [<over> | <under>] <points> - example: \"!listplayers BofSs under 1500\"")]
         private async Task HandleEOSCommand(SocketMessage message)
         {
             string content = message.Content.Trim();

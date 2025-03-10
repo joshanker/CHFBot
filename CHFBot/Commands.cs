@@ -141,14 +141,18 @@ namespace BotCommands
                 {
                     if (player.PersonalClanRating >= points)
                     {
-                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName} {player.DateOfEntry} ");
+                        // Format the DateOfEntry property as a short date string
+                        string formattedDate = player.DateOfEntry.ToShortDateString();
+                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName} {formattedDate} "); // Use formattedDate{player.DateOfEntry} ");
                     }
                 }
                 if (overUnder == "under")
                 {
                     if (player.PersonalClanRating <= points)
                     {
-                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName,-18} {player.DateOfEntry}");
+                        // Format the DateOfEntry property as a short date string
+                        string formattedDate = player.DateOfEntry.ToShortDateString();
+                        sb.AppendLine($"Pts: {player.PersonalClanRating} {player.PlayerName,-18} {formattedDate}"); // Use formattedDate
                     }
                 }
 
