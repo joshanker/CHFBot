@@ -786,6 +786,35 @@ namespace CHFBot
                 {
                     await HandleListplayersCommand(message);
                 }
+                else if (content.StartsWith("!dmtest"))
+                {
+                    await SecretdmtestCommand(message);
+                }
+                else if (content.StartsWith("!testcmd"))
+                {
+                    await SecrettestcmdCommand(message);
+                }
+                else if (content.StartsWith("!2testcmd"))
+                {
+                    await Secret2testcmdCommand(message);
+                }
+                else if (content.StartsWith("!3testcmd"))
+                {
+                    await Secret3testcmdCommand(message);
+                }
+                else if (content.StartsWith("!4testcmd"))
+                {
+                    await Secret4testcmdCommand(message);
+                }
+                else if (content.StartsWith("!5testcmd"))
+                {
+                    await Secret5testcmdCommand(message);
+                }
+                else if (content.StartsWith("!recent50"))
+                {
+                    await SecretRecent50Command(message);
+                }
+
                 else if (content.StartsWith("!eos"))
                 {
                     await HandleEOSCommand(message);
@@ -1291,7 +1320,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string input = content.Substring("!top20 ".Length);
 
-            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN","BriSs","EXLY", "ASP1D", "Nrst", "IAVRI", "R6PL", "EPRO", "CLIM" }.Contains(input))
+            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN","BriSs","EXLY", "ASP1D", "Nrst", "IAVRI", "R6PL", "EPRO", "CLIM", "VaVic" }.Contains(input))
             {
                 await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
@@ -2155,7 +2184,7 @@ namespace CHFBot
 
             var chnl = message.Channel as IMessageChannel;
 
-            await chnl.SendMessageAsync("Players in " + squadronName + " with score " + overUnder + " " + points + ":");
+            await chnl.SendMessageAsync("Players in " + squadronName + " with score " + overUnder + " " + points + " and their join date:");
 
             squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
             squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
@@ -3030,9 +3059,350 @@ namespace CHFBot
             await message.Channel.SendMessageAsync(settings);
         }
 
+        private async Task SecretdmtestCommand(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!dmtest"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
+
+                if (message.Author.Id == yourUserId) //makes sure only you can trigger this command.
+                {
+                    var user = _client.GetUser(yourUserId);
+                    if (user != null)
+                    {
+                        await user.SendMessageAsync("Hello from your bot!");
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("Could not find user.");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("You are not authorized to use this command.");
+                }
+
+            }
+        }
 
 
+        private async Task SecrettestcmdCommand(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!testcmd"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
 
+                if (message.Author.Id == yourUserId) // Makes sure only you can trigger this command.
+                {
+                    if (message.Channel is SocketGuildChannel guildChannel) // Ensure the message is from a guild channel
+                    {
+                        SocketGuild guild = guildChannel.Guild; // Get the guild
+
+                        var user = _client.GetUser(yourUserId);
+                        if (user != null)
+                        {
+                            StringBuilder channelList = new StringBuilder();
+                            channelList.AppendLine("Channels in this server:");
+
+                            foreach (SocketGuildChannel channel in guild.Channels)
+                            {
+                                channelList.AppendLine($"- {channel.Name} (ID: {channel.Id})");
+                            }
+
+                            await SendLongMessage(user, channelList.ToString()); // Use the SendLongMessage method
+                        }
+                        else
+                        {
+                            await message.Channel.SendMessageAsync("Could not find user.");
+                        }
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("This command can only be used in a server channel.");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("You are not authorized to use this command."); // Generic error message
+                }
+            }
+        }
+
+
+        private async Task Secret2testcmdCommand(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!2testcmd"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
+                ulong targetChannelId = 1173393377929203822; // Replace with your target channel ID
+                ulong firstMessageId = 1349559895741038613; // Replace with the ID you copied
+
+                if (message.Author.Id == yourUserId)
+                {
+                    var targetChannel = _client.GetChannel(targetChannelId) as SocketTextChannel;
+
+                    if (targetChannel != null)
+                    {
+                        string[] parts = message.Content.Split(' ');
+                        ulong fromMessageId = firstMessageId; // Always start from the first message
+
+                        if (parts.Length > 1 && ulong.TryParse(parts[1], out fromMessageId))
+                        {
+                            // Start from a specific message ID
+                        }
+
+                        IEnumerable<IMessage> messages;
+
+                        messages = await targetChannel.GetMessagesAsync(fromMessageId, Direction.After, limit: 50).FlattenAsync();
+
+                        if (messages.Any())
+                        {
+                            StringBuilder history = new StringBuilder();
+                            history.AppendLine($"Message history for {targetChannel.Name} (Starting from: {fromMessageId}):");
+
+                            foreach (IMessage msg in messages)
+                            {
+                                history.AppendLine($"- {msg.Author.Username}: {msg.Content} ({msg.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}) (ID: {msg.Id})");
+                            }
+
+                            await SendLongMessage(message.Author, history.ToString());
+                        }
+                        else
+                        {
+                            await message.Channel.SendMessageAsync("No more messages found.");
+                        }
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("Target channel not found.");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("You are not authorized to use this command.");
+                }
+            }
+        }
+
+
+        private async Task Secret3testcmdCommand(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!3testcmd"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
+                ulong targetCategoryId = 1173393243883442236; // Replace with your target category ID
+
+                if (message.Author.Id == yourUserId)
+                {
+                    if (message.Channel is SocketGuildChannel guildChannel)
+                    {
+                        SocketGuild guild = guildChannel.Guild;
+
+                        var category = guild.GetCategoryChannel(targetCategoryId);
+
+                        if (category != null)
+                        {
+                            var channelsInCategory = category.Channels;
+
+                            if (channelsInCategory.Any())
+                            {
+                                StringBuilder channelList = new StringBuilder();
+                                channelList.AppendLine($"Channels in category '{category.Name}':");
+
+                                foreach (SocketGuildChannel channel in channelsInCategory)
+                                {
+                                    channelList.AppendLine($"- {channel.Name} (ID: {channel.Id})");
+                                }
+
+                                await SendLongMessage(message.Author, channelList.ToString());
+                            }
+                            else
+                            {
+                                await message.Channel.SendMessageAsync("No channels found in that category.");
+                            }
+                        }
+                        else
+                        {
+                            await message.Channel.SendMessageAsync("Category not found.");
+                        }
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("This command can only be used in a server channel.");
+                    }
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("You are not authorized to use this command.");
+                }
+            }
+        }
+
+
+        private async Task Secret4testcmdCommand(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!4testcmd"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
+                ulong targetChannelId = 1173393377929203822; // Replace with your target channel ID
+
+                if (message.Author.Id == yourUserId)
+                {
+                    var targetChannel = _client.GetChannel(targetChannelId) as SocketTextChannel;
+
+                    if (targetChannel != null)
+                    {
+                        var firstMessage = (await targetChannel.GetMessagesAsync(limit: 1).FlattenAsync()).FirstOrDefault();
+
+                        if (firstMessage != null)
+                        {
+                            await message.Author.SendMessageAsync($"The ID of the first message is: {firstMessage.Id}");
+                        }
+                        else
+                        {
+                            await message.Author.SendMessageAsync("Channel is empty.");
+                        }
+                    }
+                    else
+                    {
+                        await message.Author.SendMessageAsync("Target channel not found.");
+                    }
+                }
+                else
+                {
+                    await message.Author.SendMessageAsync("You are not authorized to use this command.");
+                }
+            }
+        }
+
+        private async Task Secret5testcmdCommand(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!5testcmd"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
+                ulong targetChannelId = 1173393377929203822; // Replace with your target channel ID
+
+                if (message.Author.Id == yourUserId)
+                {
+                    var targetChannel = _client.GetChannel(targetChannelId) as SocketTextChannel;
+
+                    if (targetChannel != null)
+                    {
+                        try
+                        {
+                            // Fetch all messages (up to a reasonable limit, e.g., 1000)
+                            var allMessages = await targetChannel.GetMessagesAsync(limit: 1000).FlattenAsync();
+
+                            if (allMessages.Any())
+                            {
+                                // Reverse the order of messages
+                                var reversedMessages = allMessages.Reverse();
+
+                                // Write to a text file
+                                string filePath = $"channel_{targetChannelId}_messages.txt";
+                                using (StreamWriter writer = new StreamWriter(filePath))
+                                {
+                                    foreach (IMessage msg in reversedMessages)
+                                    {
+                                        writer.WriteLine($"- {msg.Author.Username}: {msg.Content} ({msg.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}) (ID: {msg.Id})");
+                                    }
+                                }
+
+                                await message.Author.SendMessageAsync($"Messages written to {filePath}");
+                            }
+                            else
+                            {
+                                await message.Author.SendMessageAsync("No messages found in the channel.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                            await message.Author.SendMessageAsync($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        await message.Author.SendMessageAsync("Target channel not found.");
+                    }
+                }
+                else
+                {
+                    await message.Author.SendMessageAsync("You are not authorized to use this command.");
+                }
+            }
+        }
+
+
+        private async Task SecretRecent50Command(SocketMessage message)
+        {
+            if (message.Content.StartsWith("!recent50"))
+            {
+                ulong yourUserId = 308128406699245568; // Replace with your actual user ID
+                ulong targetChannelId = 1173393377929203822; // Replace with your target channel ID
+
+                if (message.Author.Id == yourUserId)
+                {
+                    var targetChannel = _client.GetChannel(targetChannelId) as SocketTextChannel;
+
+                    if (targetChannel != null)
+                    {
+                        try
+                        {
+                            var recentMessages = await targetChannel.GetMessagesAsync(limit: 50).FlattenAsync();
+
+                            if (recentMessages.Any())
+                            {
+                                StringBuilder history = new StringBuilder();
+                                history.AppendLine($"Recent 50 Messages in {targetChannel.Name}:");
+
+                                foreach (IMessage msg in recentMessages.Reverse()) // Reverse to display newest first
+                                {
+                                    history.AppendLine($"- {msg.Author.Username}: {msg.Content} ({msg.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")})");
+                                }
+
+                                await SendLongMessage(message.Author, history.ToString());
+                            }
+                            else
+                            {
+                                await message.Author.SendMessageAsync($"No messages found in {targetChannel.Name}.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                            await message.Author.SendMessageAsync($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        await message.Author.SendMessageAsync("Target channel not found.");
+                    }
+                }
+                else
+                {
+                    await message.Author.SendMessageAsync("You are not authorized to use this command.");
+                }
+            }
+        }
+
+
+        private async Task SendLongMessage(IUser user, string message) // Corrected parameter type
+        {
+            if (message.Length <= 2000)
+            {
+                await user.SendMessageAsync(message); // Send DM to user
+                return;
+            }
+
+            int chunkSize = 2000;
+            for (int i = 0; i < message.Length; i += chunkSize)
+            {
+                int length = Math.Min(chunkSize, message.Length - i);
+                string chunk = message.Substring(i, length);
+                await user.SendMessageAsync(chunk); // Send DM to user
+            }
+        }
 
 
 
@@ -3042,11 +3412,6 @@ namespace CHFBot
             string sanitized = Regex.Replace(input, @"[^a-zA-Z0-9_\s]", ""); // Added underscore
             return sanitized.Trim();
         }
-
-
-
-
-
 
         private async Task ProcessSquadron1mScoreChanges()
         {
@@ -3187,6 +3552,7 @@ namespace CHFBot
 
             }
         }
+
 
         public class SquadronData
         {

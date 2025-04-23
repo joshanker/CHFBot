@@ -136,7 +136,7 @@ namespace BotCommands
             sb.AppendLine($"{" ",-50}");
             foreach (Player player in sortedPlayers)
             {
-
+                
                 if (overUnder == "over")
                 {
                     if (player.PersonalClanRating >= points)
@@ -274,7 +274,6 @@ namespace BotCommands
             string TEHb = "https://warthunder.com/en/community/claninfo/TEHb";
             string IRAN = "https://warthunder.com/en/community/claninfo/Persian%20Warriors";
             string BriSs = "https://warthunder.com/en/community/claninfo/Brigade%20of%20Scrubs";
-
             string EXLY  = "https://warthunder.com/en/community/claninfo/EXLY";
             string ASP1D = "https://warthunder.com/en/community/claninfo/Aspid%20Crew";
             string Nrst  = "https://warthunder.com/en/community/claninfo/North_Steel";
@@ -282,6 +281,7 @@ namespace BotCommands
             string R6PL  = "https://warthunder.com/en/community/claninfo/Czerwone%20Szostki";
             string EPRO  = "https://warthunder.com/en/community/claninfo/EPRO-Team";
             string CLIM  = "https://warthunder.com/en/community/claninfo/Clim";
+            string VaVic = "https://warthunder.com/en/community/claninfo/Vae%20Victis%20211";
 
 
 
@@ -316,7 +316,8 @@ namespace BotCommands
                     { "R6PL", R6PL},
                     { "EPRO", EPRO},
                     { "ASP1D", ASP1D},
-                    { "CLIM", CLIM}
+                    { "CLIM", CLIM},
+                    { "VaVic", VaVic}
 
                 };
 

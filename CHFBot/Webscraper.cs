@@ -465,7 +465,7 @@ namespace Scraper
 
 
 
-            for (int page = 1; page <= 20; page++) // Iterate over 6 pages
+            for (int page = 1; page <= 30; page++) // Iterate over 6 pages
             {
                 string url = $"https://warthunder.com/en/community/getclansleaderboard/dif/_hist/page/{page}/sort/dr_era5";
                 string rawData = await DownloadPageAsync(url);
