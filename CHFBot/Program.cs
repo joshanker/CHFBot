@@ -871,14 +871,6 @@ namespace CHFBot
                 {
                     await HandleScrapeCommand(message);
                 }
-                //else if (content.StartsWith("!comparescrape"))
-                //{
-                //    await HandleCompareScrapeCommand(message);
-                //}
-                //else if (content.StartsWith("!2comparescrape"))
-                //{
-                //    await Handle2CompareScrapeCommand(message);
-                //}
                 else if (content.StartsWith("!comparescrape"))
                 {
                     await HandleCompareScrapeCommand(message.Channel);

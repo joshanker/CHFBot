@@ -955,75 +955,71 @@ namespace BotCommands
             }
         }
 
+
+
+
         public async Task<StringBuilder> FormatAndSendComparisonResults(SquadronObj[] newContent)
         {
-
-
             StringBuilder messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine("       Name     Wins    Losses    Played      Pts");
-            if (newContent[0] != null)
+            messageBuilder.AppendLine("#   Name   Wins      Losses    Played     Pts");
+
+            if (newContent != null && newContent.Length > 0 && newContent[0] != null)
             {
+                int maxWinsLength = 4;
+                int maxLossesLength = 4;
+                int maxPlayedLength = 4;
+                int maxPtsLength = 5;
 
-
-                foreach (var squadronObj in newContent)
+                // First pass: determine max column widths (including change indicators)
+                foreach (var squad in newContent)
                 {
-                    string paddedPos = squadronObj.Pos.ToString().PadRight(2, ' ');
-                    string posChangeStr = squadronObj.PosChange != 0 ? $"({squadronObj.PosChange.ToString().PadLeft(2, ' ')})" : "    ";
-
-                    string paddedName;
-                    //string paddedWins = squadronObj.Wins.ToString().PadLeft(3, ' ');
-                    string paddedWins = squadronObj.Wins != 0 ? squadronObj.Wins.ToString().PadLeft(3, ' ') : "   ";
-                    //string paddedLosses = squadronObj.Losses.ToString().PadLeft(3, ' '); ;
-                    string paddedLosses = squadronObj.Losses != 0 ? squadronObj.Losses.ToString().PadLeft(3, ' ') : "   ";
-
-                    //string WinsChange = squadronObj.WinsChange.ToString().PadLeft(2,' ');
-                    //string LossesChange = squadronObj.LossesChange.ToString().PadLeft(2, ' ');
-                    //string BattlesPlayedChanged = squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ');
-                    //int ScoreChange = squadronObj.ScoreChange;
-
-                    string WinsChange = squadronObj.WinsChange != 0 ? squadronObj.WinsChange.ToString().PadLeft(2, ' ') : " ";
-                    string LossesChange = squadronObj.LossesChange != 0 ? squadronObj.LossesChange.ToString().PadLeft(2, ' ') : " ";
-                    string BattlesPlayedChanged = squadronObj.BattlesPlayedChange != 0 ? squadronObj.BattlesPlayedChange.ToString().PadLeft(3, ' ') : " ";
-
-                    string ScoreChange = squadronObj.ScoreChange != 0 ? squadronObj.ScoreChange.ToString() : " ";
-
-                    // Include parentheses only when the corresponding value is non-zero
-                    string winsChangeStr = squadronObj.WinsChange != 0 ? $"({WinsChange})" : "";
-                    string lossesChangeStr = squadronObj.LossesChange != 0 ? $"({LossesChange})" : "";
-                    string battlesPlayedChangedStr = squadronObj.BattlesPlayedChange != 0 ? $"({BattlesPlayedChanged})" : "";
-                    string scoreChangeStr = squadronObj.ScoreChange != 0 ? $"({ScoreChange})" : "";
-
-
-                    if (squadronObj.Pos < 10)
+                    if (squad != null)
                     {
+                        int winsTotalLength = squad.Wins.ToString().Length + (squad.WinsChange != 0 ? $"(+{Math.Abs(squad.WinsChange)})".Length : 0);
+                        int lossesTotalLength = squad.Losses.ToString().Length + (squad.LossesChange != 0 ? $"(+{Math.Abs(squad.LossesChange)})".Length : 0);
+                        int playedTotalLength = squad.BattlesPlayed.ToString().Length + (squad.BattlesPlayedChange != 0 ? $"(+{Math.Abs(squad.BattlesPlayedChange)})".Length : 0);
+                        int ptsTotalLength = squad.Score.ToString().Length + (squad.ScoreChange != 0 ? $"(+{Math.Abs(squad.ScoreChange)})".Length : 0);
 
-                        paddedName = squadronObj.SquadronName.PadRight(6, ' ');
+                        maxWinsLength = Math.Max(maxWinsLength, winsTotalLength);
+                        maxLossesLength = Math.Max(maxLossesLength, lossesTotalLength);
+                        maxPlayedLength = Math.Max(maxPlayedLength, playedTotalLength);
+                        maxPtsLength = Math.Max(maxPtsLength, ptsTotalLength);
                     }
-                    else
-                    {
-                        paddedName = squadronObj.SquadronName.PadRight(6, ' ');
-                    }
-
-                    messageBuilder.AppendLine($"{paddedPos}{posChangeStr} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. {squadronObj.BattlesPlayed}{battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
-
-
-
-                    //!3comparescrapemessageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}{winsChangeStr} & {paddedLosses}{lossesChangeStr}. ({squadronObj.BattlesPlayed}){battlesPlayedChangedStr}. {squadronObj.Score}{scoreChangeStr} ");
-
-
-                    //messageBuilder.AppendLine($"{paddedPos} {paddedName} {paddedWins}({WinsChange}) & {paddedLosses}({LossesChange}). ({squadronObj.BattlesPlayed})({BattlesPlayedChanged}). {squadronObj.Score}({ScoreChange}) ");
                 }
 
+                // Second pass: format each line
+                foreach (var squad in newContent)
+                {
+                    if (squad != null)
+                    {
+                        string paddedPos = squad.Pos.ToString().PadRight(3);
+                        string paddedName = squad.SquadronName.PadRight(5);
 
+                        string winsChangeStr = squad.WinsChange != 0 ? $"({(squad.WinsChange > 0 ? "+" : "")}{squad.WinsChange})" : "";
+                        string winsWithChange = $"{squad.Wins}{winsChangeStr}".PadRight(maxWinsLength);
+
+                        string lossesChangeStr = squad.LossesChange != 0 ? $"({squad.LossesChange})" : "";
+                        string lossesWithChange = $"{squad.Losses}{lossesChangeStr}".PadRight(maxLossesLength);
+
+                        string playedChangeStr = squad.BattlesPlayedChange != 0 ? $"({(squad.BattlesPlayedChange > 0 ? "+" : "")}{squad.BattlesPlayedChange})" : "";
+                        string playedWithChange = $"{squad.BattlesPlayed}{playedChangeStr}".PadRight(maxPlayedLength);
+
+                        string ptsChangeStr = squad.ScoreChange != 0 ? $"({(squad.ScoreChange > 0 ? "+" : "")}{squad.ScoreChange})" : "";
+                        string ptsWithChange = $"{squad.Score}{ptsChangeStr}".PadRight(maxPtsLength);
+
+                        messageBuilder.AppendLine($"{paddedPos} {paddedName}  {winsWithChange}  {lossesWithChange}  {playedWithChange}  {ptsWithChange}");
+                    }
+                }
 
                 return messageBuilder;
             }
             else
             {
+                messageBuilder.AppendLine("No squadron data available.");
                 return messageBuilder;
             }
-
         }
+
 
     }
 
