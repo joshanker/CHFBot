@@ -521,7 +521,18 @@ namespace Scraper
                 }
             }
 
-            return null; // If BufSs is not found, return null
+
+            return new SquadronObj // If BufSs is not found, return null
+            {
+                SquadronName = sqdToGet,
+                Wins = 0,
+                Losses = 0,
+                BattlesPlayed = 0,
+                Score = 0,
+                Pos = 0
+            };
+
+            
         }
 
         private static string ExtractPlaceValue(string chunk)

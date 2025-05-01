@@ -961,7 +961,7 @@ namespace BotCommands
         public async Task<StringBuilder> FormatAndSendComparisonResults(SquadronObj[] newContent)
         {
             StringBuilder messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine("#   Name   Wins      Losses    Played     Pts");
+            messageBuilder.AppendLine("#   Name   Wins       Losses    Played Pts");
 
             if (newContent != null && newContent.Length > 0 && newContent[0] != null)
             {
