@@ -445,23 +445,27 @@ namespace Scraper
 
         public static async Task<SquadronObj> ScrapeCheck(string message)
         {
-            string sqdToGet;
-            if (message.ToLower() == "!check bofss")
+
+
+            string sqdToGet = message.Substring(7).Trim().ToLower();
+
+            switch (sqdToGet)
             {
-                sqdToGet = "bofss";
+                case "bofss":
+                    sqdToGet = "BofSs";
+                    break;
+                case "bufss":
+                    sqdToGet = "BufSs";
+                    break;
+                case "briss":
+                    sqdToGet = "BriSs";
+                    break;
+                default:
+                    // Keep whatever the user typed (they may type a correctly cased name)
+                    break;
             }
-            if (message.ToLower() == "!check bufss")
-            {
-                sqdToGet = "bufss";
-            }
-            if (message.ToLower() == "!check briss")
-            {
-                sqdToGet = "briss";
-            }
-            else
-            {
-                sqdToGet = message.Substring(7).Trim();
-            }
+
+
 
 
 
@@ -480,18 +484,7 @@ namespace Scraper
                         squadronName = squadronName.Substring(1, squadronName.Length - 2);
                     }
 
-                    if (sqdToGet == "bofss")
-                    {
-                        sqdToGet = "BofSs";
-                    }
-                    if (sqdToGet == "bufss")
-                    {
-                        sqdToGet = "BufSs";
-                    }
-                    if (sqdToGet == "briss")
-                    {
-                        sqdToGet = "BriSs";
-                    }
+
 
                     if (squadronName == sqdToGet)
                     {
@@ -499,12 +492,15 @@ namespace Scraper
                         string winsStr = ExtractFieldValue(chunk, "wins_hist");
                         string scoreStr = ExtractFieldValue(chunk, "dr_era5_hist");
 
-                        int battlesPlayed = int.Parse(battlesPlayedStr);
-                        int wins = int.Parse(winsStr);
-                        int losses = battlesPlayed - wins;
-                        int score = int.Parse(scoreStr);
 
-                        int pos = int.Parse(ExtractPlaceValue(chunk));
+                        if (!int.TryParse(battlesPlayedStr, out int battlesPlayed)) battlesPlayed = 0;
+                        if (!int.TryParse(winsStr, out int wins)) wins = 0;
+                        int losses = battlesPlayed - wins;
+                        if (!int.TryParse(scoreStr, out int score)) score = 0;
+
+                        int pos = 0;
+                        int.TryParse(ExtractPlaceValue(chunk), out pos);
+                        
 
                         SquadronObj squadron = new SquadronObj
                         {
