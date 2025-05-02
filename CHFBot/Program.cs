@@ -907,7 +907,7 @@ namespace CHFBot
                 {
                     await HandleSettingsCommand(message);
                 }
-                else if (content.StartsWith("!executetimer"))
+                else if (content.StartsWith("!2executetimer"))
                 {
                     DateTime now = DateTime.Now.AddDays(-1);
                     string dateTimePrefix = $"{now.Year}-{now.Month}-{now.Day}-US Session:{now.Hour}:{now.Minute}:{now.Second}";
@@ -2635,16 +2635,27 @@ namespace CHFBot
                     // Write the win and loss counters to the file
 
 
-                    string[] lines = messageBuilder.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                    //string[] lines = messageBuilder.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                    //// Skip the first line and join the remaining lines
+                    //string contentToWrite = string.Join(Environment.NewLine, lines.Skip(1));
+                    //// Write the content to the file
+                    ////await File.WriteAllTextAsync(filePath, contentToWrite);
+                    //writer.Write(contentToWrite);
 
-                    // Skip the first line and join the remaining lines
-                    string contentToWrite = string.Join(Environment.NewLine, lines.Skip(1));
-
-                    // Write the content to the file
-                    //await File.WriteAllTextAsync(filePath, contentToWrite);
 
 
-                    writer.Write(contentToWrite);
+
+                    SquadronObj squadron = await Webscraper.ScrapeCheck(content);
+
+                    // Format to match previous entries exactly (WITH ampersand):
+                    string formattedLine = $"{squadron.Pos} {squadron.SquadronName} {squadron.Wins} & {squadron.Losses}. {squadron.BattlesPlayed}. {squadron.Score}";
+
+                    writer.WriteLine(formattedLine);
+
+
+
+
+
                 }
 
             }
@@ -2654,26 +2665,10 @@ namespace CHFBot
             }
         }
 
+
         public static (int[], int[]) ReadCheck(string squadronName)
         {
-            // Determine the file name based on the squadron name
-            string fileName;
-            if (squadronName == "BufSs")
-            {
-                fileName = "CheckBufSs.txt";
-            }
-            else if (squadronName == "BofSs")
-            {
-                fileName = "CheckBofSs.txt";
-            }
-            else if (squadronName == "BriSs")
-            {
-                fileName = "CheckBriSs.txt";
-            }
-            else
-            {
-                throw new ArgumentException("Invalid squadron name. Must be either 'BufSs' or 'BofSs' or 'BriSs'.");
-            }
+            string fileName = GetCheckFileName(squadronName); // Helper function to get the filename
 
             if (!File.Exists(fileName))
             {
@@ -2681,58 +2676,66 @@ namespace CHFBot
             }
 
             string[] lines = File.ReadAllLines(fileName);
-            if (lines.Length < 0)
+            if (lines.Length < 2) // Need at least two lines to compare
             {
                 throw new InvalidOperationException("The file doesn't contain enough lines.");
             }
 
+            // Parse the last line
             string lastLine = lines.Last();
-            string[] parts = lastLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 6)
+            string[] lastParts = lastLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (lastParts.Length < 7) // Now expecting 7 parts
             {
-                throw new InvalidOperationException("The last line does not contain enough parts.");
+                throw new InvalidOperationException($"Last line '{lastLine}' does not contain enough parts.");
             }
-            int pos = int.Parse(parts[0]);
-            string name = parts[1];
-            int wins = int.Parse(parts[2]);
+            int lastPos = int.Parse(lastParts[0]);
+            string lastName = lastParts[1];
+            int lastWins = int.Parse(lastParts[2]);
+            int lastLosses = int.Parse(lastParts[4].Trim('.')); // Losses is at index 4
+            int lastTotalPlayed = int.Parse(lastParts[5].Trim('.'));
+            int lastScore = int.Parse(lastParts[6]);
+            int[] lastLineData = new int[] { lastPos, lastWins, lastLosses, lastTotalPlayed, lastScore };
 
-            parts[4] = parts[4].Trim('.');
-            int losses = int.Parse(parts[4]); // Note: Skipping the "&" part
-
-            parts[5] = parts[5].Trim('.');
-            int totalPlayed = int.Parse(parts[5]);
-            int score = int.Parse(parts[6]);
-
-            int[] lastLine2 = new int[] { pos, wins, losses, totalPlayed, score };
-
-
+            // Parse the second to last line
             string secondToLastLine = lines[lines.Length - 2];
-            string[] parts2 = secondToLastLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 6)
+            string[] secondToLastParts = secondToLastLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (secondToLastParts.Length < 7) // Now expecting 7 parts
             {
-                throw new InvalidOperationException("The last line does not contain enough parts.");
+                throw new InvalidOperationException($"Second to last line '{secondToLastLine}' does not contain enough parts.");
             }
-            int pos2 = int.Parse(parts2[0]);
-            string name2 = parts2[1];
-            int wins2 = int.Parse(parts2[2]);
+            int secondToLastPos = int.Parse(secondToLastParts[0]);
+            string secondToLastName = secondToLastParts[1];
+            int secondToLastWins = int.Parse(secondToLastParts[2]);
+            int secondToLastLosses = int.Parse(secondToLastParts[4].Trim('.')); // Losses is at index 4
+            int secondToLastTotalPlayed = int.Parse(secondToLastParts[5].Trim('.'));
+            int secondToLastScore = int.Parse(secondToLastParts[6]);
+            int[] secondToLastLineData = new int[] { secondToLastPos, secondToLastWins, secondToLastLosses, secondToLastTotalPlayed, secondToLastScore };
 
-            parts2[4] = parts2[4].Trim('.');
-            int losses2 = int.Parse(parts2[4]); // Note: Skipping the "&" part
-
-            parts2[5] = parts2[5].Trim('.');
-            int totalPlayed2 = int.Parse(parts2[5].Trim('.').Trim()); // Remove the trailing dot
-            int score2 = int.Parse(parts2[6]);
-
-            int[] secondToLastLine2 = new int[] { pos2, wins2, losses2, totalPlayed2, score2 };
-
-
-
-            //int[] secondToLastLine = lines[lines.Length - 2];
-
-
-
-            return (secondToLastLine2, lastLine2);
+            return (secondToLastLineData, lastLineData);
         }
+
+        private static string GetCheckFileName(string squadronName)
+        {
+            if (squadronName == "BufSs")
+            {
+                return "CheckBufSs.txt";
+            }
+            else if (squadronName == "BofSs")
+            {
+                return "CheckBofSs.txt";
+            }
+            else if (squadronName == "BriSs")
+            {
+                return "CheckBriSs.txt";
+            }
+            else
+            {
+                throw new ArgumentException("Invalid squadron name.");
+            }
+        }
+
+
+
 
         public class ScoreExtractor
         {

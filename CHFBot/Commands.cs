@@ -181,10 +181,7 @@ namespace BotCommands
 
         public async void printSum(IMessageChannel chnl, SquadronObj sqdobj)
         {
-            //foreach (Player player in AcadObj.Players)
-            //{
-            //    await chnl.SendMessageAsync("Name: " + player.PlayerName + " \nNumber: " + player.Number + " \nPersonal Clan Rating: " + player.PersonalClanRating + " \nActivity: " + player.Activity + " \nRole: " + player.Rank + " \nDate of Entry: " + player.DateOfEntry + "\n-");
-            //}
+
             int sum = 0;
             //StringBuilder sb = new StringBuilder();
             foreach (Player player in sqdobj.Players)
