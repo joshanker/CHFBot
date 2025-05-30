@@ -814,7 +814,10 @@ namespace CHFBot
                 {
                     await SecretRecent50Command(message);
                 }
-
+                else if (content.StartsWith("!setbr"))
+                {
+                    await HandleSetBRCommand(message);
+                }
                 else if (content.StartsWith("!eos"))
                 {
                     await HandleEOSCommand(message);
@@ -1406,6 +1409,51 @@ namespace CHFBot
 
             await message.Channel.SendMessageAsync(response);
         }
+
+        [CommandDescription("!setBR <BR> - Changes divider channels to new BR.")]
+        private async Task HandleSetBRCommand(SocketMessage message)
+        {
+            string content = message.Content;
+            string[] parts = content.Split(' ');
+
+            if (parts.Length < 2)
+            {
+                await message.Channel.SendMessageAsync("Usage: !setbr <value>");
+                return;
+            }
+
+            string newValue = parts[1];
+
+            // These are your target channel IDs
+            ulong[] channelIds = {
+        876561486431027250,
+        865803859594051634,
+        1310053658515345418
+    };
+
+            // Get the guild from the channel
+            if (message.Channel is SocketGuildChannel guildChannel)
+            {
+                SocketGuild guild = guildChannel.Guild;
+
+                foreach (ulong id in channelIds)
+                {
+                    SocketTextChannel channel = guild.GetTextChannel(id);
+                    if (channel != null)
+                    {
+                        await channel.ModifyAsync(props => props.Name = $"[------- SRE {newValue} -------]");
+                    }
+                }
+
+                await message.Channel.SendMessageAsync($"Channels updated to SRE {newValue}");
+            }
+            else
+            {
+                await message.Channel.SendMessageAsync("This command must be used in a server channel.");
+            }
+        }
+
+
 
         private double[] GenerateBattleRatings()
         {
