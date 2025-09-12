@@ -842,6 +842,10 @@ namespace CHFBot
                 {
                     await HandleLastTenCommand(message);
                 }
+                else if (content.StartsWith("!2lastten"))
+                {
+                    await Handle2LastTenCommand(message);
+                }
                 else if (content.StartsWith("!setwinloss"))
                 {
                     await HandleSetWinLossCom(message);
@@ -2270,6 +2274,42 @@ namespace CHFBot
 
         }
 
+        private async Task Handle2LastTenCommand(SocketMessage message)
+        {
+            string content = message.ToString().ToLower();
+            if (content == "!2lastten")
+            {
+
+                string fileName = "SREWinLossRecordsBufSs.txt";
+
+                // Check if the file exists
+                if (File.Exists(fileName))
+                {
+                    // Read all lines from the file
+                    string[] lines = File.ReadAllLines(fileName);
+
+                    // Calculate how many lines you want to retrieve (last ten or all if less than ten)
+                    int numberOfLinesToRetrieve = Math.Min(14, lines.Length);
+
+                    // Get the last ten (or fewer) lines
+                    //string[] lastEntries = lines.TakeLast(numberOfLinesToRetrieve).ToArray();
+                    string[] lastEntries = lines.Skip(Math.Max(0, lines.Length - numberOfLinesToRetrieve)).Take(numberOfLinesToRetrieve).ToArray();
+
+                    string combinedEntries = string.Join("\n", lastEntries);
+
+                    await message.Channel.SendMessageAsync(("..." + combinedEntries));
+                }
+                else
+                {
+                    await message.Channel.SendMessageAsync("The file 'SREWinLossRecordsBufSs.txt' does not exist.");
+                }
+
+
+            }
+
+
+        }
+
         [CommandDescription("!SetWinLoss <Num/Num> of current session.")]
         private async Task HandleSetWinLossCom(SocketMessage message)
         {
@@ -2699,10 +2739,6 @@ namespace CHFBot
                     string formattedLine = $"{squadron.Pos} {squadron.SquadronName} {squadron.Wins} & {squadron.Losses}. {squadron.BattlesPlayed}. {squadron.Score}";
 
                     writer.WriteLine(formattedLine);
-
-
-
-
 
                 }
 
@@ -3667,12 +3703,6 @@ namespace CHFBot
             brissData.HasBeenInitialized = false;
 
         }
-
-
-
-
-
-
 
     }
 

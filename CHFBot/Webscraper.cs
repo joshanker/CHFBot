@@ -432,21 +432,49 @@ namespace Scraper
             return rawData.Split(separators, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        //Gaijin apparently made changes to how they output data on the webpage we scrape?  Replacing this to see if that fixes my bofss issue without breaking bufss.
+        //
+        //private static string ExtractFieldValue(string chunk, string fieldName)
+        //{
+        //    string pattern = $"\"{fieldName}\":(.*?),";
+        //    Match match = Regex.Match(chunk, pattern);
+        //    if (match.Success)
+        //    {
+        //        return match.Groups[1].Value.Trim('\"', '{', '}');
+        //    }
+        //    return "N/A";
+        //}
+
         private static string ExtractFieldValue(string chunk, string fieldName)
         {
+            // First, try the standard pattern
             string pattern = $"\"{fieldName}\":(.*?),";
             Match match = Regex.Match(chunk, pattern);
+
             if (match.Success)
             {
                 return match.Groups[1].Value.Trim('\"', '{', '}');
             }
+
+            // If the standard pattern fails, try to find the value within the 'astat' object
+            string astatPattern = $"\"astat\":{{\"astat\":.?.?\"({fieldName})\"?:(.*?)}}";
+            Match astatMatch = Regex.Match(chunk, astatPattern);
+
+            if (astatMatch.Success && astatMatch.Groups.Count > 2)
+            {
+                return astatMatch.Groups[2].Value.Trim('\"', '{', '}');
+            }
+
+            // If all else fails, return "N/A"
             return "N/A";
         }
 
+
+
+
+
         public static async Task<SquadronObj> ScrapeCheck(string message)
         {
-
-
             string sqdToGet = message.Substring(7).Trim().ToLower();
 
             switch (sqdToGet)
@@ -464,8 +492,6 @@ namespace Scraper
                     // Keep whatever the user typed (they may type a correctly cased name)
                     break;
             }
-
-
 
 
 
