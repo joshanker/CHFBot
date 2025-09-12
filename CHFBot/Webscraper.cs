@@ -447,7 +447,16 @@ namespace Scraper
 
         private static string ExtractFieldValue(string chunk, string fieldName)
         {
-            // First, try the standard pattern
+            // Regex to find a field within the 'astat' object
+            string astatPattern = $"\"astat\":.*\\\"{fieldName}\\\":(\\d+).*";
+            Match astatMatch = Regex.Match(chunk, astatPattern);
+
+            if (astatMatch.Success)
+            {
+                return astatMatch.Groups[1].Value;
+            }
+
+            // Fallback to the old method for top-level fields
             string pattern = $"\"{fieldName}\":(.*?),";
             Match match = Regex.Match(chunk, pattern);
 
@@ -456,17 +465,7 @@ namespace Scraper
                 return match.Groups[1].Value.Trim('\"', '{', '}');
             }
 
-            // If the standard pattern fails, try to find the value within the 'astat' object
-            string astatPattern = $"\"astat\":{{\"astat\":.?.?\"({fieldName})\"?:(.*?)}}";
-            Match astatMatch = Regex.Match(chunk, astatPattern);
-
-            if (astatMatch.Success && astatMatch.Groups.Count > 2)
-            {
-                return astatMatch.Groups[2].Value.Trim('\"', '{', '}');
-            }
-
-            // If all else fails, return "N/A"
-            return "N/A";
+            return "0";
         }
 
 
