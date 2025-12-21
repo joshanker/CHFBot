@@ -534,7 +534,7 @@ namespace Scraper
                             Losses = losses,
                             BattlesPlayed = battlesPlayed,
                             Score = score,
-                            Pos = pos
+                            Pos = pos + 1
                         };
 
                         return squadron; // Return the squadron info
