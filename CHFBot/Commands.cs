@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Specialized;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace BotCommands
 {
@@ -279,7 +280,14 @@ namespace BotCommands
             string EPRO  = "https://warthunder.com/en/community/claninfo/EPRO-Team";
             string CLIM  = "https://warthunder.com/en/community/claninfo/Clim";
             string VaVic = "https://warthunder.com/en/community/claninfo/Vae%20Victis%20211";
-
+            string xTHCx = "https://warthunder.com/en/community/claninfo/Try%20Hard%20Coalition";
+            string ATAKD = "https://warthunder.com/en/community/claninfo/ATTACK%20the%20D%20POINT";
+            string _14QID = "https://warthunder.com/en/community/claninfo/14%20Quid";
+            string SCORE = "https://warthunder.com/en/community/claninfo/SCOREBOARD";
+            string _0NYX = "https://warthunder.com/en/community/claninfo/0NYX";
+            string Astrx = "https://warthunder.com/en/community/claninfo/Per%20Aspera%20Ad%20Astra%20-%20X";
+            string BLKFT = "https://warthunder.com/en/community/claninfo/Blackfoot";
+            string VCoM = "https://warthunder.com/en/community/claninfo/Valiant%20Crew%20of%20Misfits";
 
 
             string url = "not yet set...";
@@ -314,9 +322,17 @@ namespace BotCommands
                     { "EPRO", EPRO},
                     { "ASP1D", ASP1D},
                     { "CLIM", CLIM},
-                    { "VaVic", VaVic}
+                    { "VaVic", VaVic},
+                    { "XTHCX", xTHCx},
+                    { "ATAKD", ATAKD},
+                    { "14QID", _14QID},
+                    { "SCORE", SCORE},
+                    { "0NYX", _0NYX},
+                    { "Astrx", Astrx},
+                    { "BLKFT", BLKFT},
+                    { "VCoM", VCoM}
 
-                };
+        };
 
             if (urlMap.ContainsKey(input))
             {

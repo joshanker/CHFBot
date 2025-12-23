@@ -1327,7 +1327,7 @@ namespace CHFBot
             string content = message.Content.Trim();
             string input = content.Substring("!top20 ".Length);
 
-            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN","BriSs","EXLY", "ASP1D", "Nrst", "IAVRI", "R6PL", "EPRO", "CLIM", "VaVic" }.Contains(input))
+            if (new[] { "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI", "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA", "AFI", "TEHb", "IRAN","BriSs","EXLY", "ASP1D", "Nrst", "IAVRI", "R6PL", "EPRO", "CLIM", "VaVic","xTHCx", "IAVRI", "ATAKD", "14QID", "SCORE", "0NYX", "Astrx", "BLKFT", "VCoM" }.Contains(input)) 
             {
                 await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few seconds.");
 
@@ -1833,10 +1833,28 @@ namespace CHFBot
 
 
 
-    private async Task HandleTop20NoArgCommand(SocketMessage message)
+    //private async Task HandleTop20NoArgCommand(SocketMessage message)
+    //    {
+    //        await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\",\"BriSs\",\"EXLY\",\"ASP1D\",\"Nrst\",\"IAVRI\",\"R6PL\",\"EPRO\",\"CLIM\" - This is case-sensitive");
+    //    }
+
+        private async Task HandleTop20NoArgCommand(SocketMessage message)
         {
-            await message.Channel.SendMessageAsync("I need a squadron, too.  You can enter \"Cadet\", \"BofSs\", \"Academy\", \"Early\", \"RO6\", \"AVR\", \"ILWI\", \"iNut\", \"SKAL\", \"NEURO\", \"LEDAC\", \"B0AR\", \"SOFUA\", \"TFedz\",\"AFI\",\"TEHb\",\"IRAN\",\"BriSs\",\"EXLY\",\"ASP1D\",\"Nrst\",\"IAVRI\",\"R6PL\",\"EPRO\",\"CLIM\" - This is case-sensitive");
+            // This list includes all the ones you were missing
+            string[] names = {
+        "Cadet", "BofSs", "Academy", "BufSs", "Early", "RO6", "AVR", "ILWI",
+        "iNut", "SKAL", "NEURO", "LEDAC", "WeBak", "TFedz", "B0AR", "SOFUA",
+        "AFI", "TEHb", "IRAN", "BriSs", "EXLY", "ASP1D", "Nrst", "IAVRI",
+        "R6PL", "EPRO", "CLIM", "VaVic", "xTHCx", "ATAKD", "14QID", "SCORE",
+        "0NYX", "Astrx", "BLKFT", "VCoM"
+    };
+
+            // This puts the names together with ", " between them
+            string list = string.Join("\", \"", names);
+
+            await message.Channel.SendMessageAsync($"I need a squadron, too. You can enter \"{list}\" - This is case-sensitive");
         }
+
 
         //[CommandDescription("turns on & off login/logoff/move notifs.")]
         private async Task HandleTrackVoiceUpdatesCommand(SocketMessage message)
