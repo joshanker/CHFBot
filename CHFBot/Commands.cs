@@ -968,7 +968,74 @@ namespace BotCommands
             }
         }
 
+        public async Task ProcessAltList(IMessageChannel chnl)
+        {
+            // 1. Get the Live Data in memory
+            SquadronObj bufss = new SquadronObj("BufSs", "https://warthunder.com/en/community/clansinfo/?id=570395");
+            bufss.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
 
+            Webscraper scraper = new Webscraper();
+            bufss = await scraper.ScrapeWebsiteAllAndPopulateAsync(bufss);
+
+            // 2. Load the CSV into memory using columns B, C, and D
+            // We'll store a small helper class or a tuple to keep the Number and Code together
+            var altData = new List<(string Number, string Name, string Code)>();
+
+            try
+            {
+                string[] csvLines = File.ReadAllLines("BufSsActivityReview.csv");
+
+                foreach (string line in csvLines)
+                {
+                    var parts = line.Split(',');
+
+                    // We need up to index 3 (Column D)
+                    if (parts.Length >= 4)
+                    {
+                        string number = parts[1].Trim(); // Column B
+                        string name = parts[2].Trim();   // Column C
+                        string code = parts[3].Trim();   // Column D
+
+                        // Skip header row if it says "Player" or "Name" in Column C
+                        if (name.ToLower() == "player" || name.ToLower() == "name" || string.IsNullOrEmpty(name))
+                            continue;
+
+                        altData.Add((number, name, code));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                await chnl.SendMessageAsync("Error reading CSV: " + e.Message);
+                return;
+            }
+
+            // 3. Match and Build the Table String
+            StringBuilder sb = new StringBuilder();
+            
+            // Header formatting
+            sb.AppendLine($"{"#".PadRight(3)} | {"Player Name".PadRight(20)} | {"Code".PadRight(6)} | {"Points"}");
+            sb.AppendLine(new string('-', 45));
+
+            foreach (var row in altData)
+            {
+                // Fix: Skip the "ALT NAME" or empty rows that cause the blank line at the end
+                if (string.IsNullOrWhiteSpace(row.Name) || row.Name.Equals("ALT NAME", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // Match against the live list (Strict match, keeping spaces and @psn)
+                var matchedPlayer = bufss.Players.FirstOrDefault(p => p.PlayerName.Equals(row.Name, StringComparison.OrdinalIgnoreCase));
+
+                string points = matchedPlayer != null ? matchedPlayer.PersonalClanRating.ToString() : "NOT FOUND";
+
+                // Build the row: Number | Name | Code | Points
+                sb.AppendLine($"{row.Number.PadRight(3)} | {row.Name.PadRight(20)} | {row.Code.PadRight(6)} | {points}");
+            }
+            //sb.AppendLine("```");
+
+            // 4. Send to Discord
+            await SendLongContentAsEmbedAsync(chnl, sb.ToString());
+        }
 
 
         public async Task<StringBuilder> FormatAndSendComparisonResults(SquadronObj[] newContent)

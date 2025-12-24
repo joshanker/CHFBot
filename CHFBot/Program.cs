@@ -870,6 +870,10 @@ namespace CHFBot
                 {
                     await Handle2ListAltsCommand(message);
                 }
+                else if (content.StartsWith("!3listalts"))
+                {
+                    await Handle3ListAltsCommand(message);
+                }
                 else if (content.StartsWith("!resetsessionwlvariables"))
                 {
                     await HandleresetsessionwlvariablesCom(message);
@@ -2489,7 +2493,7 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("2listalts - Shows BufSs alts and points on each.")]
+        [CommandDescription("2listalts - Shows BufSs alts, points.")]
         private async Task Handle2ListAltsCommand(SocketMessage message)
         {
             string content = message.Content.Trim();
@@ -2551,6 +2555,18 @@ namespace CHFBot
 
             commands.printPlayersOverUnder(chnl, squadronObjectOfAlts, "under", 2100);
 
+        }
+
+        [CommandDescription("!3listalts - Checks CSV names against live BufSs roster points.")]
+        private async Task Handle3ListAltsCommand(SocketMessage message)
+        {
+            await message.Channel.SendMessageAsync("Scraping BufSs and processing CSV... please wait.");
+
+            Commands commands = new Commands();
+            var chnl = message.Channel as IMessageChannel;
+
+            // We'll build this method in Commands.cs
+            await commands.ProcessAltList(chnl);
         }
 
         [CommandDescription("listalts - Shows alts and points on each.")]
