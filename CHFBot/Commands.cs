@@ -1015,40 +1015,43 @@ namespace BotCommands
                 return;
             }
 
-            // 3. Sort descending: High scores -> Zeros -> -1 (NOT FOUND)
+            // 3. Sort the list by Points descending
             var sortedData = altData.OrderByDescending(x => x.Points).ToList();
 
-            // 3. Build the Table String
+            // 4. Build the Table String
             StringBuilder sb = new StringBuilder();
 
-            // Inject the diff tag for color
+            // Inject the diff tag so the + and - triggers colors
             sb.AppendLine("diff");
 
-            // Header formatting
+            // Header formatting (Space aligned for the + and - triggers)
             sb.AppendLine($"  {"#".PadRight(3)}  {"Player Name".PadRight(20)}  {"Code".PadRight(6)}  {"Points"}");
             sb.AppendLine(new string('-', 47));
+
+            // Start ranking from 1
+            int rank = 1;
 
             foreach (var row in sortedData)
             {
                 string pointsDisplay = row.Points == -1 ? "NOT FOUND" : row.Points.ToString();
 
-                // Base data string
-                string data = $"{row.Number.PadRight(3)}  {row.Name.PadRight(20)}  {row.Code.PadRight(6)}  {pointsDisplay}";
+                // We use 'rank' now instead of 'row.Number' to show the new sorted order
+                string data = $"{rank.ToString().PadRight(3)}  {row.Name.PadRight(20)}  {row.Code.PadRight(6)}  {pointsDisplay}";
 
-                // The NEW coloring logic based on Code
+                // Coloring logic based on Code "0"
                 if (row.Code == "0")
                 {
-                    // Red line for Code 0
-                    sb.AppendLine($"- {data}");
+                    sb.AppendLine($"- {data}"); // Red
                 }
                 else
                 {
-                    // Green line for any other Code (1, 5, 1p, etc.)
-                    sb.AppendLine($"+ {data}");
+                    sb.AppendLine($"+ {data}"); // Green
                 }
+
+                rank++; // Increment the rank for the next player
             }
 
-            // 4. Send to Discord
+            // 5. Send to Discord
             await SendLongContentAsEmbedAsync(chnl, sb.ToString());
         }
 
