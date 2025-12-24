@@ -870,10 +870,6 @@ namespace CHFBot
                 {
                     await Handle2ListAltsCommand(message);
                 }
-                else if (content.StartsWith("!3listalts"))
-                {
-                    await Handle3ListAltsCommand(message);
-                }
                 else if (content.StartsWith("!resetsessionwlvariables"))
                 {
                     await HandleresetsessionwlvariablesCom(message);
@@ -2493,72 +2489,10 @@ namespace CHFBot
             }
         }
 
-        [CommandDescription("2listalts - Shows BufSs alts, points.")]
+
+
+        [CommandDescription("!2listalts - Checks CSV names against live BufSs roster points.")]
         private async Task Handle2ListAltsCommand(SocketMessage message)
-        {
-            string content = message.Content.Trim();
-
-            await message.Channel.SendMessageAsync("Please wait, scraping.... This might take a few moments. Results will be sent to the <#1165452109513244673> channel");
-
-            Commands commands = new Commands();
-            SquadronObj squadronObject = new SquadronObj();
-
-            squadronObject = commands.validateSquadron("BufSs");
-
-            var chnl = _client.GetChannel(esperbotchannel) as IMessageChannel;
-
-            chnl.SendMessageAsync("Alts:");
-
-            squadronObject = await commands.populateScore(squadronObject).ConfigureAwait(true);
-            squadronObject = await commands.scrapeAllAndPopulate(squadronObject).ConfigureAwait(true);
-
-            string altListFilePath = "BufSsAltList.txt"; // Replace with the correct file path
-
-            SquadronObj squadronObjectOfAlts = new SquadronObj();
-            squadronObjectOfAlts.Players = new List<Player>();
-
-            // Read the lines from the AltList.txt file
-            string[] altNames = File.ReadAllLines(altListFilePath);
-
-            // Replace 'squadronObject' with your SquadronObj instance
-            foreach (var altName in altNames)
-            {
-                // Find the player in squadronObject by their name
-                Player player = squadronObject.Players.FirstOrDefault(p => p.PlayerName.Equals(altName, StringComparison.OrdinalIgnoreCase));
-
-                if (player != null)
-                {
-                    // Append the alt name and points to the response
-                    //string response = $"{altName}: {player.PersonalClanRating} points";
-                    //await ReplyAsync(response);
-                    //player temp = new SquadronObject.Player();
-                    //squadronObjectOfAlts.Players.Add(player);
-
-                    Player copiedPlayer = new Player
-                    {
-                        PlayerName = player.PlayerName,
-                        PersonalClanRating = player.PersonalClanRating,
-                        // Copy other properties you need
-                    };
-
-                    // Add the copied player to the target squadron
-                    squadronObjectOfAlts.Players.Add(copiedPlayer);
-
-
-                }
-                else
-                {
-                    // Handle the case where the player is not found
-                    //await ReplyAsync($"{altName}: Player not found");
-                }
-            }
-
-            commands.printPlayersOverUnder(chnl, squadronObjectOfAlts, "under", 2100);
-
-        }
-
-        [CommandDescription("!3listalts - Checks CSV names against live BufSs roster points.")]
-        private async Task Handle3ListAltsCommand(SocketMessage message)
         {
             await message.Channel.SendMessageAsync("Scraping BufSs and processing CSV... please wait.");
 
