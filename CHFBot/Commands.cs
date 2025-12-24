@@ -970,16 +970,15 @@ namespace BotCommands
 
         public async Task ProcessAltList(IMessageChannel chnl)
         {
-            // 1. Get the Live Data in memory
+            // 1. Get the Live Data
             SquadronObj bufss = new SquadronObj("BufSs", "https://warthunder.com/en/community/clansinfo/?id=570395");
             bufss.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
 
             Webscraper scraper = new Webscraper();
             bufss = await scraper.ScrapeWebsiteAllAndPopulateAsync(bufss);
 
-            // 2. Load the CSV into memory using columns B, C, and D
-            // We'll store a small helper class or a tuple to keep the Number and Code together
-            var altData = new List<(string Number, string Name, string Code)>();
+            // 2. Load the CSV with a Points field for sorting
+            var altData = new List<(string Number, string Name, string Code, int Points)>();
 
             try
             {
@@ -989,18 +988,24 @@ namespace BotCommands
                 {
                     var parts = line.Split(',');
 
-                    // We need up to index 3 (Column D)
                     if (parts.Length >= 4)
                     {
-                        string number = parts[1].Trim(); // Column B
-                        string name = parts[2].Trim();   // Column C
-                        string code = parts[3].Trim();   // Column D
+                        string number = parts[1].Trim();
+                        string name = parts[2].Trim();
+                        string code = parts[3].Trim();
 
-                        // Skip header row if it says "Player" or "Name" in Column C
-                        if (name.ToLower() == "player" || name.ToLower() == "name" || string.IsNullOrEmpty(name))
+                        if (string.IsNullOrEmpty(name) || name.ToLower() == "player" || name.ToLower() == "name" || name.Equals("ALT NAME", StringComparison.OrdinalIgnoreCase))
                             continue;
 
-                        altData.Add((number, name, code));
+                        // Lookup points
+                        var matchedPlayer = bufss.Players.FirstOrDefault(p => p.PlayerName.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                        // CRITICAL SORT LOGIC: 
+                        // Actual players found get their points (0 or higher).
+                        // Players NOT FOUND get -1 so they sink to the very bottom.
+                        int pointsValue = matchedPlayer != null ? matchedPlayer.PersonalClanRating : -1;
+
+                        altData.Add((number, name, code, pointsValue));
                     }
                 }
             }
@@ -1010,30 +1015,24 @@ namespace BotCommands
                 return;
             }
 
-            // 3. Match and Build the Table String
+            // 3. Sort descending: High scores -> Zeros -> -1 (NOT FOUND)
+            var sortedData = altData.OrderByDescending(x => x.Points).ToList();
+
+            // 4. Build the Table String (No backticks, as handled by your sender)
             StringBuilder sb = new StringBuilder();
-            
-            // Header formatting
-            sb.AppendLine($"{"#".PadRight(3)} | {"Player Name".PadRight(20)} | {"Code".PadRight(6)} | {"Points"}");
+
+            sb.AppendLine($"{"#".PadRight(3)}  {"Player Name".PadRight(20)}  {"Code".PadRight(6)}  {"Points"}");
             sb.AppendLine(new string('-', 45));
 
-            foreach (var row in altData)
+            foreach (var row in sortedData)
             {
-                // Fix: Skip the "ALT NAME" or empty rows that cause the blank line at the end
-                if (string.IsNullOrWhiteSpace(row.Name) || row.Name.Equals("ALT NAME", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                // Display -1 as "NOT FOUND", everything else (including 0) as its number
+                string pointsDisplay = row.Points == -1 ? "NOT FOUND" : row.Points.ToString();
 
-                // Match against the live list (Strict match, keeping spaces and @psn)
-                var matchedPlayer = bufss.Players.FirstOrDefault(p => p.PlayerName.Equals(row.Name, StringComparison.OrdinalIgnoreCase));
-
-                string points = matchedPlayer != null ? matchedPlayer.PersonalClanRating.ToString() : "NOT FOUND";
-
-                // Build the row: Number | Name | Code | Points
-                sb.AppendLine($"{row.Number.PadRight(3)} | {row.Name.PadRight(20)} | {row.Code.PadRight(6)} | {points}");
+                sb.AppendLine($"{row.Number.PadRight(3)}  {row.Name.PadRight(20)}  {row.Code.PadRight(6)}  {pointsDisplay}");
             }
-            //sb.AppendLine("```");
 
-            // 4. Send to Discord
+            // 5. Send to Discord (using your 2-arg signature)
             await SendLongContentAsEmbedAsync(chnl, sb.ToString());
         }
 
