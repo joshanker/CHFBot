@@ -971,7 +971,7 @@ namespace BotCommands
         public async Task ProcessAltList(IMessageChannel chnl)
         {
             // 1. Get the Live Data
-            SquadronObj bufss = new SquadronObj("BufSs", "https://warthunder.com/en/community/clansinfo/?id=570395");
+            SquadronObj bufss = new SquadronObj("BufSs", "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs");
             bufss.url = "https://warthunder.com/en/community/claninfo/Bunch%20of%20Scrubs";
 
             Webscraper scraper = new Webscraper();
@@ -1018,26 +1018,41 @@ namespace BotCommands
             // 3. Sort descending: High scores -> Zeros -> -1 (NOT FOUND)
             var sortedData = altData.OrderByDescending(x => x.Points).ToList();
 
-            // 4. Build the Table String (No backticks, as handled by your sender)
+            // 3. Build the Table String
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"{"#".PadRight(3)}  {"Player Name".PadRight(20)}  {"Code".PadRight(6)}  {"Points"}");
-            sb.AppendLine(new string('-', 45));
+            // Inject the diff tag for color
+            sb.AppendLine("diff");
+
+            // Header formatting
+            sb.AppendLine($"  {"#".PadRight(3)}  {"Player Name".PadRight(20)}  {"Code".PadRight(6)}  {"Points"}");
+            sb.AppendLine(new string('-', 47));
 
             foreach (var row in sortedData)
             {
-                // Display -1 as "NOT FOUND", everything else (including 0) as its number
                 string pointsDisplay = row.Points == -1 ? "NOT FOUND" : row.Points.ToString();
 
-                sb.AppendLine($"{row.Number.PadRight(3)}  {row.Name.PadRight(20)}  {row.Code.PadRight(6)}  {pointsDisplay}");
+                // Base data string
+                string data = $"{row.Number.PadRight(3)}  {row.Name.PadRight(20)}  {row.Code.PadRight(6)}  {pointsDisplay}";
+
+                // The NEW coloring logic based on Code
+                if (row.Code == "0")
+                {
+                    // Red line for Code 0
+                    sb.AppendLine($"- {data}");
+                }
+                else
+                {
+                    // Green line for any other Code (1, 5, 1p, etc.)
+                    sb.AppendLine($"+ {data}");
+                }
             }
 
-            // 5. Send to Discord (using your 2-arg signature)
+            // 4. Send to Discord
             await SendLongContentAsEmbedAsync(chnl, sb.ToString());
         }
 
-
-        public async Task<StringBuilder> FormatAndSendComparisonResults(SquadronObj[] newContent)
+            public async Task<StringBuilder> FormatAndSendComparisonResults(SquadronObj[] newContent)
         {
             StringBuilder messageBuilder = new StringBuilder();
             messageBuilder.AppendLine("#   Name   Wins       Losses    Played Pts");
