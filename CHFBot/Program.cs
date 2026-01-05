@@ -814,6 +814,11 @@ namespace CHFBot
                 {
                     await SecretRecent50Command(message);
                 }
+                else if (message.Content.StartsWith("!2BRAlts", StringComparison.OrdinalIgnoreCase))
+                {
+                    await Handle2BRAltsCommand(message);
+                    return;
+                }
                 else if (content.StartsWith("!setbr"))
                 {
                     await HandleSetBRCommand(message);
@@ -3219,6 +3224,113 @@ namespace CHFBot
 
             return altVehicles;
         }
+
+        private async Task Handle2BRAltsCommand(SocketMessage message)
+        {
+            string[] parts = message.Content.Split(' ');
+            if (parts.Length != 2)
+            {
+                await message.Channel.SendMessageAsync("Use: `!2BRAlts <BR>` (e.g. !2BRAlts 4.0)");
+                return;
+            }
+
+            string targetBR = parts[1].Trim();
+            var altData = new Dictionary<string, List<(string Header, string Vehicle)>>(StringComparer.OrdinalIgnoreCase);
+
+            try
+            {
+                using (var reader = new StreamReader("2AltSpreadsheet.csv"))
+                {
+                    string[] headers = ReadCsvRow(reader); // Row 0: Headers
+
+                    while (!reader.EndOfStream)
+                    {
+                        string[] fields = ReadCsvRow(reader);
+                        if (fields.Length < 1) continue;
+
+                        // Index 0: Player Name
+                        string playerName = fields[0].Trim();
+                        if (string.IsNullOrEmpty(playerName) || playerName.Equals("Player Name", StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        var vehicles = new List<(string Header, string Vehicle)>();
+
+                        // Loop from Index 4 (3.7 Ground) to 56 (12.3 Air)
+                        for (int col = 4; col <= 56 && col < fields.Length && col < headers.Length; col++)
+                        {
+                            string cellValue = fields[col].Trim();
+                            if (!string.IsNullOrEmpty(cellValue))
+                            {
+                                // Clean vehicle names: remove internal newlines/quotes found in CSV
+                                string cleanVehicle = cellValue.Replace("\r", "").Replace("\n", " ").Replace("\"", "").Trim();
+                                vehicles.Add((headers[col].Trim(), cleanVehicle));
+                            }
+                        }
+                        altData[playerName] = vehicles;
+                    }
+                }
+            }
+            catch (Exception ex) { await message.Channel.SendMessageAsync($"Error: {ex.Message}"); return; }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("diff");
+            sb.AppendLine($"--- Alts with {targetBR} Vehicles ---");
+
+            bool foundAny = false;
+            foreach (var entry in altData)
+            {
+                // Matches headers containing the BR (e.g., "4.0 Ground")
+                var matches = entry.Value
+                    .Where(v => v.Header.Contains(targetBR))
+                    .Select(v => v.Vehicle)
+                    .ToList();
+
+                if (matches.Any())
+                {
+                    foundAny = true;
+                    // PadRight(20) keeps the list aligned
+                    string displayName = entry.Key.Replace("\n", " ").Replace("\r", " ").Trim();
+                    sb.Append($"\n+ {displayName.PadRight(20)}: {string.Join(" | ", matches)}");
+                }
+            }
+
+            if (!foundAny)
+                await message.Channel.SendMessageAsync($"No alts found with BR {targetBR}.");
+            else
+            {
+                var commandsInstance = new Commands();
+                await commandsInstance.SendLongContentAsEmbedAsync(message.Channel, sb.ToString());
+            }
+        }
+
+        // Ensure ONLY ONE copy of this method exists in your file
+        private string[] ReadCsvRow(StreamReader reader)
+        {
+            List<string> fields = new List<string>();
+            StringBuilder currentField = new StringBuilder();
+            bool inQuotes = false;
+
+            while (reader.Peek() >= 0)
+            {
+                char c = (char)reader.Read();
+                if (c == '"') inQuotes = !inQuotes;
+                else if (c == ',' && !inQuotes)
+                {
+                    fields.Add(currentField.ToString());
+                    currentField.Clear();
+                }
+                else if ((c == '\n' || c == '\r') && !inQuotes)
+                {
+                    if (c == '\r' && reader.Peek() == '\n') reader.Read();
+                    fields.Add(currentField.ToString());
+                    return fields.ToArray();
+                }
+                else currentField.Append(c);
+            }
+            fields.Add(currentField.ToString());
+            return fields.ToArray();
+        }
+
 
 
         [CommandDescription("!turn <setting> on|off")]
