@@ -819,6 +819,11 @@ namespace CHFBot
                     await Handle2BRAltsCommand(message);
                     return;
                 }
+                else if (message.Content.StartsWith("!BRAlts", StringComparison.OrdinalIgnoreCase))
+                {
+                    await HandleBRAltsCommand(message);
+                    return;
+                }
                 else if (content.StartsWith("!setbr"))
                 {
                     await HandleSetBRCommand(message);
@@ -3224,7 +3229,8 @@ namespace CHFBot
 
             return altVehicles;
         }
-
+        
+        [CommandDescription("!2BRAlts <BR>")]
         private async Task Handle2BRAltsCommand(SocketMessage message)
         {
             string[] parts = message.Content.Split(' ');
@@ -3250,6 +3256,86 @@ namespace CHFBot
 
                         // Index 0: Player Name
                         string playerName = fields[0].Trim();
+                        if (string.IsNullOrEmpty(playerName) || playerName.Equals("Player Name", StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        var vehicles = new List<(string Header, string Vehicle)>();
+
+                        // Loop from Index 4 (3.7 Ground) to 56 (12.3 Air)
+                        for (int col = 4; col <= 56 && col < fields.Length && col < headers.Length; col++)
+                        {
+                            string cellValue = fields[col].Trim();
+                            if (!string.IsNullOrEmpty(cellValue))
+                            {
+                                // Clean vehicle names: remove internal newlines/quotes found in CSV
+                                string cleanVehicle = cellValue.Replace("\r", "").Replace("\n", " ").Replace("\"", "").Trim();
+                                vehicles.Add((headers[col].Trim(), cleanVehicle));
+                            }
+                        }
+                        altData[playerName] = vehicles;
+                    }
+                }
+            }
+            catch (Exception ex) { await message.Channel.SendMessageAsync($"Error: {ex.Message}"); return; }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("diff");
+            sb.AppendLine($"--- Alts with {targetBR} Vehicles ---");
+
+            bool foundAny = false;
+            foreach (var entry in altData)
+            {
+                // Matches headers containing the BR (e.g., "4.0 Ground")
+                var matches = entry.Value
+                    .Where(v => v.Header.Contains(targetBR))
+                    .Select(v => v.Vehicle)
+                    .ToList();
+
+                if (matches.Any())
+                {
+                    foundAny = true;
+                    // PadRight(20) keeps the list aligned
+                    string displayName = entry.Key.Replace("\n", " ").Replace("\r", " ").Trim();
+                    sb.Append($"\n+ {displayName.PadRight(20)}: {string.Join(" | ", matches)}");
+                }
+            }
+
+            if (!foundAny)
+                await message.Channel.SendMessageAsync($"No alts found with BR {targetBR}.");
+            else
+            {
+                var commandsInstance = new Commands();
+                await commandsInstance.SendLongContentAsEmbedAsync(message.Channel, sb.ToString());
+            }
+        }
+        
+        
+        [CommandDescription("!BRAlts <BR>")]
+        private async Task HandleBRAltsCommand(SocketMessage message)
+        {
+            string[] parts = message.Content.Split(' ');
+            if (parts.Length != 2)
+            {
+                await message.Channel.SendMessageAsync("Use: `!BRAlts <BR>` (e.g. !BRAlts 4.0)");
+                return;
+            }
+
+            string targetBR = parts[1].Trim();
+            var altData = new Dictionary<string, List<(string Header, string Vehicle)>>(StringComparer.OrdinalIgnoreCase);
+
+            try
+            {
+                using (var reader = new StreamReader("AltSpreadsheet.csv"))
+                {
+                    string[] headers = ReadCsvRow(reader); // Row 0: Headers
+
+                    while (!reader.EndOfStream)
+                    {
+                        string[] fields = ReadCsvRow(reader);
+                        if (fields.Length < 1) continue;
+
+                        // Index 0: Player Name
+                        string playerName = fields[2].Trim();
                         if (string.IsNullOrEmpty(playerName) || playerName.Equals("Player Name", StringComparison.OrdinalIgnoreCase))
                             continue;
 
